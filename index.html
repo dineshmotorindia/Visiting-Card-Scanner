@@ -147,6 +147,36 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
 .dl dd{margin:0;word-break:break-word}
 .dl a{color:var(--ink);font-weight:600}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:50;display:none;font-size:14px;max-width:90vw}
+
+/* ---------- selection + label tools ---------- */
+.chk{position:absolute;left:4px;top:4px;width:46px;height:46px;display:grid;place-items:center;z-index:3;cursor:pointer}
+.chk input{display:none}
+.chk i{width:26px;height:26px;border-radius:50%;border:2px solid #fff;background:rgba(13,43,51,.4);box-shadow:0 0 0 1px rgba(13,43,51,.4);display:grid;place-items:center}
+.chk i svg{opacity:0}
+.chk input:checked+i{background:var(--go)}
+.chk input:checked+i svg{opacity:1}
+.tile{position:relative}
+.tile.sel{border-color:var(--go);box-shadow:0 0 0 2px var(--go)}
+.listbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.listbar .count{margin:0}
+.link{background:none;border:0;color:var(--ink);font-weight:600;text-decoration:underline;padding:6px 0;cursor:pointer;font-size:13.5px}
+#selBar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--white);border-top:1px solid var(--line);padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);display:none;align-items:center;gap:12px;box-shadow:0 -6px 20px rgba(13,43,51,.1)}
+#selBar b{flex:1;font-size:14.5px}
+#selBar .btn{width:auto;padding:13px 20px}
+main.padb{padding-bottom:110px}
+.opts{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:end;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.opts .fld{margin:0;width:150px}
+.opts label.ck{display:flex;gap:8px;align-items:center;font-size:14px}
+.opts label.ck input{width:18px;height:18px}
+.sheetp{position:relative;background:#fff;border:1px solid var(--line);box-shadow:0 6px 24px rgba(13,43,51,.12);margin:6px auto 22px;overflow:hidden}
+.slot{position:absolute;border:1px dashed #c8d2d1;overflow:hidden;font-family:"Courier New",Courier,monospace;color:#000;white-space:pre}
+.slot.on{border-color:#9fb1b0}
+.shl{text-align:center;font-size:13px;color:var(--mute)}
+#lBar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--white);border-top:1px solid var(--line);padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px)}
+details.set{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+details.set summary{font-weight:600;cursor:pointer}
+details.set .form{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:480px){details.set .form{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -162,19 +192,7 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
       <div class="dhead"><h3>Latest scan</h3><span class="pill">Not saved yet</span></div>
       <div class="cardframe"><img id="dImg" alt="Scanned card"></div>
       <div class="sum" id="dSum"></div>
-      <details class="edit"><summary>Edit details</summary>
-        <div class="form">
-          <label class="fld"><span>Name</span><input id="f_name" autocomplete="off"></label>
-          <label class="fld"><span>Designation</span><input id="f_designation" autocomplete="off"></label>
-          <label class="fld w"><span>Company</span><input id="f_company" autocomplete="off"></label>
-          <label class="fld"><span>Phone</span><input id="f_phone" inputmode="tel" autocomplete="off"></label>
-          <label class="fld"><span>Email</span><input id="f_email" type="email" autocomplete="off"></label>
-          <label class="fld w"><span>Address</span><textarea id="f_address" rows="2"></textarea></label>
-          <label class="fld"><span>City</span><input id="f_city" autocomplete="off"></label>
-          <label class="fld"><span>PIN code</span><input id="f_pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
-          <label class="fld w"><span>Website</span><input id="f_website" autocomplete="off"></label>
-        </div>
-      </details>
+      <details class="edit" id="dEdit"><summary>Edit details</summary><div class="form" id="draftForm"></div></details>
       <div class="btns">
         <button class="btn" id="saveBtn">Save card</button>
         <div class="two"><button class="btn alt" id="dRescan">Scan again</button><button class="btn alt" id="dDiscard">Discard</button></div>
@@ -221,7 +239,7 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
   <header class="top"><div class="bar">
     <button class="back" id="allBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
     <span class="brand">All cards</span></div></header>
-  <main class="wide">
+  <main class="wide padb">
     <div class="split">
       <aside class="filters">
         <h3>Find a card</h3>
@@ -231,11 +249,33 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
         <button class="clear" id="qClear">Clear filters</button>
       </aside>
       <div>
-        <p class="count" id="cardCount"></p>
+        <div class="listbar"><p class="count" id="cardCount"></p><button class="link" id="selAll">Select all shown</button></div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
   </main>
+  <div id="selBar"><b id="selTxt"></b><button class="link" id="selClear">Clear</button><button class="btn" id="mkLabels">Make labels</button></div>
+</section>
+
+<!-- ============ LABELS ============ -->
+<section id="v-labels" class="hide">
+  <header class="top"><div class="bar">
+    <button class="back" id="labBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <span class="brand">Address labels</span></div></header>
+  <main class="padb">
+    <p class="count" id="lSum"></p>
+    <div class="opts">
+      <label class="fld"><span>Start from label no.</span><input id="lStart" type="number" min="1" max="16" value="1" inputmode="numeric"></label>
+      <label class="ck"><input type="checkbox" id="lCo" checked> Include company</label>
+      <label class="ck"><input type="checkbox" id="lOut"> Draw outlines in PDF</label>
+    </div>
+    <details class="set"><summary>Sheet settings (match your sticker sheet)</summary>
+      <div class="form" id="setForm" style="margin-top:12px"></div>
+      <div class="btns"><button class="btn alt" id="setSave">Save settings</button></div>
+    </details>
+    <div id="lPages"></div>
+  </main>
+  <div id="lBar"><button class="btn" id="pdfBtn">Download PDF</button></div>
 </section>
 
 <!-- ============ DETAIL SHEET ============ -->
@@ -247,11 +287,14 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* =====================================================================
-   SERVER SETTINGS
-   Leave apiKey empty to test: cards are then saved on this phone only.
-   Paste your Firebase details here to save cards on your online server.
+   SETTINGS
+   1) SERVER: leave apiKey empty to test (cards stay on this phone only).
+      Paste Firebase details to save cards online for the whole team.
+   2) AI READER (optional, much more accurate): paste a Gemini API key.
+      Leave empty to use the free offline reader.
    ===================================================================== */
 const FIREBASE_CONFIG = {
   apiKey: "",
@@ -261,11 +304,23 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "",
   appId: ""
 };
+const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
+const AI_MODEL = "gemini-2.5-flash";  // change if Google renames the model
 /* ===================================================================== */
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3000)}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
+
+/* ---------------- fields ---------------- */
+const F=['name','designation','company','phone','email','address','city','pin','website'];
+const FL={name:'Name',designation:'Designation',company:'Company',phone:'Mobile / phone',email:'Email',address:'Address',city:'City',pin:'PIN code',website:'Website'};
+const WIDE=['company','address','website'];
+function formHTML(p){
+  return F.map(k=>`<label class="fld ${WIDE.includes(k)?'w':''}"><span>${FL[k]}</span>${
+    k==='address'?`<textarea id="${p}${k}" rows="2"></textarea>`:
+    `<input id="${p}${k}" autocomplete="off" ${k==='phone'?'inputmode="tel"':''} ${k==='pin'?'inputmode="numeric" maxlength="6"':''} ${k==='email'?'type="email"':''}>`}</label>`).join('');
+}
 
 /* ---------------- storage: online (Firebase) or this phone ---------------- */
 const ONLINE=!!FIREBASE_CONFIG.apiKey;
@@ -276,6 +331,7 @@ if(ONLINE){
   const db=firebase.firestore();
   store={
     async add(c){await db.collection('cards').add({...c,createdAt:firebase.firestore.FieldValue.serverTimestamp()})},
+    async update(id,v){await db.collection('cards').doc(id).update(v)},
     async del(id){await db.collection('cards').doc(id).delete()},
     watch(){db.collection('cards').orderBy('createdAt','desc').onSnapshot(s=>{cards=s.docs.map(d=>({id:d.id,...d.data()}));onCards()},e=>{$('homeCount').textContent='Could not reach server';toast('Server error: '+e.message)})}
   };
@@ -284,55 +340,54 @@ if(ONLINE){
   const read=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
   store={
     async add(c){const a=read();a.unshift({...c,id:'l'+Date.now(),createdAt:Date.now()});localStorage.setItem(K,JSON.stringify(a))},
+    async update(id,v){localStorage.setItem(K,JSON.stringify(read().map(x=>x.id===id?{...x,...v}:x)))},
     async del(id){localStorage.setItem(K,JSON.stringify(read().filter(x=>x.id!==id)))},
     watch(){cards=read();onCards()},
     refresh(){cards=read();onCards()}
   };
 }
+const selected=new Set();
 onCards=()=>{
   const n=cards.length;
   $('homeCount').textContent=n?`${n} card${n===1?'':'s'} saved`:'No cards saved yet';
+  [...selected].forEach(id=>{if(!cards.find(c=>c.id===id))selected.delete(id)});
   if(!$('v-cards').classList.contains('hide'))renderCards();
 };
-$('modeNote').textContent=ONLINE?'Connected to the online register. Every card uploaded here is visible to your team.':'Test mode: cards are saved only on this phone. Connect the server to share them with your team.';
+$('modeNote').textContent=(ONLINE?'Connected to the online register. Cards you save are visible to your team.':'Test mode: cards are saved only on this phone.')+(AI_KEY?' Card reader: AI.':' Card reader: offline.');
 
 /* ---------------- navigation ---------------- */
-const VIEWS=['home','cards','scan'];
-function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards()}
+const VIEWS=['home','cards','scan','labels'];
+function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards();if(v==='labels')renderLabels()}
 function nav(v){location.hash=v==='home'?'':v}
 function goBack(){history.length>1?history.back():nav('home')}
 window.addEventListener('hashchange',()=>{
-  const v=location.hash.slice(1)||'home';
+  let v=location.hash.slice(1)||'home';
   $('sheet').classList.add('hide');
-  if(v==='scan'){if(!camOn)return show('home');}
+  if(v==='scan'&&!camOn)v='home';
+  if(v==='labels'&&!selected.size)v='cards';
   show(VIEWS.includes(v)?v:'home');
 });
 $('allBtn').onclick=()=>nav('cards');
 $('allBack').onclick=goBack;
+$('labBack').onclick=goBack;
 
 /* ---------------- live scanner ---------------- */
-const F=['name','designation','company','phone','email','address','city','pin','website'];
 let draft=null,worker=null,stream=null,camOn=false,busy=false;
-const CARD_RATIO=1.75;
-
 function ensureWorker(){
-  if(!worker)worker=Tesseract.createWorker('eng',1,{logger:m=>{if(busy&&m.status==='recognizing text')$('msg').textContent='Reading the card… '+Math.round(m.progress*100)+'%'}}).catch(e=>{worker=null;throw e});
+  if(!worker)worker=Tesseract.createWorker('eng',1,{logger:m=>{if(busy&&m.status==='recognizing text')$('msg').dataset.p=Math.round(m.progress*100)}}).catch(e=>{worker=null;throw e});
   return worker;
 }
-function stopCam(){
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
-  $('vid').srcObject=null;
-}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('vid').srcObject=null}
 async function openScanner(){
   camOn=true;busy=false;
   $('snap').classList.add('hide');$('frame').classList.remove('busy');$('tick').style.display='none';
   $('camErr').style.display='none';$('msg').textContent='';$('hintTop').textContent='Place the card flat and fit it inside the green corners';
   $('shutter').disabled=false;
   nav('scan');show('scan');
-  ensureWorker().catch(()=>{});
+  if(!AI_KEY)ensureWorker().catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}},audio:false});
     const v=$('vid');v.srcObject=stream;await v.play().catch(()=>{});
     try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
   }catch(e){
@@ -350,11 +405,10 @@ $('camFile').onchange=$('galFile').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   try{
     const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f)});
-    const k=Math.min(1,1400/Math.max(img.width,img.height));
+    const k=Math.min(1,1800/Math.max(img.width,img.height));
     const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
     c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-    $('camErr').style.display='none';
-    processCanvas(c);
+    $('camErr').style.display='none';processCanvas(c);
   }catch(err){toast('Could not open that photo')}
 };
 $('shutter').onclick=()=>{
@@ -364,11 +418,61 @@ $('shutter').onclick=()=>{
   const vw=v.videoWidth,vh=v.videoHeight,sc=Math.max(r.width/vw,r.height/vh);
   const ox=(vw*sc-r.width)/2,oy=(vh*sc-r.height)/2;
   const sx=(fr.left-r.left+ox)/sc,sy=(fr.top-r.top+oy)/sc,sw=fr.width/sc,sh=fr.height/sc;
-  const cw=Math.min(1400,Math.round(sw)),ch=Math.round(cw*sh/sw);
+  const cw=Math.min(1800,Math.round(sw)),ch=Math.round(cw*sh/sw);
   const c=document.createElement('canvas');c.width=cw;c.height=ch;
   c.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cw,ch);
   processCanvas(c);
 };
+
+/* ---- reading: AI (optional) or offline OCR ---- */
+async function aiRead(c){
+  const b64=c.toDataURL('image/jpeg',.88).split(',')[1];
+  const prompt='This is a photo of a business visiting card, usually from India. Read it and reply with JSON only, using exactly these keys: name, designation, company, phone, email, address, city, pin, website. Rules: name is the person\'s name only, without degrees or qualifications. designation is the job title, empty if none. company is the organisation name. phone lists mobile numbers first, then landlines, separated by commas, as printed. address is the full postal address on one line, without phone, email or website. pin is the 6 digit PIN code. Use an empty string for anything not on the card. Never invent text.';
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+AI_MODEL+':generateContent',{
+    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI_KEY},
+    body:JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})
+  });
+  if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error(r.status+' '+m)}
+  const j=await r.json();
+  let t=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').replace(/```json|```/g,'').trim();
+  const o=JSON.parse(t),out={};
+  F.forEach(k=>out[k]=String(o[k]??'').trim());
+  out.pin=out.pin.replace(/\D/g,'').slice(0,6);
+  return out;
+}
+function prep(c,inv){
+  const k=Math.max(1,Math.min(2.2,2000/c.width));
+  const o=document.createElement('canvas');o.width=Math.round(c.width*k);o.height=Math.round(c.height*k);
+  const x=o.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(c,0,0,o.width,o.height);
+  const im=x.getImageData(0,0,o.width,o.height),d=im.data,h=new Uint32Array(256);
+  for(let i=0;i<d.length;i+=4){const g=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)|0;d[i]=g;h[g]++}
+  const n=o.width*o.height;let s=0,lo=0,hi=255;
+  for(;lo<255;lo++){s+=h[lo];if(s>n*.02)break}
+  s=0;for(hi=255;hi>0;hi--){s+=h[hi];if(s>n*.02)break}
+  const span=Math.max(40,hi-lo);
+  for(let i=0;i<d.length;i+=4){let v=(d[i]-lo)*255/span;v=v<0?0:v>255?255:v;if(inv)v=255-v;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}
+  x.putImageData(im,0,0);return o;
+}
+async function ocrRead(c){
+  const w=await ensureWorker();
+  let all=[];
+  for(const inv of [false,true]){
+    $('msg').textContent=inv?'Reading the card… second pass':'Reading the card…';
+    const {data}=await w.recognize(prep(c,inv));
+    const ls=(data.lines&&data.lines.length)?data.lines.map(l=>({t:l.text,cf:l.confidence,y:l.bbox.y0,x:l.bbox.x0})):data.text.split('\n').map((t,j)=>({t,cf:80,y:j*10,x:0}));
+    all=all.concat(ls.filter(l=>l.cf>=55));
+  }
+  const key=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const kept=[];
+  all.sort((a,b)=>b.cf-a.cf).forEach(l=>{
+    const k=key(l.t);if(k.length<3)return;
+    if(kept.some(o=>{const ok=key(o.t);return ok===k||(k.length>=6&&(ok.includes(k)||k.includes(ok)))}))return;
+    kept.push(l);
+  });
+  kept.sort((a,b)=>a.y-b.y||a.x-b.x);
+  return kept.map(l=>l.t).join('\n');
+}
+
 async function processCanvas(c){
   if(busy)return;busy=true;
   $('shutter').disabled=true;
@@ -377,20 +481,17 @@ async function processCanvas(c){
   t.getContext('2d').drawImage(c,0,0,t.width,t.height);
   const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7);
   $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
-  $('vid').pause&&$('vid').pause();
-  $('hintTop').textContent='Scanning card';$('msg').textContent='Loading the card reader…';
-  let p={};let raw='';
-  try{
-    const w=await ensureWorker();
-    // boost contrast for better reading
-    const o=document.createElement('canvas');o.width=c.width;o.height=c.height;
-    const ox=o.getContext('2d');try{ox.filter='grayscale(1) contrast(1.35)'}catch(e){}
-    ox.drawImage(c,0,0);
-    const {data}=await w.recognize(o);
-    raw=data.text;p=parseCard(raw);
-  }catch(e){p={};}
+  try{$('vid').pause()}catch(e){}
+  $('hintTop').textContent='Scanning card';$('msg').textContent=AI_KEY?'Reading the card with AI…':'Loading the card reader…';
+  let p=null,raw='';
+  if(AI_KEY){
+    try{p=await aiRead(c)}catch(e){console.warn(e);toast('AI reader failed ('+String(e.message).slice(0,60)+'). Using offline reader.');$('msg').textContent='Using offline reader…'}
+  }
+  if(!p){
+    try{raw=await ocrRead(c);p=parseCard(raw)}catch(e){console.warn(e);p={}}
+  }
   const got=F.some(k=>p[k]);
-  draft={img:thumb,raw,f:{}};F.forEach(k=>draft.f[k]=p[k]||'');
+  draft={img:thumb,f:{}};F.forEach(k=>draft.f[k]=p[k]||'');
   $('msg').textContent=got?'Card captured':'Card captured. Text could not be read, you can type the details.';
   $('tick').style.display='grid';
   await new Promise(r=>setTimeout(r,850));
@@ -400,13 +501,104 @@ async function processCanvas(c){
   if(!got)setTimeout(()=>toast('Could not read the text. Tap Edit details to type it.'),300);
 }
 
+/* ---------------- parsing offline text ---------------- */
+const tc=s=>s.toLowerCase().replace(/(^|[\s.(\-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+const GOOD=/[A-Za-z0-9]{3,}|^[A-Za-z]\.?$|^(&|no|po|st|rd|tn|in|of|and|to|ph)[.:,]?$/i;
+function clean(l){
+  l=l.replace(/[|_~•©®™=\\{}\[\]<>]+/g,' ').replace(/\s+/g,' ').trim();
+  let t=l.split(' ').filter(Boolean);
+  while(t.length>2&&!GOOD.test(t[0]))t.shift();
+  while(t.length>2&&!GOOD.test(t[t.length-1]))t.pop();
+  const good=t.filter(x=>GOOD.test(x)).length;
+  if(!t.length||good/t.length<.5)return '';
+  return t.join(' ');
+}
+const EMAIL_RE=/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*/g;
+const SITE_RE=/(?:https?:\/\/)?(?:w{3}\.?)?[A-Za-z0-9-]{2,}(?:\.[A-Za-z0-9-]+)*\.(?:com|in|net|org|biz|info|co\.in)\b/gi;
+const PHONE_RE=/(?:\+\s?\d{1,3}[\s-]?)?\d[\d\s.\-]{6,}\d/g;
+const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent|auditor|accountant|architect|doctor|secretary|treasurer|principal|proprietrix)\b/i;
+const COM=/\b(pvt|ltd|llp|inc|company|industries|enterprises?|publications?|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|engineers|engineering|manufacturing|consultants|exports?|labs|technologies|systems|infotech|works|stores|distributors|printers|press)\b|&/i;
+const ADR=/\b(road|rd|street|st|nagar|floor|building|bldg|plot|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|towers|complex|park|flat|door|pandal|post|po|p\.o|apartments|estate|layout|extn|extension|market|bazaar|puram|palayam|garden|gardens|village|taluk|dist|district|hills|mall|plaza)\b|\bno\s*[.:]|\bd\.?\s?no\b/i;
+const STATE=/^(tamil\s?nadu|t\.?\s?n\.?|india|kerala|karnataka|andhra pradesh|telangana|maharashtra|in|ind)[\s,.\-]*(in|india)?[\s,.]*$/i;
+const DEG=/\s*(\b(B\.?\s?Sc|B\.?\s?Tech|M\.?\s?Tech|B\.?\s?Com|M\.?\s?Com|M\.?\s?Sc|Ph\.?\s?D|Dr)\b|\b(B\.?E|M\.?E|B\.?A|M\.?A|C\.?A|MBA|LLB|MBBS)\b(?![a-z])).*$/;
+function normPhone(m){
+  let d=m.replace(/\D/g,'');
+  if(d.length<8||d.length>13)return null;
+  if(d.length===11&&d[0]==='1'&&/^[6-9]/.test(d.slice(1)))d=d.slice(1);
+  if(d.length===12&&d.startsWith('91'))d=d.slice(2);
+  if(d.length===13&&d.startsWith('091'))d=d.slice(3);
+  if(d.length===10&&/^[6-9]/.test(d))return d.slice(0,5)+' '+d.slice(5);
+  return m.replace(/[^\d+\s\-]/g,'').replace(/\s+/g,' ').trim();
+}
+function parseCard(text){
+  const r={};F.forEach(k=>r[k]='');
+  const lines=text.split('\n').map(clean).filter(Boolean);
+  const emails=[],sites=[],phones=[],addr=[],rest=[];let pinLine='';
+  for(let l of lines){
+    l=l.replace(EMAIL_RE,m=>{let e=m.toLowerCase().replace(/[.,]+$/,'');if(!/@.+\./.test(e))e=e.replace(/(com|in|net|org)$/,'.$1');emails.push(e);return ' '});
+    l=l.replace(SITE_RE,m=>{let w=m.toLowerCase().replace(/^https?:\/\//,'');w=w.replace(/^www(?!\.)/,'www.');sites.push(w);return ' '});
+    const fax=/\bfax\b/i.test(l);
+    l=l.replace(PHONE_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return p?' ':m});
+    l=l.replace(/\b(mobile|mob|phone|ph|tel|cell|fax|e-?mail|website|web|email)\b\s*[:.\-]?/ig,' ').replace(/\s+/g,' ').trim();
+    if(l.replace(/[^A-Za-z0-9]/g,'').length<3)continue;
+    const pm=l.match(/\b[1-9]\d{2}\s?\d{3}\b/);
+    if(pm&&!r.pin){r.pin=pm[0].replace(/\s/g,'');pinLine=l;addr.push(l);continue}
+    if(STATE.test(l)||ADR.test(l)){addr.push(l);continue}
+    rest.push(l);
+  }
+  const mob=p=>/^[6-9]\d{4} \d{5}$/.test(p);
+  const ph=[...new Set(phones)];
+  r.phone=[...ph.filter(mob),...ph.filter(p=>!mob(p))].slice(0,3).join(', ');
+  r.email=[...new Set(emails)].slice(0,2).join(', ');
+  // website: prefer the domain used in the email
+  let ws=[...new Set(sites)];
+  const dom=(emails[0]||'').split('@')[1]||'';
+  if(dom){ws=ws.map(w=>{const b=w.replace(/^www\./,'');return(b!==dom&&b.endsWith(dom))?'www.'+dom:w})}
+  r.website=[...new Set(ws)].slice(0,2).join(', ');
+  const base=(dom||(ws[0]||'').replace(/^www\./,'')).split('.')[0].toLowerCase();
+  // designation, company candidates
+  const coms=[],rem=[];
+  for(const l of rest){
+    if(!r.designation&&DES.test(l)){r.designation=l;continue}
+    if(COM.test(l)){coms.push(l);continue}
+    rem.push(l);
+  }
+  const k=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(coms.length){
+    r.company=(base&&coms.find(l=>k(l).includes(base)||base.includes(k(l))))||
+      [...coms].sort((a,b)=>a.split(' ').length-b.split(' ').length).find(l=>k(l).length>=4)||coms[0];
+  }
+  // name: best scoring short line made of letters
+  let best=null,bs=-1;
+  rem.concat(coms.filter(l=>l!==r.company&&false)).forEach((l,i)=>{
+    const t=l.replace(DEG,'').trim();
+    if(!/^[A-Za-z][A-Za-z.' ]{2,34}$/.test(t))return;
+    const w=t.split(/\s+/);if(w.length>4)return;
+    let sc=10-i;
+    if(/^[A-Za-z]\.\s?[A-Za-z]{2,}/.test(t)||/[A-Za-z]{3,}\s[A-Za-z]\.?$/.test(t))sc+=3;
+    if(w.length>=2&&w.length<=3)sc+=2;
+    if(l!==t)sc+=2;
+    if(sc>bs){bs=sc;best=t}
+  });
+  if(best)r.name=tc(best);
+  if(!r.company&&base)r.company=tc(base);
+  // address + city
+  r.address=addr.join(', ').replace(/\s*,\s*,/g,',').replace(/[,\s-]+$/,'');
+  const pl=pinLine||'';
+  const parts=pl.replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-–]/).map(x=>x.replace(/[^A-Za-z .]/g,'').trim()).filter(x=>x.length>2&&!STATE.test(x));
+  if(parts.length)r.city=tc(parts[parts.length-1]);
+  return r;
+}
+
 /* ---------------- latest scan panel (landing page) ---------------- */
+$('draftForm').innerHTML=formHTML('f_');
 function renderDraft(){
   const box=$('draftBox');
   if(!draft){box.classList.add('hide');return}
   box.classList.remove('hide');
   $('dImg').src=draft.img;
   F.forEach(k=>$('f_'+k).value=draft.f[k]);
+  $('dEdit').open=false;
   drawSummary();
 }
 function drawSummary(){
@@ -420,78 +612,67 @@ $('dDiscard').onclick=()=>{if(confirm('Discard this scan?')){draft=null;renderDr
 $('saveBtn').onclick=async()=>{
   if(!draft)return;
   const c={};F.forEach(k=>c[k]=(draft.f[k]||'').trim());
-  if(!c.name&&!c.company){toast('Enter at least a name or a company');$('draftBox').querySelector('details').open=true;return}
+  if(!c.name&&!c.company){toast('Enter at least a name or a company');$('dEdit').open=true;return}
   const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
   if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Save anyway?'))return;
   c.image=draft.img;
   $('saveBtn').disabled=true;$('saveBtn').textContent='Saving…';
   try{
-    await store.add(c);
-    if(store.refresh)store.refresh();
+    await store.add(c);if(store.refresh)store.refresh();
     draft=null;renderDraft();toast('Card saved');
   }catch(e){toast('Save failed: '+(e.name==='QuotaExceededError'?'phone storage is full (test mode)':e.message))}
   $('saveBtn').textContent='Save card';$('saveBtn').disabled=false;
 };
 
-/* ---------------- text parsing ---------------- */
-function parseCard(text){
-  const r={};F.forEach(k=>r[k]='');
-  const lines=text.split('\n').map(s=>s.replace(/[|_]/g,' ').replace(/\s+/g,' ').trim()).filter(s=>s.length>2);
-  const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent)\b/i;
-  const COM=/\b(pvt|ltd|llp|inc|co\.?|company|industries|enterprises|publications|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|&)\b/i;
-  const ADR=/\b(road|street|st\.|nagar|floor|building|plot|no\.|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|complex|park|flat|door)\b/i;
-  const rest=[],phones=[],addr=[];
-  for(const l of lines){
-    const em=l.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/);
-    if(em&&!r.email){r.email=em[0].toLowerCase();continue}
-    const wb=l.match(/(https?:\/\/)?(www\.)[\w-]+(\.[\w-]+)+\S*/i);
-    if(wb&&!r.website){r.website=wb[0];continue}
-    const digits=(l.match(/\d/g)||[]).length,letters=(l.match(/[A-Za-z]/g)||[]).length;
-    const pin=l.match(/\b[1-9]\d{2}\s?\d{3}\b/);
-    if(pin&&!r.pin&&(ADR.test(l)||letters>3)){r.pin=pin[0].replace(/\s/g,'');addr.push(l);continue}
-    if(digits>=8&&letters<=12){(l.match(/\+?\d[\d\s().-]{6,}\d/g)||[]).forEach(p=>phones.push(p.trim()));continue}
-    if(ADR.test(l)||(/\d/.test(l)&&letters>5&&!DES.test(l))){addr.push(l);continue}
-    rest.push(l);
-  }
-  r.phone=[...new Set(phones)].slice(0,2).join(', ');
-  const rem=[];
-  for(const l of rest){
-    if(!r.designation&&DES.test(l)){r.designation=l;continue}
-    if(!r.company&&COM.test(l)){r.company=l;continue}
-    rem.push(l);
-  }
-  const nl=rem.find(l=>/^[A-Za-z.\s]{3,35}$/.test(l)&&l.split(/\s+/).length<=4);
-  if(nl){r.name=nl.replace(/\b(\w)(\w*)/g,(m,a,b)=>a.toUpperCase()+b.toLowerCase());rem.splice(rem.indexOf(nl),1)}
-  if(!r.company&&rem.length)r.company=rem.shift();
-  r.address=addr.join(', ');
-  const pl=addr.find(l=>r.pin&&l.replace(/\s/g,'').includes(r.pin));
-  if(pl){const parts=pl.replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-]/).map(s=>s.trim()).filter(Boolean);r.city=(parts.pop()||'').replace(/[^A-Za-z .]/g,'').trim()}
-  return r;
-}
-
-/* ---------------- all cards + filters ---------------- */
+/* ---------------- all cards + filters + selection ---------------- */
 ['q_name','q_city','q_des'].forEach(i=>$(i).addEventListener('input',renderCards));
 $('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');renderCards()};
-function renderCards(){
+function filtered(){
   const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim();
-  const L=cards.filter(c=>
+  return cards.filter(c=>
     (!qn||((c.name||'')+' '+(c.company||'')).toLowerCase().includes(qn))&&
     (!qc||(c.city||'').toLowerCase().includes(qc))&&
     (!qd||(c.designation||'').toLowerCase().includes(qd)));
+}
+const CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#04251a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+function renderCards(){
+  const L=filtered();
   $('cardCount').textContent=L.length===cards.length?`${cards.length} card${cards.length===1?'':'s'}`:`${L.length} of ${cards.length} cards`;
   $('grid').innerHTML=L.map(c=>`
-    <button class="tile" data-id="${esc(c.id)}">
-      <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="" loading="lazy">`:'No image'}</div>
+    <div class="tile ${selected.has(c.id)?'sel':''}" data-id="${esc(c.id)}" role="button" tabindex="0">
+      <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="" loading="lazy">`:'No image'}
+        <label class="chk" aria-label="Select for label"><input type="checkbox" ${selected.has(c.id)?'checked':''}><i>${CHECK}</i></label></div>
       <div class="meta">
         <h4>${esc(c.name||c.company||'Unnamed')}</h4>
         <p class="l2">${esc([c.designation,c.name?c.company:''].filter(Boolean).join(', '))}</p>
         ${c.city?`<p class="l3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>${esc(c.city)}</p>`:''}
       </div>
-    </button>`).join('')||`<div class="emptymsg">${cards.length?'No cards match these filters.':'No cards yet. Go back and scan the first one.'}</div>`;
+    </div>`).join('')||`<div class="emptymsg">${cards.length?'No cards match these filters.':'No cards yet. Go back and scan the first one.'}</div>`;
+  updateSelBar();
 }
-$('grid').onclick=e=>{const t=e.target.closest('.tile');if(t)openSheet(t.dataset.id)};
+function updateSelBar(){
+  const n=selected.size;
+  $('selBar').style.display=n&&!$('v-cards').classList.contains('hide')?'flex':'none';
+  $('selTxt').textContent=n+' selected';
+}
+$('grid').addEventListener('click',e=>{
+  const t=e.target.closest('.tile');if(!t)return;
+  if(e.target.closest('.chk')){
+    e.preventDefault();
+    const id=t.dataset.id;selected.has(id)?selected.delete(id):selected.add(id);
+    t.classList.toggle('sel',selected.has(id));t.querySelector('input').checked=selected.has(id);updateSelBar();return;
+  }
+  openSheet(t.dataset.id);
+});
+$('selAll').onclick=()=>{
+  const L=filtered(),all=L.every(c=>selected.has(c.id));
+  L.forEach(c=>all?selected.delete(c.id):selected.add(c.id));
+  $('selAll').textContent=all?'Select all shown':'Unselect all shown';renderCards();
+};
+$('selClear').onclick=()=>{selected.clear();$('selAll').textContent='Select all shown';renderCards()};
+$('mkLabels').onclick=()=>nav('labels');
 
-/* ---------------- detail sheet ---------------- */
+/* ---------------- detail sheet (view + edit) ---------------- */
 function openSheet(id){
   const c=cards.find(x=>x.id===id);if(!c)return;
   const row=(k,v,h)=>v?`<dt>${k}</dt><dd>${h||esc(v)}</dd>`:'';
@@ -499,27 +680,143 @@ function openSheet(id){
     <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="Scanned card">`:'No image'}</div>
     <h3 class="sec" style="margin-top:16px">${esc(c.name||c.company)}</h3>
     <dl class="dl">
-      ${row('Designation',c.designation)}${row('Company',c.company)}
+      ${row('Name',c.name)}${row('Designation',c.designation)}${row('Company',c.company)}
       ${row('Phone',c.phone,c.phone?c.phone.split(',').map(p=>`<a href="tel:${esc(p.replace(/[^\d+]/g,''))}">${esc(p.trim())}</a>`).join(', '):'')}
-      ${row('Email',c.email,c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:'')}
+      ${row('Email',c.email,c.email?c.email.split(',').map(m=>`<a href="mailto:${esc(m.trim())}">${esc(m.trim())}</a>`).join(', '):'')}
       ${row('Address',c.address)}${row('City',c.city)}${row('PIN code',c.pin)}${row('Website',c.website)}
     </dl>
     <div class="btns">
+      <button class="btn" id="shEdit">Edit details</button>
       <button class="btn alt" id="shClose">Close</button>
       <button class="btn del" id="shDel">Delete card</button>
     </div>`;
   $('sheet').classList.remove('hide');
   $('shClose').onclick=()=>$('sheet').classList.add('hide');
+  $('shEdit').onclick=()=>editSheet(id);
   $('shDel').onclick=async()=>{
     if(!confirm('Delete this card from the register?'))return;
-    try{await store.del(id);if(store.refresh)store.refresh();$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
+    try{await store.del(id);if(store.refresh)store.refresh();selected.delete(id);$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
+  };
+}
+function editSheet(id){
+  const c=cards.find(x=>x.id===id);if(!c)return;
+  $('sheetIn').innerHTML=`
+    <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="">`:'No image'}</div>
+    <h3 class="sec" style="margin:16px 0 0">Edit details</h3>
+    <div class="form" id="eForm">${formHTML('e_')}</div>
+    <div class="btns"><button class="btn" id="eSave">Save changes</button><button class="btn alt" id="eCancel">Cancel</button></div>`;
+  F.forEach(k=>$('e_'+k).value=c[k]||'');
+  $('eCancel').onclick=()=>openSheet(id);
+  $('eSave').onclick=async()=>{
+    const v={};F.forEach(k=>v[k]=$('e_'+k).value.trim());
+    if(!v.name&&!v.company){toast('Enter at least a name or a company');return}
+    $('eSave').disabled=true;
+    try{await store.update(id,v);Object.assign(c,v);if(store.refresh)store.refresh();toast('Changes saved');openSheet(id)}
+    catch(e){toast('Could not save: '+e.message);$('eSave').disabled=false}
   };
 }
 $('sheet').onclick=e=>{if(e.target===$('sheet'))$('sheet').classList.add('hide')};
+
+/* ---------------- address labels (A4 sheet, PDF) ---------------- */
+const LDEF={cols:2,rows:8,w:99.1,h:33.9,top:12.9,left:4.65,gx:2.5,gy:0,pad:3,fs:10};
+const LSET=[['cols','Columns'],['rows','Rows'],['w','Label width mm'],['h','Label height mm'],['top','Top margin mm'],['left','Left margin mm'],['gx','Column gap mm'],['gy','Row gap mm'],['pad','Inner padding mm'],['fs','Largest text pt']];
+let lay={...LDEF};
+try{lay={...LDEF,...JSON.parse(localStorage.getItem('gopali_layout')||'{}')}}catch(e){}
+$('setForm').innerHTML=LSET.map(([k,l])=>`<label class="fld"><span>${l}</span><input id="s_${k}" type="number" step="0.1" inputmode="decimal"></label>`).join('');
+function fillSet(){LSET.forEach(([k])=>$('s_'+k).value=lay[k])}
+function readSet(){LSET.forEach(([k])=>{const v=parseFloat($('s_'+k).value);lay[k]=isNaN(v)?LDEF[k]:v})}
+fillSet();
+$('setSave').onclick=()=>{readSet();localStorage.setItem('gopali_layout',JSON.stringify(lay));toast('Settings saved');renderLabels()};
+
+const mdoc=new jspdf.jsPDF({unit:'mm',format:'a4'});
+function labelItems(c,withCo){
+  const L=[{t:'TO:',b:true,u:true}];
+  if(c.name)L.push({t:c.name.toUpperCase(),b:true});
+  if(c.designation)L.push({t:c.designation});
+  if(withCo&&c.company&&c.company!==c.name)L.push({t:c.company});
+  let a=c.address||'';
+  if(c.city&&!a.toLowerCase().includes(c.city.toLowerCase()))a+=(a?', ':'')+c.city;
+  if(c.pin&&!a.includes(c.pin))a+=(a?' - ':'')+c.pin;
+  if(a)L.push({t:a});
+  const ps=(c.phone||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const m=ps.find(p=>/^[6-9]\d{4} \d{5}$/.test(p))||ps[0];
+  if(m)L.push({t:'PH: '+m});
+  return L;
+}
+function fitLabel(c,withCo){
+  const items=labelItems(c,withCo),maxW=lay.w-2*lay.pad,maxH=lay.h-2*lay.pad;
+  let res=null;
+  for(let fs=lay.fs;fs>=6;fs-=0.5){
+    const lines=[];
+    items.forEach(it=>{
+      mdoc.setFont('courier',it.b?'bold':'normal');mdoc.setFontSize(fs);
+      mdoc.splitTextToSize(it.t,maxW).forEach(w=>lines.push({t:w,b:it.b,u:it.u}));
+    });
+    const lh=fs*0.3528*1.18;
+    res={fs,lh,lines};
+    if(lines.length*lh<=maxH+0.3)break;
+  }
+  return res;
+}
+function slotPos(s){const col=s%lay.cols,row=Math.floor(s/lay.cols);return{x:lay.left+col*(lay.w+lay.gx),y:lay.top+row*(lay.h+lay.gy)}}
+function labelPlan(){
+  const sel=cards.filter(c=>selected.has(c.id)),per=lay.cols*lay.rows;
+  const start=Math.max(1,Math.min(per,parseInt($('lStart').value)||1))-1;
+  const pages=Math.max(1,Math.ceil((start+sel.length)/per));
+  return{sel,per,start,pages,withCo:$('lCo').checked};
+}
+function renderLabels(){
+  const {sel,per,start,pages,withCo}=labelPlan();
+  $('lSum').textContent=`${sel.length} label${sel.length===1?'':'s'} on ${pages} sheet${pages===1?'':'s'}. Each sheet holds ${per} labels, empty ones stay blank.`;
+  const W=Math.min(540,Math.max(260,($('lPages').clientWidth||window.innerWidth-36))),sc=W/210;
+  let html='';
+  for(let p=0;p<pages;p++){
+    html+=`<div class="shl">Sheet ${p+1} of ${pages}</div><div class="sheetp" style="width:${W}px;height:${W*297/210}px">`;
+    for(let s=0;s<per;s++){
+      const idx=p*per+s-start,c=idx>=0?sel[idx]:null,{x,y}=slotPos(s);
+      let inner='';
+      if(c){
+        const f=fitLabel(c,withCo);
+        inner=f.lines.map(l=>`<div style="font-size:${f.fs*0.3528*sc}px;line-height:${f.lh*sc}px;font-weight:${l.b?700:400};${l.u?'text-decoration:underline;':''}">${esc(l.t)}</div>`).join('');
+      }
+      html+=`<div class="slot ${c?'on':''}" style="left:${x*sc}px;top:${y*sc}px;width:${lay.w*sc}px;height:${lay.h*sc}px;padding:${lay.pad*sc}px">${inner}</div>`;
+    }
+    html+='</div>';
+  }
+  $('lPages').innerHTML=html;
+}
+['lStart','lCo'].forEach(i=>$(i).addEventListener('input',renderLabels));
+window.addEventListener('resize',()=>{if(!$('v-labels').classList.contains('hide'))renderLabels()});
+$('pdfBtn').onclick=()=>{
+  readSet();
+  const {sel,per,start,pages,withCo}=labelPlan();
+  if(!sel.length){toast('Select cards first');return}
+  const doc=new jspdf.jsPDF({unit:'mm',format:'a4'}),outl=$('lOut').checked;
+  for(let p=0;p<pages;p++){
+    if(p)doc.addPage();
+    for(let s=0;s<per;s++){
+      const idx=p*per+s-start,{x,y}=slotPos(s);
+      if(outl){doc.setDrawColor(170);doc.setLineWidth(0.1);doc.rect(x,y,lay.w,lay.h)}
+      const c=idx>=0?sel[idx]:null;if(!c)continue;
+      const f=fitLabel(c,withCo);
+      let ty=y+lay.pad+f.fs*0.3528*0.8;
+      doc.setTextColor(0);
+      f.lines.forEach(l=>{
+        doc.setFont('courier',l.b?'bold':'normal');doc.setFontSize(f.fs);
+        doc.text(l.t,x+lay.pad,ty);
+        if(l.u){const w=doc.getTextWidth(l.t);doc.setLineWidth(0.25);doc.line(x+lay.pad,ty+0.5,x+lay.pad+w,ty+0.5)}
+        ty+=f.lh;
+      });
+    }
+  }
+  doc.save('Gopali-labels-'+new Date().toISOString().slice(0,10)+'.pdf');
+  toast('PDF downloaded');
+};
 
 /* ---------------- start ---------------- */
 store.watch();
 if(location.hash)location.hash='';
 </script>
+
 </body>
 </html>
