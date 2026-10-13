@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d2b33">
+<title>Gopali & Co | Card Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d2b33; --ink2:#173c46; --paper:#f3f5f4; --white:#fff;
+  --line:#d5dcdb; --mute:#5f7378; --brass:#b98a2e; --brass-soft:#f4ead3; --bad:#a63a24;
+  --serif:"Newsreader",Georgia,serif; --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input{font:inherit;color:inherit}
+.hide{display:none!important}
+
+/* ---------- header ---------- */
+.top{background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 22px) 22px 20px;position:relative}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--brass)}
+.brand{font:500 34px/1.05 var(--serif);letter-spacing:.2px;margin:0}
+.sub{margin:6px 0 0;font-size:13px;color:#a9c0c4;letter-spacing:.3px}
+.bar{display:flex;align-items:center;gap:12px}
+.bar .brand{font-size:22px;flex:1}
+.back{background:none;border:0;color:#fff;padding:6px 8px 6px 0;display:flex;align-items:center;gap:4px;font-weight:600;cursor:pointer}
+
+main{max-width:760px;margin:0 auto;padding:22px 18px calc(env(safe-area-inset-bottom,0px) + 40px)}
+
+/* ---------- home ---------- */
+.actions{display:grid;gap:14px;margin-top:6px}
+.act{display:flex;align-items:center;gap:16px;width:100%;text-align:left;border:1px solid var(--line);background:var(--white);border-radius:14px;padding:22px 20px;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.act:active{transform:scale(.985)}
+.act .ic{flex:0 0 56px;height:56px;border-radius:12px;display:grid;place-items:center;background:var(--brass-soft);color:var(--ink)}
+.act h2{margin:0;font:500 24px/1.15 var(--serif)}
+.act p{margin:3px 0 0;color:var(--mute);font-size:13.5px}
+.act.pri{background:var(--ink);border-color:var(--ink);color:#fff}
+.act.pri .ic{background:var(--brass);color:var(--ink)}
+.act.pri p{color:#a9c0c4}
+.act .chev{margin-left:auto;opacity:.5}
+.note{margin-top:26px;padding:12px 14px;border-left:3px solid var(--brass);background:var(--white);font-size:13px;color:var(--mute);border-radius:0 8px 8px 0}
+
+/* ---------- card frame (die-cut look) ---------- */
+.cardframe{position:relative;width:100%;aspect-ratio:1.75/1;background:#e6ebea;border:1px solid #b9c4c3;border-radius:12px;overflow:hidden;box-shadow:0 1px 0 #fff inset,0 2px 6px rgba(13,43,51,.08)}
+.cardframe img{width:100%;height:100%;object-fit:contain;display:block}
+.cardframe.empty{display:grid;place-items:center;color:var(--mute);font-size:13px}
+
+/* ---------- review ---------- */
+h3.sec{font:500 22px/1.2 var(--serif);margin:0 0 4px}
+.status{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:11px 14px;background:var(--brass-soft);border-radius:10px;font-size:13.5px}
+.status.ok{background:#e3f1ea}
+.status.err{background:#f9e6e1;color:var(--bad)}
+.spin{width:16px;height:16px;border:2px solid var(--brass);border-top-color:transparent;border-radius:50%;animation:sp .8s linear infinite;flex:0 0 16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:2s}}
+.form{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:block}
+.fld.w{grid-column:1/-1}
+.fld span{display:block;font-size:12.5px;font-weight:600;color:var(--mute);margin-bottom:5px}
+.fld input,.fld textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--white);font-size:16px;font-family:var(--sans);resize:vertical}
+.fld input:focus,.fld textarea:focus,.btn:focus-visible,.act:focus-visible,.back:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+@media(max-width:480px){.form{grid-template-columns:1fr}}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;background:var(--ink);color:#fff}
+.btn.alt{background:var(--white);color:var(--ink);border:1px solid var(--line)}
+.btn.del{background:#f9e6e1;color:var(--bad)}
+.btn:disabled{opacity:.55;cursor:default}
+.btns{display:grid;gap:10px;margin-top:20px}
+details.raw{margin-top:14px;font-size:13px;color:var(--mute)}
+details.raw textarea{margin-top:8px;width:100%;min-height:90px;font:12px/1.4 ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--line);border-radius:8px}
+
+/* ---------- all cards ---------- */
+.split{display:grid;gap:18px}
+@media(min-width:820px){main.wide{max-width:1100px}.split{grid-template-columns:270px 1fr;align-items:start}.filters{position:sticky;top:18px}}
+.filters{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:16px}
+.filters h3{margin:0 0 12px;font:500 19px var(--serif)}
+.filters .fld{margin-bottom:10px}
+.filters .fld input{padding:11px 12px;font-size:15px}
+.count{font-size:13px;color:var(--mute);margin:0 0 12px}
+.clear{background:none;border:0;color:var(--ink);font-weight:600;text-decoration:underline;padding:4px 0;cursor:pointer;font-size:13px}
+.grid{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+.tile{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 10px 14px;cursor:pointer;text-align:left;width:100%;transition:border-color .12s}
+.tile:hover{border-color:var(--brass)}
+.tile .meta{padding:12px 6px 0}
+.tile h4{margin:0;font:500 20px/1.2 var(--serif)}
+.tile .l2{margin:3px 0 0;color:var(--ink2);font-size:13.5px}
+.tile .l3{margin:6px 0 0;color:var(--mute);font-size:12.5px;display:flex;gap:6px;align-items:center}
+.emptymsg{padding:40px 10px;text-align:center;color:var(--mute);grid-column:1/-1}
+
+/* ---------- detail sheet ---------- */
+.sheet{position:fixed;inset:0;background:rgba(13,43,51,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet .in{background:var(--paper);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 22px)}
+@media(min-width:700px){.sheet{align-items:center}.sheet .in{border-radius:18px}}
+.dl{display:grid;grid-template-columns:104px 1fr;gap:8px 12px;margin:18px 0 6px;font-size:14.5px}
+.dl dt{color:var(--mute);font-size:13px;padding-top:1px}
+.dl dd{margin:0;word-break:break-word}
+.dl a{color:var(--ink);font-weight:600}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:50;display:none;font-size:14px;max-width:90vw}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<section id="v-home">
+  <header class="top">
+    <h1 class="brand">Gopali &amp; Co</h1>
+    <p class="sub">Visiting card register</p>
+  </header>
+  <main>
+    <div class="actions">
+      <button class="act pri" id="scanBtn">
+        <span class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.4-2h6.2l1.4 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.6"/></svg></span>
+        <span><h2>Scan a Card</h2><p>Opens the camera and reads the card</p></span>
+        <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="act" id="allBtn">
+        <span class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="10" rx="2"/><path d="M7 19h12a2 2 0 0 0 2-2V9"/></svg></span>
+        <span><h2>View All Cards</h2><p id="homeCount">Loading…</p></span>
+        <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="note" id="modeNote"></div>
+  </main>
+</section>
+
+<!-- ============ REVIEW ============ -->
+<section id="v-review" class="hide">
+  <header class="top"><div class="bar">
+    <button class="back" id="revBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <span class="brand">Scanned card</span></div></header>
+  <main>
+    <div class="cardframe" id="revFrame"><img id="revImg" alt="Scanned visiting card"></div>
+    <div class="status" id="revStat"><span class="spin"></span><span>Preparing…</span></div>
+    <div class="form" id="revForm">
+      <label class="fld"><span>Name</span><input id="f_name" autocomplete="off"></label>
+      <label class="fld"><span>Designation</span><input id="f_designation" autocomplete="off"></label>
+      <label class="fld w"><span>Company</span><input id="f_company" autocomplete="off"></label>
+      <label class="fld"><span>Phone</span><input id="f_phone" inputmode="tel" autocomplete="off"></label>
+      <label class="fld"><span>Email</span><input id="f_email" type="email" autocomplete="off"></label>
+      <label class="fld w"><span>Address</span><textarea id="f_address" rows="2"></textarea></label>
+      <label class="fld"><span>City</span><input id="f_city" autocomplete="off"></label>
+      <label class="fld"><span>PIN code</span><input id="f_pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+      <label class="fld w"><span>Website</span><input id="f_website" autocomplete="off"></label>
+    </div>
+    <details class="raw"><summary>Raw text read from the card</summary><textarea id="f_raw" readonly></textarea></details>
+    <div class="btns">
+      <button class="btn" id="upBtn" disabled>Upload to register</button>
+      <button class="btn alt" id="rescanBtn">Scan again</button>
+    </div>
+  </main>
+</section>
+
+<!-- ============ ALL CARDS ============ -->
+<section id="v-cards" class="hide">
+  <header class="top"><div class="bar">
+    <button class="back" id="allBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <span class="brand">All cards</span></div></header>
+  <main class="wide">
+    <div class="split">
+      <aside class="filters">
+        <h3>Find a card</h3>
+        <label class="fld"><span>Search by name</span><input id="q_name" type="search" placeholder="Name or company"></label>
+        <label class="fld"><span>City</span><input id="q_city" type="search" placeholder="e.g. Chennai"></label>
+        <label class="fld"><span>Designation</span><input id="q_des" type="search" placeholder="e.g. Editor"></label>
+        <button class="clear" id="qClear">Clear filters</button>
+      </aside>
+      <div>
+        <p class="count" id="cardCount"></p>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============ DETAIL SHEET ============ -->
+<div class="sheet hide" id="sheet"><div class="in" id="sheetIn"></div></div>
+<div id="toast" role="status"></div>
+<input type="file" id="cam" accept="image/*" capture="environment" class="hide">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+/* =====================================================================
+   SERVER SETTINGS
+   Leave apiKey empty to test: cards are then saved on this phone only.
+   Paste your Firebase details here to save cards on your online server.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+/* ===================================================================== */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3000)}
+
+/* ---------------- storage: online (Firebase) or this phone ---------------- */
+const ONLINE=!!FIREBASE_CONFIG.apiKey;
+let cards=[],onCards=()=>{};
+let store;
+if(ONLINE){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db=firebase.firestore();
+  store={
+    async add(c){await db.collection('cards').add({...c,createdAt:firebase.firestore.FieldValue.serverTimestamp()})},
+    async del(id){await db.collection('cards').doc(id).delete()},
+    watch(){db.collection('cards').orderBy('createdAt','desc').onSnapshot(s=>{cards=s.docs.map(d=>({id:d.id,...d.data()}));onCards()},e=>{$('homeCount').textContent='Could not reach server';toast('Server error: '+e.message)})}
+  };
+}else{
+  const K='gopali_cards_v1';
+  const read=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
+  store={
+    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now(),createdAt:Date.now()});localStorage.setItem(K,JSON.stringify(a))},
+    async del(id){localStorage.setItem(K,JSON.stringify(read().filter(x=>x.id!==id)))},
+    watch(){cards=read();onCards()},
+    refresh(){cards=read();onCards()}
+  };
+}
+onCards=()=>{
+  const n=cards.length;
+  $('homeCount').textContent=n?`${n} card${n===1?'':'s'} saved`:'No cards saved yet';
+  if(!$('v-cards').classList.contains('hide'))renderCards();
+};
+$('modeNote').textContent=ONLINE?'Connected to the online register. Every card uploaded here is visible to your team.':'Test mode: cards are saved only on this phone. Connect the server to share them with your team.';
+
+/* ---------------- navigation ---------------- */
+const VIEWS=['home','review','cards'];
+function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));window.scrollTo(0,0);if(v==='cards')renderCards()}
+function nav(v){location.hash=v==='home'?'':v}
+window.addEventListener('hashchange',()=>{
+  const v=location.hash.slice(1)||'home';
+  $('sheet').classList.add('hide');
+  show(v==='review'&&!draft?'home':(VIEWS.includes(v)?v:'home'));
+});
+$('allBtn').onclick=()=>nav('cards');
+$('allBack').onclick=()=>history.length>1?history.back():nav('home');
+$('revBack').onclick=()=>{draft=null;history.length>1?history.back():nav('home')};
+
+/* ---------------- scan ---------------- */
+let draft=null,worker=null,thumb='';
+$('scanBtn').onclick=()=>$('cam').click();
+$('rescanBtn').onclick=()=>$('cam').click();
+$('cam').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)scan(f)};
+const F=['name','designation','company','phone','email','address','city','pin','website'];
+
+function loadImg(file){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)})}
+function toCanvas(img,max){
+  const k=Math.min(1,max/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;
+}
+function status(kind,msg){
+  const s=$('revStat');s.className='status'+(kind==='ok'?' ok':kind==='err'?' err':'');
+  s.innerHTML=(kind==='busy'?'<span class="spin"></span>':'')+'<span>'+esc(msg)+'</span>';
+}
+async function scan(file){
+  draft={};F.forEach(k=>$('f_'+k).value='');$('f_raw').value='';$('upBtn').disabled=true;
+  nav('review');show('review');status('busy','Preparing the photo…');
+  try{
+    const img=await loadImg(file);
+    thumb=toCanvas(img,ONLINE?1000:760).toDataURL('image/jpeg',ONLINE?.72:.62);
+    $('revImg').src=thumb;
+    const big=toCanvas(img,1800);
+    status('busy','Loading the card reader (first time takes a few seconds)…');
+    if(!worker)worker=await Tesseract.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')status('busy','Reading the card… '+Math.round(m.progress*100)+'%')}});
+    const {data}=await worker.recognize(big);
+    const p=parseCard(data.text);
+    F.forEach(k=>$('f_'+k).value=p[k]||'');
+    $('f_raw').value=data.text.trim();
+    status('ok','Card read. Please check each detail, fix anything wrong, then upload.');
+    $('upBtn').disabled=false;
+  }catch(e){
+    status('err','Could not read this card. You can type the details below, or tap Scan again for a clearer photo.');
+    $('upBtn').disabled=false;
+  }
+}
+$('upBtn').onclick=async()=>{
+  const c={};F.forEach(k=>c[k]=$('f_'+k).value.trim());
+  if(!c.name&&!c.company){toast('Enter at least a name or a company');return}
+  const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
+  if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Upload anyway?'))return;
+  c.image=thumb;
+  $('upBtn').disabled=true;$('upBtn').textContent='Uploading…';
+  try{
+    await store.add(c);
+    if(store.refresh)store.refresh();
+    draft=null;toast('Card uploaded');history.length>1?history.back():nav('home');
+  }catch(e){toast('Upload failed: '+(e.name==='QuotaExceededError'?'phone storage is full (test mode)':e.message))}
+  $('upBtn').textContent='Upload to register';$('upBtn').disabled=false;
+};
+
+/* ---------------- text parsing ---------------- */
+function parseCard(text){
+  const r={};F.forEach(k=>r[k]='');
+  const lines=text.split('\n').map(s=>s.replace(/[|_]/g,' ').replace(/\s+/g,' ').trim()).filter(s=>s.length>2);
+  const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent)\b/i;
+  const COM=/\b(pvt|ltd|llp|inc|co\.?|company|industries|enterprises|publications|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|&)\b/i;
+  const ADR=/\b(road|street|st\.|nagar|floor|building|plot|no\.|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|complex|park|flat|door)\b/i;
+  const rest=[],phones=[],addr=[];
+  for(const l of lines){
+    const em=l.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/);
+    if(em&&!r.email){r.email=em[0].toLowerCase();continue}
+    const wb=l.match(/(https?:\/\/)?(www\.)[\w-]+(\.[\w-]+)+\S*/i);
+    if(wb&&!r.website){r.website=wb[0];continue}
+    const digits=(l.match(/\d/g)||[]).length,letters=(l.match(/[A-Za-z]/g)||[]).length;
+    const pin=l.match(/\b[1-9]\d{2}\s?\d{3}\b/);
+    if(pin&&!r.pin&&(ADR.test(l)||letters>3)){r.pin=pin[0].replace(/\s/g,'');addr.push(l);continue}
+    if(digits>=8&&letters<=12){(l.match(/\+?\d[\d\s().-]{6,}\d/g)||[]).forEach(p=>phones.push(p.trim()));continue}
+    if(ADR.test(l)||(/\d/.test(l)&&letters>5&&!DES.test(l))){addr.push(l);continue}
+    rest.push(l);
+  }
+  r.phone=[...new Set(phones)].slice(0,2).join(', ');
+  const rem=[];
+  for(const l of rest){
+    if(!r.designation&&DES.test(l)){r.designation=l;continue}
+    if(!r.company&&COM.test(l)){r.company=l;continue}
+    rem.push(l);
+  }
+  const nl=rem.find(l=>/^[A-Za-z.\s]{3,35}$/.test(l)&&l.split(/\s+/).length<=4);
+  if(nl){r.name=nl.replace(/\b(\w)(\w*)/g,(m,a,b)=>a.toUpperCase()+b.toLowerCase());rem.splice(rem.indexOf(nl),1)}
+  if(!r.company&&rem.length)r.company=rem.shift();
+  r.address=addr.join(', ');
+  const pl=addr.find(l=>r.pin&&l.replace(/\s/g,'').includes(r.pin));
+  if(pl){const parts=pl.replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-]/).map(s=>s.trim()).filter(Boolean);r.city=(parts.pop()||'').replace(/[^A-Za-z .]/g,'').trim()}
+  return r;
+}
+
+/* ---------------- all cards + filters ---------------- */
+['q_name','q_city','q_des'].forEach(i=>$(i).addEventListener('input',renderCards));
+$('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');renderCards()};
+function renderCards(){
+  const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim();
+  const L=cards.filter(c=>
+    (!qn||((c.name||'')+' '+(c.company||'')).toLowerCase().includes(qn))&&
+    (!qc||(c.city||'').toLowerCase().includes(qc))&&
+    (!qd||(c.designation||'').toLowerCase().includes(qd)));
+  $('cardCount').textContent=L.length===cards.length?`${cards.length} card${cards.length===1?'':'s'}`:`${L.length} of ${cards.length} cards`;
+  $('grid').innerHTML=L.map(c=>`
+    <button class="tile" data-id="${esc(c.id)}">
+      <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="" loading="lazy">`:'No image'}</div>
+      <div class="meta">
+        <h4>${esc(c.name||c.company||'Unnamed')}</h4>
+        <p class="l2">${esc([c.designation,c.name?c.company:''].filter(Boolean).join(', '))}</p>
+        ${c.city?`<p class="l3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>${esc(c.city)}</p>`:''}
+      </div>
+    </button>`).join('')||`<div class="emptymsg">${cards.length?'No cards match these filters.':'No cards yet. Go back and scan the first one.'}</div>`;
+}
+$('grid').onclick=e=>{const t=e.target.closest('.tile');if(t)openSheet(t.dataset.id)};
+
+/* ---------------- detail sheet ---------------- */
+function openSheet(id){
+  const c=cards.find(x=>x.id===id);if(!c)return;
+  const row=(k,v,h)=>v?`<dt>${k}</dt><dd>${h||esc(v)}</dd>`:'';
+  $('sheetIn').innerHTML=`
+    <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="Scanned card">`:'No image'}</div>
+    <h3 class="sec" style="margin-top:16px">${esc(c.name||c.company)}</h3>
+    <dl class="dl">
+      ${row('Designation',c.designation)}${row('Company',c.company)}
+      ${row('Phone',c.phone,c.phone?c.phone.split(',').map(p=>`<a href="tel:${esc(p.replace(/[^\d+]/g,''))}">${esc(p.trim())}</a>`).join(', '):'')}
+      ${row('Email',c.email,c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:'')}
+      ${row('Address',c.address)}${row('City',c.city)}${row('PIN code',c.pin)}${row('Website',c.website)}
+    </dl>
+    <div class="btns">
+      <button class="btn alt" id="shClose">Close</button>
+      <button class="btn del" id="shDel">Delete card</button>
+    </div>`;
+  $('sheet').classList.remove('hide');
+  $('shClose').onclick=()=>$('sheet').classList.add('hide');
+  $('shDel').onclick=async()=>{
+    if(!confirm('Delete this card from the register?'))return;
+    try{await store.del(id);if(store.refresh)store.refresh();$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
+  };
+}
+$('sheet').onclick=e=>{if(e.target===$('sheet'))$('sheet').classList.add('hide')};
+
+/* ---------------- start ---------------- */
+store.watch();
+if(location.hash)location.hash='';
+</script>
+</body>
+</html>
