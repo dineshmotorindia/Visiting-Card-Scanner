@@ -148,6 +148,23 @@ details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0
 .dl a{color:var(--ink);font-weight:600}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:50;display:none;font-size:14px;max-width:90vw}
 
+/* ---------- login + misc ---------- */
+.lgbox{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:6px}
+.lgbox .form{grid-template-columns:1fr}
+.err{color:var(--bad);font-size:13.5px;min-height:20px;margin:6px 0 0}
+.who2{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:#a9c0c4}
+.who2 button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:8px;padding:6px 11px;font-weight:600;cursor:pointer;font-size:12.5px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th,.tbl td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:12px;color:var(--mute)}
+.tw{overflow-x:auto}
+/* ---------- flip + ask ---------- */
+.cardframe img{transition:transform .16s ease}
+.flip{position:absolute;right:6px;bottom:6px;z-index:3;width:44px;height:44px;border-radius:50%;border:0;background:rgba(13,43,51,.78);color:#fff;display:grid;place-items:center;cursor:pointer}
+.cardframe .side{position:absolute;left:8px;bottom:8px;z-index:3;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(13,43,51,.78);color:#fff;border-radius:99px;padding:3px 9px}
+#ask{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);z-index:7;background:var(--white);color:var(--ink);border-radius:16px;padding:18px;display:none;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+#ask b{display:block;font:500 21px/1.2 var(--serif);margin-bottom:4px}
+#ask p{margin:0 0 14px;color:var(--mute);font-size:14px}
 /* ---------- selection + label tools ---------- */
 .chk{position:absolute;left:4px;top:4px;width:46px;height:46px;display:grid;place-items:center;z-index:3;cursor:pointer}
 .chk input{display:none}
@@ -181,16 +198,52 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
 </head>
 <body>
 
+<!-- ============ LOGIN ============ -->
+<section id="v-login" class="hide">
+  <header class="top"><h1 class="brand">Gopali &amp; Co</h1><p class="sub">Visiting card register</p></header>
+  <main>
+    <div class="lgbox">
+      <h3 class="sec" id="lgTitle">Sign in</h3>
+      <p class="tag" id="lgSub" style="color:var(--mute);margin:0 0 12px;font-size:14px">Use your own login. Your cards are saved to your account.</p>
+      <div class="form">
+        <label class="fld hide" id="lgNameW"><span>Your name</span><input id="lgName" autocomplete="name"></label>
+        <label class="fld"><span>Email</span><input id="lgEmail" type="email" autocomplete="username" autocapitalize="off"></label>
+        <label class="fld"><span>Password</span><input id="lgPass" type="password" autocomplete="current-password"></label>
+      </div>
+      <div class="err" id="lgErr" role="alert"></div>
+      <div class="btns">
+        <button class="btn" id="lgGo">Sign in</button>
+        <button class="link" id="lgSwap">New here? Create an account</button>
+        <button class="link" id="lgForgot">Forgot password?</button>
+      </div>
+    </div>
+    <div class="note" id="lgNote"></div>
+  </main>
+</section>
+
+<!-- ============ ACTIVITY (admin) ============ -->
+<section id="v-activity" class="hide">
+  <header class="top"><div class="bar">
+    <button class="back" id="actBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <span class="brand">Activity</span></div></header>
+  <main class="wide">
+    <div class="box tw" style="background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px">
+      <table class="tbl"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr></thead><tbody id="actRows"></tbody></table>
+    </div>
+  </main>
+</section>
+
 <!-- ============ HOME ============ -->
-<section id="v-home">
+<section id="v-home" class="hide">
   <header class="top">
     <h1 class="brand">Gopali &amp; Co</h1>
     <p class="sub">Visiting card register</p>
+    <div class="who2"><span id="whoTxt"></span><button id="outBtn">Sign out</button></div>
   </header>
   <main>
     <div class="draft hide" id="draftBox">
       <div class="dhead"><h3>Latest scan</h3><span class="pill">Not saved yet</span></div>
-      <div class="cardframe"><img id="dImg" alt="Scanned card"></div>
+      <div id="dFrameWrap"></div>
       <div class="sum" id="dSum"></div>
       <details class="edit" id="dEdit"><summary>Edit details</summary><div class="form" id="draftForm"></div></details>
       <div class="btns">
@@ -211,6 +264,7 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
       </button>
     </div>
     <div class="note" id="modeNote"></div>
+    <button class="link hide" id="actBtn" style="margin-top:14px">View activity log (admin)</button>
   </main>
 </section>
 
@@ -223,9 +277,11 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
     <div id="sweep"></div>
     <div id="tick"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="38"/><path d="M24 41l11 11 21-24"/></svg></div>
   </div>
-  <div class="shead"><button id="sClose" aria-label="Close scanner"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b>Scan a card</b></div>
+  <div class="shead"><button id="sClose" aria-label="Close scanner"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b id="sTitle">Scan a card</b></div>
   <div class="hint" id="hintTop">Place the card flat and fit it inside the green corners</div>
   <div class="hint" id="msg"></div>
+  <div id="ask"><b>Is there anything on the back?</b><p>If the other side has an address, phone or other details, scan it too. Everything goes onto one label.</p>
+    <div class="two"><button class="btn alt" id="askNo">No, continue</button><button class="btn" id="askYes">Yes, scan back</button></div></div>
   <div id="camErr"><p id="camErrTxt"></p><button class="btn" id="errCam">Use the phone camera app</button></div>
   <div class="sctl">
     <button class="side" id="galBtn" aria-label="Choose from gallery"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg></button>
@@ -249,7 +305,7 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
         <button class="clear" id="qClear">Clear filters</button>
       </aside>
       <div>
-        <div class="listbar"><p class="count" id="cardCount"></p><button class="link" id="selAll">Select all shown</button></div>
+        <div class="listbar"><p class="count" id="cardCount"></p><span><button class="link hide" id="scopeBtn"></button> <button class="link" id="selAll">Select all shown</button></span></div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
@@ -285,6 +341,7 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
 <input type="file" id="galFile" accept="image/*" class="hide">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -324,27 +381,64 @@ function formHTML(p){
 
 /* ---------------- storage: online (Firebase) or this phone ---------------- */
 const ONLINE=!!FIREBASE_CONFIG.apiKey;
-let cards=[],onCards=()=>{};
-let store;
+let cards=[],onCards=()=>{},me=null,scopeAll=false,unsub=null;
+let store,A={},db=null,auth=null;
+const tsOf=c=>c.createdAt&&c.createdAt.toMillis?c.createdAt.toMillis():(typeof c.createdAt==='number'?c.createdAt:Date.now());
 if(ONLINE){
   firebase.initializeApp(FIREBASE_CONFIG);
-  const db=firebase.firestore();
+  auth=firebase.auth();db=firebase.firestore();
+  db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+  const SV=()=>firebase.firestore.FieldValue.serverTimestamp();
   store={
-    async add(c){await db.collection('cards').add({...c,createdAt:firebase.firestore.FieldValue.serverTimestamp()})},
+    async add(c){await db.collection('cards').add({...c,owner:me.uid,ownerName:me.name,createdAt:SV()})},
     async update(id,v){await db.collection('cards').doc(id).update(v)},
     async del(id){await db.collection('cards').doc(id).delete()},
-    watch(){db.collection('cards').orderBy('createdAt','desc').onSnapshot(s=>{cards=s.docs.map(d=>({id:d.id,...d.data()}));onCards()},e=>{$('homeCount').textContent='Could not reach server';toast('Server error: '+e.message)})}
+    watch(){
+      if(unsub){unsub();unsub=null}
+      const col=db.collection('cards'),q=(me.role==='admin'&&scopeAll)?col:col.where('owner','==',me.uid);
+      unsub=q.onSnapshot(sn=>{cards=sn.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>tsOf(y)-tsOf(x));onCards()},
+        e=>{$('homeCount').textContent='Could not reach server';toast('Server error: '+e.message)});
+    }
   };
+  const build=async u=>{
+    let role='staff',name=u.displayName||u.email;
+    try{const d=await db.collection('users').doc(u.uid).get();if(d.exists){role=d.data().role||'staff';name=d.data().name||name}}catch(e){}
+    return {uid:u.uid,email:u.email,name,role};
+  };
+  A.signIn=(e,p)=>auth.signInWithEmailAndPassword(e,p);
+  A.signUp=async(n,e,p)=>{
+    const cr=await auth.createUserWithEmailAndPassword(e,p);
+    try{await cr.user.updateProfile({displayName:n})}catch(x){}
+    try{await db.collection('users').doc(cr.user.uid).set({name:n,email:e,role:'staff',createdAt:SV()})}catch(x){console.warn(x)}
+    startSession(await build(auth.currentUser));
+  };
+  A.signOut=()=>auth.signOut();
+  A.reset=e=>auth.sendPasswordResetEmail(e);
+  A.init=()=>auth.onAuthStateChanged(async u=>{startSession(u?await build(u):null)});
 }else{
-  const K='gopali_cards_v1';
-  const read=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
+  // Test mode: accounts live on this phone only
+  const UK='gopali_users_v1',SK='gopali_session_v1';
+  const lu=()=>{try{return JSON.parse(localStorage.getItem(UK)||'{}')}catch(e){return{}}};
+  const sha=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+  const key=()=>'gopali_cards_v2_'+me.uid;
+  const read=()=>{try{return JSON.parse(localStorage.getItem(key())||'[]')}catch(e){return[]}};
   store={
-    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now(),createdAt:Date.now()});localStorage.setItem(K,JSON.stringify(a))},
-    async update(id,v){localStorage.setItem(K,JSON.stringify(read().map(x=>x.id===id?{...x,...v}:x)))},
-    async del(id){localStorage.setItem(K,JSON.stringify(read().filter(x=>x.id!==id)))},
+    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now(),owner:me.uid,ownerName:me.name,createdAt:Date.now()});localStorage.setItem(key(),JSON.stringify(a))},
+    async update(id,v){localStorage.setItem(key(),JSON.stringify(read().map(x=>x.id===id?{...x,...v}:x)))},
+    async del(id){localStorage.setItem(key(),JSON.stringify(read().filter(x=>x.id!==id)))},
     watch(){cards=read();onCards()},
     refresh(){cards=read();onCards()}
   };
+  const mk=(e,u)=>({uid:u.uid,email:e,name:u.name,role:'staff'});
+  A.signIn=async(e,p)=>{const U=lu(),u=U[e];if(!u||u.hash!==await sha(e+p))throw{code:'auth/invalid-credential'};localStorage.setItem(SK,e);startSession(mk(e,u))};
+  A.signUp=async(n,e,p)=>{const U=lu();if(U[e])throw{code:'auth/email-already-in-use'};if(p.length<6)throw{code:'auth/weak-password'};U[e]={name:n,hash:await sha(e+p),uid:'u'+Date.now()};localStorage.setItem(UK,JSON.stringify(U));localStorage.setItem(SK,e);startSession(mk(e,U[e]))};
+  A.signOut=async()=>{localStorage.removeItem(SK);startSession(null)};
+  A.reset=async()=>{throw{code:'local-reset'}};
+  A.init=()=>{const e=localStorage.getItem(SK),u=e&&lu()[e];startSession(u?mk(e,u):null)};
+}
+function log(action,detail){
+  if(!ONLINE||!me)return;
+  db.collection('activity').add({uid:me.uid,name:me.name,action,detail:detail||'',ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
 }
 const selected=new Set();
 onCards=()=>{
@@ -353,11 +447,18 @@ onCards=()=>{
   [...selected].forEach(id=>{if(!cards.find(c=>c.id===id))selected.delete(id)});
   if(!$('v-cards').classList.contains('hide'))renderCards();
 };
-$('modeNote').textContent=(ONLINE?'Connected to the online register. Cards you save are visible to your team.':'Test mode: cards are saved only on this phone.')+(AI_KEY?' Card reader: AI.':' Card reader: offline.');
+function setNote(){
+  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI_KEY?' Card reader: AI.':' Card reader: offline.');
+  $('whoTxt').textContent='Signed in as '+me.name+(me.role==='admin'?' (admin)':'');
+  $('actBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
+  $('scopeBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
+  scopeText();
+}
+function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
 /* ---------------- navigation ---------------- */
-const VIEWS=['home','cards','scan','labels'];
-function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards();if(v==='labels')renderLabels()}
+const VIEWS=['login','home','cards','scan','labels','activity'];
+function show(v){if(!me)v='login';VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards();if(v==='labels')renderLabels()}
 function nav(v){location.hash=v==='home'?'':v}
 function goBack(){history.length>1?history.back():nav('home')}
 window.addEventListener('hashchange',()=>{
@@ -365,21 +466,86 @@ window.addEventListener('hashchange',()=>{
   $('sheet').classList.add('hide');
   if(v==='scan'&&!camOn)v='home';
   if(v==='labels'&&!selected.size)v='cards';
+  if(v==='activity'&&!(me&&me.role==='admin'))v='home';
+  if(!me)v='login';
   show(VIEWS.includes(v)?v:'home');
 });
 $('allBtn').onclick=()=>nav('cards');
 $('allBack').onclick=goBack;
 $('labBack').onclick=goBack;
+$('actBack').onclick=goBack;
+$('actBtn').onclick=()=>{nav('activity');loadActivity()};
+$('scopeBtn').onclick=()=>{scopeAll=!scopeAll;scopeText();selected.clear();store.watch()};
+async function loadActivity(){
+  $('actRows').innerHTML='<tr><td colspan="4" style="color:var(--mute)">Loading…</td></tr>';
+  try{
+    const sn=await db.collection('activity').orderBy('ts','desc').limit(200).get();
+    $('actRows').innerHTML=sn.docs.map(d=>{const x=d.data(),t=x.ts&&x.ts.toDate?x.ts.toDate().toLocaleString('en-IN'):'';
+      return `<tr><td>${esc(t)}</td><td>${esc(x.name)}</td><td>${esc(x.action)}</td><td>${esc(x.detail)}</td></tr>`}).join('')||'<tr><td colspan="4" style="color:var(--mute)">No activity yet.</td></tr>';
+  }catch(e){$('actRows').innerHTML='<tr><td colspan="4" style="color:var(--bad)">'+esc(e.message)+'</td></tr>'}
+}
+
+/* ---------------- login / sign out ---------------- */
+let signup=false;
+function lgMode(){
+  $('lgTitle').textContent=signup?'Create account':'Sign in';
+  $('lgNameW').classList.toggle('hide',!signup);
+  $('lgGo').textContent=signup?'Create account':'Sign in';
+  $('lgSwap').textContent=signup?'Already have an account? Sign in':'New here? Create an account';
+  $('lgPass').autocomplete=signup?'new-password':'current-password';
+  $('lgErr').textContent='';
+}
+$('lgNote').textContent=ONLINE?'Sign in on any phone with the same email and password to see your cards.':'Test mode: accounts and cards stay on this phone only. Connect the online server to use the same login on other devices.';
+$('lgSwap').onclick=()=>{signup=!signup;lgMode()};
+function authMsg(e){
+  const c=(e&&e.code)||'';
+  if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Wrong email or password.';
+  if(c==='auth/email-already-in-use')return 'This email already has an account. Sign in instead.';
+  if(c==='auth/weak-password')return 'Password must be at least 6 characters.';
+  if(c==='auth/invalid-email')return 'Enter a valid email address.';
+  if(c==='auth/network-request-failed')return 'No internet connection.';
+  if(c==='auth/too-many-requests')return 'Too many attempts. Wait a few minutes and try again.';
+  if(c==='auth/operation-not-allowed')return 'Email sign-in is not switched on in Firebase yet.';
+  return 'Could not sign in. Please try again.';
+}
+$('lgGo').onclick=async()=>{
+  const n=$('lgName').value.trim(),e=$('lgEmail').value.trim().toLowerCase(),p=$('lgPass').value;
+  if(signup&&!n){$('lgErr').textContent='Enter your name.';return}
+  if(!e||!p){$('lgErr').textContent='Enter your email and password.';return}
+  $('lgErr').textContent='';$('lgGo').disabled=true;
+  try{signup?await A.signUp(n,e,p):await A.signIn(e,p)}catch(x){$('lgErr').textContent=authMsg(x)}
+  $('lgGo').disabled=false;
+};
+['lgEmail','lgPass','lgName'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')$('lgGo').click()}));
+$('lgForgot').onclick=async()=>{
+  const e=$('lgEmail').value.trim().toLowerCase();
+  if(!e){$('lgErr').textContent='Type your email above first.';return}
+  try{await A.reset(e);toast('Password reset email sent');$('lgErr').textContent=''}
+  catch(x){$('lgErr').textContent=x&&x.code==='local-reset'?'Test mode has no password reset. Create a new account instead.':authMsg(x)}
+};
+$('outBtn').onclick=()=>{if(confirm('Sign out of '+me.name+'?'))A.signOut()};
+function startSession(u){
+  if(unsub){unsub();unsub=null}
+  me=u;cards=[];selected.clear();scopeAll=false;draft=null;
+  if(typeof renderDraft==='function')renderDraft();
+  if(!u){signup=false;lgMode();$('lgPass').value='';location.hash='';show('login');return}
+  setNote();onCards();store.watch();log('login');
+  $('lgPass').value='';
+  const cur=location.hash.slice(1);
+  show(['cards','labels','activity'].includes(cur)?'home':'home');
+  if(location.hash)location.hash='';
+}
 
 /* ---------------- live scanner ---------------- */
-let draft=null,worker=null,stream=null,camOn=false,busy=false;
+let draft=null,worker=null,stream=null,camOn=false,busy=false,scanSide='front';
 function ensureWorker(){
   if(!worker)worker=Tesseract.createWorker('eng',1,{logger:m=>{if(busy&&m.status==='recognizing text')$('msg').dataset.p=Math.round(m.progress*100)}}).catch(e=>{worker=null;throw e});
   return worker;
 }
 function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('vid').srcObject=null}
 async function openScanner(){
-  camOn=true;busy=false;
+  camOn=true;busy=false;scanSide='front';$('sTitle').textContent='Scan a card';$('ask').style.display='none';
+  loadCV().catch(()=>{});
   $('snap').classList.add('hide');$('frame').classList.remove('busy');$('tick').style.display='none';
   $('camErr').style.display='none';$('msg').textContent='';$('hintTop').textContent='Place the card flat and fit it inside the green corners';
   $('shutter').disabled=false;
@@ -398,7 +564,7 @@ async function openScanner(){
 }
 $('scanBtn').onclick=openScanner;
 $('dRescan').onclick=openScanner;
-$('sClose').onclick=()=>{camOn=false;goBack()};
+$('sClose').onclick=()=>{if(scanSide==='back'&&draft){finish()}else{camOn=false;goBack()}};
 $('errCam').onclick=()=>$('camFile').click();
 $('galBtn').onclick=()=>$('galFile').click();
 $('camFile').onchange=$('galFile').onchange=async e=>{
@@ -408,7 +574,7 @@ $('camFile').onchange=$('galFile').onchange=async e=>{
     const k=Math.min(1,1800/Math.max(img.width,img.height));
     const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
     c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-    $('camErr').style.display='none';processCanvas(c);
+    $('camErr').style.display='none';processCanvas(c,c);
   }catch(err){toast('Could not open that photo')}
 };
 $('shutter').onclick=()=>{
@@ -417,12 +583,98 @@ $('shutter').onclick=()=>{
   const r=v.getBoundingClientRect(),fr=$('frame').getBoundingClientRect();
   const vw=v.videoWidth,vh=v.videoHeight,sc=Math.max(r.width/vw,r.height/vh);
   const ox=(vw*sc-r.width)/2,oy=(vh*sc-r.height)/2;
-  const sx=(fr.left-r.left+ox)/sc,sy=(fr.top-r.top+oy)/sc,sw=fr.width/sc,sh=fr.height/sc;
-  const cw=Math.min(1800,Math.round(sw)),ch=Math.round(cw*sh/sw);
-  const c=document.createElement('canvas');c.width=cw;c.height=ch;
-  c.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cw,ch);
-  processCanvas(c);
+  let sx=(fr.left-r.left+ox)/sc,sy=(fr.top-r.top+oy)/sc,sw=fr.width/sc,sh=fr.height/sc;
+  const grab=(x,y,w,h,maxW)=>{
+    x=Math.max(0,x);y=Math.max(0,y);w=Math.min(w,vw-x);h=Math.min(h,vh-y);
+    const cw=Math.min(maxW,Math.round(w)),ch=Math.round(cw*h/w);
+    const c=document.createElement('canvas');c.width=cw;c.height=ch;
+    c.getContext('2d').drawImage(v,x,y,w,h,0,0,cw,ch);return c;
+  };
+  const m=.1;                                   // wider grab so the card edges can be found
+  const wide=grab(sx-sw*m,sy-sh*m,sw*(1+2*m),sh*(1+2*m),1500);
+  const fallback=grab(sx,sy,sw,sh,1800);
+  processCanvas(wide,fallback);
 };
+
+/* ---- automatic card edge detection (OpenCV, loads in the background) ---- */
+let cvP=null;
+function loadCV(){
+  if(cvP)return cvP;
+  cvP=new Promise((res,rej)=>{
+    const sc=document.createElement('script');
+    sc.src='https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.js';
+    sc.async=true;
+    sc.onload=()=>{
+      const c=window.cv;if(!c){rej(new Error('cv'));return}
+      if(c.Mat)res(true);else if(typeof c.then==='function')c.then(()=>res(true));else c.onRuntimeInitialized=()=>res(true);
+    };
+    sc.onerror=()=>{cvP=null;rej(new Error('cv load'))};
+    document.head.appendChild(sc);
+  });
+  return cvP;
+}
+const dist2=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const polyArea=q=>Math.abs(q.reduce((s,p,i)=>{const n=q[(i+1)%4];return s+(p.x*n.y-n.x*p.y)},0))/2;
+function orderQuad(p){
+  const s=p.map(q=>q.x+q.y),d=p.map(q=>q.x-q.y);
+  return [p[s.indexOf(Math.min(...s))],p[d.indexOf(Math.max(...d))],p[s.indexOf(Math.max(...s))],p[d.indexOf(Math.min(...d))]];
+}
+function findCardQuad(cv,imgData){
+  const src=cv.matFromImageData(imgData);
+  const scale=Math.min(1,520/src.cols);
+  const small=new cv.Mat();cv.resize(src,small,new cv.Size(Math.round(src.cols*scale),Math.round(src.rows*scale)),0,0,cv.INTER_AREA);
+  const gray=new cv.Mat();cv.cvtColor(small,gray,cv.COLOR_RGBA2GRAY);cv.GaussianBlur(gray,gray,new cv.Size(5,5),0);
+  const total=small.cols*small.rows;let best=null,bestScore=0;
+  const k3=cv.Mat.ones(3,3,cv.CV_8U),k7=cv.Mat.ones(7,7,cv.CV_8U);
+  for(const mode of ['canny','otsu','otsuInv']){
+    const bw=new cv.Mat();
+    if(mode==='canny'){cv.Canny(gray,bw,40,120);cv.dilate(bw,bw,k3)}
+    else{cv.threshold(gray,bw,0,255,cv.THRESH_BINARY+(mode==='otsuInv'?cv.THRESH_BINARY_INV:0)+cv.THRESH_OTSU);cv.morphologyEx(bw,bw,cv.MORPH_CLOSE,k7)}
+    const cs=new cv.MatVector(),hi=new cv.Mat();
+    cv.findContours(bw,cs,hi,cv.RETR_LIST,cv.CHAIN_APPROX_SIMPLE);
+    for(let i=0;i<cs.size();i++){
+      const c=cs.get(i),hull=new cv.Mat();cv.convexHull(c,hull);
+      const area=cv.contourArea(hull);
+      if(area>=total*.22&&area<=total*.985){
+        const peri=cv.arcLength(hull,true),ap=new cv.Mat();cv.approxPolyDP(hull,ap,.03*peri,true);
+        let pts,quad=false;
+        if(ap.rows===4){pts=[0,1,2,3].map(j=>({x:ap.data32S[j*2],y:ap.data32S[j*2+1]}));quad=true}
+        else{const bp=cv.RotatedRect.points(cv.minAreaRect(hull));pts=bp.map(p=>({x:p.x,y:p.y}))}
+        const q=orderQuad(pts),w=dist2(q[0],q[1]),h=dist2(q[0],q[3]),ar=Math.max(w,h)/Math.min(w,h),qa=polyArea(q);
+        const fill=Math.min(area,qa)/Math.max(area,qa);
+        if(ar>=1.2&&ar<=2.4&&fill>.85){const sc=qa/total*fill*(quad?1.1:1);if(sc>bestScore){bestScore=sc;best=q}}
+        ap.delete();
+      }
+      hull.delete();c.delete();
+    }
+    bw.delete();cs.delete();hi.delete();
+  }
+  src.delete();small.delete();gray.delete();k3.delete();k7.delete();
+  return best?best.map(p=>({x:p.x/scale,y:p.y/scale})):null;
+}
+function warpQuad(cv,srcMat,q,maxW){
+  const cx=q.reduce((s,p)=>s+p.x,0)/4,cy=q.reduce((s,p)=>s+p.y,0)/4;
+  q=q.map(p=>({x:p.x+(cx-p.x)*.012,y:p.y+(cy-p.y)*.012}));
+  let W=Math.round(Math.max(dist2(q[0],q[1]),dist2(q[3],q[2]))),H=Math.round(Math.max(dist2(q[0],q[3]),dist2(q[1],q[2])));
+  const k=Math.min(1,maxW/W);W=Math.round(W*k);H=Math.round(H*k);
+  const a=cv.matFromArray(4,1,cv.CV_32FC2,q.flatMap(p=>[p.x,p.y]));
+  const b=cv.matFromArray(4,1,cv.CV_32FC2,[0,0,W,0,W,H,0,H]);
+  const M=cv.getPerspectiveTransform(a,b),dst=new cv.Mat();
+  cv.warpPerspective(srcMat,dst,M,new cv.Size(W,H),cv.INTER_CUBIC,cv.BORDER_REPLICATE);
+  a.delete();b.delete();M.delete();
+  return dst;
+}
+async function smartCrop(srcCanvas){
+  try{
+    await Promise.race([loadCV(),new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),8000))]);
+    const cv=window.cv,id=srcCanvas.getContext('2d').getImageData(0,0,srcCanvas.width,srcCanvas.height);
+    const quad=findCardQuad(cv,id);if(!quad)return null;
+    const m=cv.matFromImageData(id),d=warpQuad(cv,m,quad,1600);
+    const out=document.createElement('canvas');out.width=d.cols;out.height=d.rows;
+    out.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(d.data),d.cols,d.rows),0,0);
+    m.delete();d.delete();return out;
+  }catch(e){console.warn('smartCrop',e);return null}
+}
 
 /* ---- reading: AI (optional) or offline OCR ---- */
 async function aiRead(c){
@@ -473,33 +725,65 @@ async function ocrRead(c){
   return kept.map(l=>l.t).join('\n');
 }
 
-async function processCanvas(c){
+function mergeFields(a,b){
+  const o={...a};
+  ['name','designation','company'].forEach(k=>{if(!o[k])o[k]=b[k]||''});
+  const mob=p=>/^[6-9]\d{4} \d{5}$/.test(p);
+  ['phone','email','website'].forEach(k=>{
+    let L=[...(a[k]?a[k].split(/,\s*/):[]),...(b[k]?b[k].split(/,\s*/):[])].map(x=>x.trim()).filter(Boolean);
+    L=[...new Set(L)];
+    if(k==='phone')L=[...L.filter(mob),...L.filter(p=>!mob(p))];
+    o[k]=L.slice(0,k==='phone'?4:2).join(', ');
+  });
+  if(!o.address){o.address=b.address||'';o.city=o.city||b.city||'';o.pin=o.pin||b.pin||''}
+  else{o.city=o.city||b.city||'';o.pin=o.pin||b.pin||''}
+  return o;
+}
+async function processCanvas(wide,fallback){
   if(busy)return;busy=true;
   $('shutter').disabled=true;
-  const outW=ONLINE?1000:800,k=Math.min(1,outW/c.width);
-  const t=document.createElement('canvas');t.width=Math.round(c.width*k);t.height=Math.round(c.height*k);
-  t.getContext('2d').drawImage(c,0,0,t.width,t.height);
-  const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7);
-  $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
+  $('snap').src=fallback.toDataURL('image/jpeg',.6);$('snap').classList.remove('hide');$('frame').classList.add('busy');
   try{$('vid').pause()}catch(e){}
-  $('hintTop').textContent='Scanning card';$('msg').textContent=AI_KEY?'Reading the card with AI…':'Loading the card reader…';
-  let p=null,raw='';
+  $('hintTop').textContent=scanSide==='back'?'Scanning back':'Scanning card';$('msg').textContent='Finding the card edges…';
+  let card=await smartCrop(wide);
+  if(!card)card=fallback;
+  const outW=ONLINE?1000:800,k=Math.min(1,outW/card.width);
+  const t=document.createElement('canvas');t.width=Math.round(card.width*k);t.height=Math.round(card.height*k);
+  t.getContext('2d').drawImage(card,0,0,t.width,t.height);
+  const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7),ar=card.width/card.height;
+  $('snap').src=thumb;
+  $('msg').textContent=AI_KEY?'Reading the card with AI…':'Reading the card…';
+  let p=null;
   if(AI_KEY){
-    try{p=await aiRead(c)}catch(e){console.warn(e);toast('AI reader failed ('+String(e.message).slice(0,60)+'). Using offline reader.');$('msg').textContent='Using offline reader…'}
+    try{p=await aiRead(card)}catch(e){console.warn(e);toast('AI reader failed ('+String(e.message).slice(0,60)+'). Using offline reader.');$('msg').textContent='Using offline reader…'}
   }
   if(!p){
-    try{raw=await ocrRead(c);p=parseCard(raw)}catch(e){console.warn(e);p={}}
+    try{p=parseCard(await ocrRead(card))}catch(e){console.warn(e);p={}}
   }
-  const got=F.some(k=>p[k]);
-  draft={img:thumb,f:{}};F.forEach(k=>draft.f[k]=p[k]||'');
-  $('msg').textContent=got?'Card captured':'Card captured. Text could not be read, you can type the details.';
+  F.forEach(k=>{if(p[k]==null)p[k]=''});
+  if(scanSide==='front'){draft={img:thumb,ar,f:{}};F.forEach(k=>draft.f[k]=p[k]||'')}
+  else{draft.f=mergeFields(draft.f,p);draft.img2=thumb;draft.ar2=ar}
+  $('msg').textContent='';
   $('tick').style.display='grid';
-  await new Promise(r=>setTimeout(r,850));
-  busy=false;camOn=false;
+  await new Promise(r=>setTimeout(r,800));
+  $('tick').style.display='none';
+  if(scanSide==='front'){
+    busy=false;$('hintTop').textContent='Front side scanned';$('ask').style.display='block';
+  }else finish();
+}
+function finish(){
+  $('ask').style.display='none';busy=false;camOn=false;
   renderDraft();
   if(location.hash==='#scan')goBack();else show('home');
-  if(!got)setTimeout(()=>toast('Could not read the text. Tap Edit details to type it.'),300);
+  if(draft&&!F.some(k=>draft.f[k]))setTimeout(()=>toast('Could not read the text. Tap Edit details to type it.'),300);
 }
+$('askNo').onclick=finish;
+$('askYes').onclick=()=>{
+  scanSide='back';$('sTitle').textContent='Scan the back';$('ask').style.display='none';
+  $('snap').classList.add('hide');$('frame').classList.remove('busy');$('shutter').disabled=false;
+  $('hintTop').textContent='Turn the card over and fit the back inside the frame';$('msg').textContent='';
+  try{$('vid').play()}catch(e){}
+};
 
 /* ---------------- parsing offline text ---------------- */
 const tc=s=>s.toLowerCase().replace(/(^|[\s.(\-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
@@ -590,13 +874,25 @@ function parseCard(text){
   return r;
 }
 
+/* ---------------- card frame with optional flip ---------------- */
+const FLIP_SVG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>';
+function frameHTML(a,b,ar,inner){
+  const r=Math.min(2.2,Math.max(1.2,ar||1.75));
+  return `<div class="cardframe ${a?'':'empty'}" style="aspect-ratio:${r}" data-side="a">${a?`<img src="${a}" alt="Visiting card">`:'No image'}${b?`<button class="flip" data-flip aria-label="Flip card to other side">${FLIP_SVG}</button><span class="side">Front</span>`:''}${inner||''}</div>`;
+}
+function doFlip(fr,a,b){
+  const img=fr.querySelector('img'),toB=fr.dataset.side!=='b';
+  img.style.transform='rotateY(90deg)';
+  setTimeout(()=>{img.src=toB?b:a;img.style.transform='rotateY(0deg)';fr.dataset.side=toB?'b':'a';const sd=fr.querySelector('.side');if(sd)sd.textContent=toB?'Back':'Front'},160);
+}
+
 /* ---------------- latest scan panel (landing page) ---------------- */
 $('draftForm').innerHTML=formHTML('f_');
 function renderDraft(){
   const box=$('draftBox');
   if(!draft){box.classList.add('hide');return}
   box.classList.remove('hide');
-  $('dImg').src=draft.img;
+  $('dFrameWrap').innerHTML=frameHTML(draft.img,draft.img2,draft.ar);
   F.forEach(k=>$('f_'+k).value=draft.f[k]);
   $('dEdit').open=false;
   drawSummary();
@@ -608,6 +904,7 @@ function drawSummary(){
     <small>${esc([f.phone,f.email,f.city].filter(Boolean).join('  |  '))||'Tap Edit details to add contact information'}</small>`;
 }
 F.forEach(k=>$('f_'+k).addEventListener('input',e=>{if(draft){draft.f[k]=e.target.value;drawSummary()}}));
+$('dFrameWrap').addEventListener('click',e=>{const f=e.target.closest('[data-flip]');if(f&&draft)doFlip(f.closest('.cardframe'),draft.img,draft.img2)});
 $('dDiscard').onclick=()=>{if(confirm('Discard this scan?')){draft=null;renderDraft()}};
 $('saveBtn').onclick=async()=>{
   if(!draft)return;
@@ -615,10 +912,10 @@ $('saveBtn').onclick=async()=>{
   if(!c.name&&!c.company){toast('Enter at least a name or a company');$('dEdit').open=true;return}
   const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
   if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Save anyway?'))return;
-  c.image=draft.img;
+  c.image=draft.img;c.ar=draft.ar;if(draft.img2){c.image2=draft.img2;c.ar2=draft.ar2}
   $('saveBtn').disabled=true;$('saveBtn').textContent='Saving…';
   try{
-    await store.add(c);if(store.refresh)store.refresh();
+    await store.add(c);if(store.refresh)store.refresh();log('save',c.name||c.company);
     draft=null;renderDraft();toast('Card saved');
   }catch(e){toast('Save failed: '+(e.name==='QuotaExceededError'?'phone storage is full (test mode)':e.message))}
   $('saveBtn').textContent='Save card';$('saveBtn').disabled=false;
@@ -640,11 +937,11 @@ function renderCards(){
   $('cardCount').textContent=L.length===cards.length?`${cards.length} card${cards.length===1?'':'s'}`:`${L.length} of ${cards.length} cards`;
   $('grid').innerHTML=L.map(c=>`
     <div class="tile ${selected.has(c.id)?'sel':''}" data-id="${esc(c.id)}" role="button" tabindex="0">
-      <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="" loading="lazy">`:'No image'}
-        <label class="chk" aria-label="Select for label"><input type="checkbox" ${selected.has(c.id)?'checked':''}><i>${CHECK}</i></label></div>
+      ${frameHTML(c.image,c.image2,c.ar,`<label class="chk" aria-label="Select for label"><input type="checkbox" ${selected.has(c.id)?'checked':''}><i>${CHECK}</i></label>`)}
       <div class="meta">
         <h4>${esc(c.name||c.company||'Unnamed')}</h4>
         <p class="l2">${esc([c.designation,c.name?c.company:''].filter(Boolean).join(', '))}</p>
+        ${scopeAll&&c.ownerName?`<p class="l3">Added by ${esc(c.ownerName)}</p>`:''}
         ${c.city?`<p class="l3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>${esc(c.city)}</p>`:''}
       </div>
     </div>`).join('')||`<div class="emptymsg">${cards.length?'No cards match these filters.':'No cards yet. Go back and scan the first one.'}</div>`;
@@ -657,6 +954,8 @@ function updateSelBar(){
 }
 $('grid').addEventListener('click',e=>{
   const t=e.target.closest('.tile');if(!t)return;
+  const fl=e.target.closest('[data-flip]');
+  if(fl){const c=cards.find(x=>x.id===t.dataset.id);if(c)doFlip(fl.closest('.cardframe'),c.image,c.image2);return}
   if(e.target.closest('.chk')){
     e.preventDefault();
     const id=t.dataset.id;selected.has(id)?selected.delete(id):selected.add(id);
@@ -677,7 +976,7 @@ function openSheet(id){
   const c=cards.find(x=>x.id===id);if(!c)return;
   const row=(k,v,h)=>v?`<dt>${k}</dt><dd>${h||esc(v)}</dd>`:'';
   $('sheetIn').innerHTML=`
-    <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="Scanned card">`:'No image'}</div>
+    ${frameHTML(c.image,c.image2,c.ar)}
     <h3 class="sec" style="margin-top:16px">${esc(c.name||c.company)}</h3>
     <dl class="dl">
       ${row('Name',c.name)}${row('Designation',c.designation)}${row('Company',c.company)}
@@ -691,35 +990,37 @@ function openSheet(id){
       <button class="btn del" id="shDel">Delete card</button>
     </div>`;
   $('sheet').classList.remove('hide');
+  const fl=$('sheetIn').querySelector('[data-flip]');if(fl)fl.onclick=()=>doFlip(fl.closest('.cardframe'),c.image,c.image2);
   $('shClose').onclick=()=>$('sheet').classList.add('hide');
   $('shEdit').onclick=()=>editSheet(id);
   $('shDel').onclick=async()=>{
     if(!confirm('Delete this card from the register?'))return;
-    try{await store.del(id);if(store.refresh)store.refresh();selected.delete(id);$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
+    try{await store.del(id);if(store.refresh)store.refresh();selected.delete(id);log('delete',c.name||c.company);$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
   };
 }
 function editSheet(id){
   const c=cards.find(x=>x.id===id);if(!c)return;
   $('sheetIn').innerHTML=`
-    <div class="cardframe ${c.image?'':'empty'}">${c.image?`<img src="${c.image}" alt="">`:'No image'}</div>
+    ${frameHTML(c.image,c.image2,c.ar)}
     <h3 class="sec" style="margin:16px 0 0">Edit details</h3>
     <div class="form" id="eForm">${formHTML('e_')}</div>
     <div class="btns"><button class="btn" id="eSave">Save changes</button><button class="btn alt" id="eCancel">Cancel</button></div>`;
   F.forEach(k=>$('e_'+k).value=c[k]||'');
+  {const fl=$('sheetIn').querySelector('[data-flip]');if(fl)fl.onclick=()=>doFlip(fl.closest('.cardframe'),c.image,c.image2)}
   $('eCancel').onclick=()=>openSheet(id);
   $('eSave').onclick=async()=>{
     const v={};F.forEach(k=>v[k]=$('e_'+k).value.trim());
     if(!v.name&&!v.company){toast('Enter at least a name or a company');return}
     $('eSave').disabled=true;
-    try{await store.update(id,v);Object.assign(c,v);if(store.refresh)store.refresh();toast('Changes saved');openSheet(id)}
+    try{await store.update(id,v);Object.assign(c,v);if(store.refresh)store.refresh();log('edit',v.name||v.company);toast('Changes saved');openSheet(id)}
     catch(e){toast('Could not save: '+e.message);$('eSave').disabled=false}
   };
 }
 $('sheet').onclick=e=>{if(e.target===$('sheet'))$('sheet').classList.add('hide')};
 
 /* ---------------- address labels (A4 sheet, PDF) ---------------- */
-const LDEF={cols:2,rows:8,w:99.1,h:33.9,top:12.9,left:4.65,gx:2.5,gy:0,pad:3,fs:10};
-const LSET=[['cols','Columns'],['rows','Rows'],['w','Label width mm'],['h','Label height mm'],['top','Top margin mm'],['left','Left margin mm'],['gx','Column gap mm'],['gy','Row gap mm'],['pad','Inner padding mm'],['fs','Largest text pt']];
+const LDEF={cols:2,rows:8,w:99.1,h:33.9,top:12.9,left:4.65,gx:2.5,gy:0,pad:3,padt:1.5,fs:10,dark:0.1};
+const LSET=[['cols','Columns'],['rows','Rows'],['w','Label width mm'],['h','Label height mm'],['top','Top margin mm'],['left','Left margin mm'],['gx','Column gap mm'],['gy','Row gap mm'],['pad','Side padding mm'],['padt','Top padding mm'],['fs','Largest text pt'],['dark','Extra dark stroke mm (0 = off)']];
 let lay={...LDEF};
 try{lay={...LDEF,...JSON.parse(localStorage.getItem('gopali_layout')||'{}')}}catch(e){}
 $('setForm').innerHTML=LSET.map(([k,l])=>`<label class="fld"><span>${l}</span><input id="s_${k}" type="number" step="0.1" inputmode="decimal"></label>`).join('');
@@ -730,10 +1031,11 @@ $('setSave').onclick=()=>{readSet();localStorage.setItem('gopali_layout',JSON.st
 
 const mdoc=new jspdf.jsPDF({unit:'mm',format:'a4'});
 function labelItems(c,withCo){
-  const L=[{t:'TO:',b:true,u:true}];
-  if(c.name)L.push({t:c.name.toUpperCase(),b:true});
+  const L=[];
+  if(c.name)L.push({t:c.name});
   if(c.designation)L.push({t:c.designation});
   if(withCo&&c.company&&c.company!==c.name)L.push({t:c.company});
+  if(!c.name&&!withCo&&c.company)L.push({t:c.company});
   let a=c.address||'';
   if(c.city&&!a.toLowerCase().includes(c.city.toLowerCase()))a+=(a?', ':'')+c.city;
   if(c.pin&&!a.includes(c.pin))a+=(a?' - ':'')+c.pin;
@@ -741,18 +1043,18 @@ function labelItems(c,withCo){
   const ps=(c.phone||'').split(',').map(x=>x.trim()).filter(Boolean);
   const m=ps.find(p=>/^[6-9]\d{4} \d{5}$/.test(p))||ps[0];
   if(m)L.push({t:'PH: '+m});
-  return L;
+  return L.map(it=>({t:it.t.toUpperCase(),b:true}));
 }
 function fitLabel(c,withCo){
-  const items=labelItems(c,withCo),maxW=lay.w-2*lay.pad,maxH=lay.h-2*lay.pad;
+  const items=labelItems(c,withCo),maxW=lay.w-2*lay.pad,maxH=lay.h-lay.padt-1.2;
   let res=null;
-  for(let fs=lay.fs;fs>=6;fs-=0.5){
+  for(let fs=lay.fs;fs>=5.5;fs-=0.5){
     const lines=[];
     items.forEach(it=>{
-      mdoc.setFont('courier',it.b?'bold':'normal');mdoc.setFontSize(fs);
-      mdoc.splitTextToSize(it.t,maxW).forEach(w=>lines.push({t:w,b:it.b,u:it.u}));
+      mdoc.setFont('courier','bold');mdoc.setFontSize(fs);
+      mdoc.splitTextToSize(it.t,maxW).forEach(w=>lines.push({t:w}));
     });
-    const lh=fs*0.3528*1.18;
+    const lh=fs*0.3528*1.15;
     res={fs,lh,lines};
     if(lines.length*lh<=maxH+0.3)break;
   }
@@ -777,9 +1079,9 @@ function renderLabels(){
       let inner='';
       if(c){
         const f=fitLabel(c,withCo);
-        inner=f.lines.map(l=>`<div style="font-size:${f.fs*0.3528*sc}px;line-height:${f.lh*sc}px;font-weight:${l.b?700:400};${l.u?'text-decoration:underline;':''}">${esc(l.t)}</div>`).join('');
+        inner=f.lines.map(l=>`<div style="font-size:${f.fs*0.3528*sc}px;line-height:${f.lh*sc}px;font-weight:700;-webkit-text-stroke:${Math.max(.2,lay.dark*sc*0.5)}px #000">${esc(l.t)}</div>`).join('');
       }
-      html+=`<div class="slot ${c?'on':''}" style="left:${x*sc}px;top:${y*sc}px;width:${lay.w*sc}px;height:${lay.h*sc}px;padding:${lay.pad*sc}px">${inner}</div>`;
+      html+=`<div class="slot ${c?'on':''}" style="left:${x*sc}px;top:${y*sc}px;width:${lay.w*sc}px;height:${lay.h*sc}px;padding:${lay.padt*sc}px ${lay.pad*sc}px 0">${inner}</div>`;
     }
     html+='</div>';
   }
@@ -796,26 +1098,27 @@ $('pdfBtn').onclick=()=>{
     if(p)doc.addPage();
     for(let s=0;s<per;s++){
       const idx=p*per+s-start,{x,y}=slotPos(s);
-      if(outl){doc.setDrawColor(170);doc.setLineWidth(0.1);doc.rect(x,y,lay.w,lay.h)}
+      if(outl){doc.setDrawColor(170,170,170);doc.setLineWidth(0.1);doc.rect(x,y,lay.w,lay.h)}
       const c=idx>=0?sel[idx]:null;if(!c)continue;
       const f=fitLabel(c,withCo);
-      let ty=y+lay.pad+f.fs*0.3528*0.8;
-      doc.setTextColor(0);
+      let ty=y+lay.padt+f.fs*0.3528*0.8;
+      doc.setTextColor(0,0,0);doc.setDrawColor(0,0,0);
+      doc.setFont('courier','bold');doc.setFontSize(f.fs);
       f.lines.forEach(l=>{
-        doc.setFont('courier',l.b?'bold':'normal');doc.setFontSize(f.fs);
-        doc.text(l.t,x+lay.pad,ty);
-        if(l.u){const w=doc.getTextWidth(l.t);doc.setLineWidth(0.25);doc.line(x+lay.pad,ty+0.5,x+lay.pad+w,ty+0.5)}
+        if(lay.dark>0){doc.setLineWidth(lay.dark);doc.text(l.t,x+lay.pad,ty,{renderingMode:'fillThenStroke'})}
+        else doc.text(l.t,x+lay.pad,ty);
         ty+=f.lh;
       });
     }
   }
   doc.save('Gopali-labels-'+new Date().toISOString().slice(0,10)+'.pdf');
+  log('labels_pdf',sel.length+' labels: '+sel.slice(0,4).map(c=>c.name||c.company).join(', '));
   toast('PDF downloaded');
 };
 
 /* ---------------- start ---------------- */
-store.watch();
 if(location.hash)location.hash='';
+A.init();
 </script>
 
 </body>
