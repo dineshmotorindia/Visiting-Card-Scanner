@@ -11,7 +11,7 @@
 <style>
 :root{
   --ink:#0d2b33; --ink2:#173c46; --paper:#f3f5f4; --white:#fff;
-  --line:#d5dcdb; --mute:#5f7378; --brass:#b98a2e; --brass-soft:#f4ead3; --bad:#a63a24;
+  --line:#d5dcdb; --mute:#5f7378; --brass:#b98a2e; --brass-soft:#f4ead3; --bad:#a63a24;--go:#2fd886;
   --serif:"Newsreader",Georgia,serif; --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -46,7 +46,7 @@ main{max-width:760px;margin:0 auto;padding:22px 18px calc(env(safe-area-inset-bo
 
 /* ---------- card frame (die-cut look) ---------- */
 .cardframe{position:relative;width:100%;aspect-ratio:1.75/1;background:#e6ebea;border:1px solid #b9c4c3;border-radius:12px;overflow:hidden;box-shadow:0 1px 0 #fff inset,0 2px 6px rgba(13,43,51,.08)}
-.cardframe img{width:100%;height:100%;object-fit:contain;display:block}
+.cardframe img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
 .cardframe.empty{display:grid;place-items:center;color:var(--mute);font-size:13px}
 
 /* ---------- review ---------- */
@@ -71,6 +71,53 @@ h3.sec{font:500 22px/1.2 var(--serif);margin:0 0 4px}
 .btns{display:grid;gap:10px;margin-top:20px}
 details.raw{margin-top:14px;font-size:13px;color:var(--mute)}
 details.raw textarea{margin-top:8px;width:100%;min-height:90px;font:12px/1.4 ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--line);border-radius:8px}
+
+
+/* ---------- latest scan (draft) on landing ---------- */
+.draft{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 14px 16px;margin-bottom:20px;box-shadow:0 6px 24px rgba(13,43,51,.08)}
+.dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dhead h3{margin:0;font:500 22px/1.2 var(--serif)}
+.pill{font-size:12px;font-weight:600;background:var(--brass-soft);color:#7a5a14;border-radius:99px;padding:4px 10px}
+.sum{margin:14px 2px 4px}
+.sum b{display:block;font:500 22px/1.2 var(--serif)}
+.sum span{display:block;color:var(--ink2);font-size:14px;margin-top:2px}
+.sum small{display:block;color:var(--mute);font-size:13px;margin-top:6px}
+details.edit{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+details.edit summary{font-weight:600;font-size:14px;cursor:pointer;padding:6px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- live scanner ---------- */
+#v-scan{position:fixed;inset:0;background:#000;z-index:40;overflow:hidden}
+#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#frame{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(90vw,560px);aspect-ratio:1.75/1;border-radius:14px;box-shadow:0 0 0 200vmax rgba(4,18,14,.66);overflow:hidden}
+#frame .c{position:absolute;width:34px;height:34px;border:4px solid var(--go);z-index:3}
+#frame .tl{left:0;top:0;border-right:0;border-bottom:0;border-top-left-radius:14px}
+#frame .tr{right:0;top:0;border-left:0;border-bottom:0;border-top-right-radius:14px}
+#frame .bl{left:0;bottom:0;border-right:0;border-top:0;border-bottom-left-radius:14px}
+#frame .br{right:0;bottom:0;border-left:0;border-top:0;border-bottom-right-radius:14px}
+#snap{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0b1a16;z-index:1}
+#sweep{position:absolute;left:0;right:0;height:3px;top:6%;z-index:2;background:linear-gradient(90deg,transparent,var(--go),transparent);box-shadow:0 0 18px 6px rgba(47,216,134,.45);animation:sweep 2.4s ease-in-out infinite}
+#frame.busy #sweep{animation-duration:1.1s}
+#frame.busy::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(rgba(47,216,134,.10),rgba(47,216,134,.10))}
+@keyframes sweep{0%,100%{top:6%}50%{top:93%}}
+@media(prefers-reduced-motion:reduce){#sweep{animation:none;top:50%}}
+#tick{position:absolute;inset:0;z-index:4;display:none;place-items:center;background:rgba(4,18,14,.55)}
+#tick svg{width:84px;height:84px}
+#tick circle{fill:var(--go)}
+#tick path{stroke:#04251a;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.shead{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 0;z-index:5;color:#fff}
+.shead button{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;cursor:pointer}
+.shead b{flex:1;font:500 20px var(--serif)}
+.hint{position:absolute;left:16px;right:16px;color:#fff;text-align:center;font-size:14px;z-index:5;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+#hintTop{top:calc(44% + min(90vw,560px)/3.5 + 22px)}
+#msg{top:calc(44% + min(90vw,560px)/3.5 + 54px);font-size:13px;color:#bfe9d5}
+.sctl{position:absolute;left:0;right:0;bottom:0;padding:0 24px calc(env(safe-area-inset-bottom,0px) + 26px);display:flex;align-items:center;justify-content:space-between;z-index:5}
+.sctl .side{width:56px;height:56px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;cursor:pointer}
+#shutter{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:var(--go);cursor:pointer;box-shadow:0 0 0 4px rgba(47,216,134,.35)}
+#shutter:active{transform:scale(.94)}
+#shutter:disabled{opacity:.4}
+#camErr{position:absolute;left:20px;right:20px;top:34%;z-index:6;background:var(--white);color:var(--ink);border-radius:14px;padding:18px;display:none}
+#camErr p{margin:0 0 12px}
 
 /* ---------- all cards ---------- */
 .split{display:grid;gap:18px}
@@ -111,6 +158,28 @@ details.raw textarea{margin-top:8px;width:100%;min-height:90px;font:12px/1.4 ui-
     <p class="sub">Visiting card register</p>
   </header>
   <main>
+    <div class="draft hide" id="draftBox">
+      <div class="dhead"><h3>Latest scan</h3><span class="pill">Not saved yet</span></div>
+      <div class="cardframe"><img id="dImg" alt="Scanned card"></div>
+      <div class="sum" id="dSum"></div>
+      <details class="edit"><summary>Edit details</summary>
+        <div class="form">
+          <label class="fld"><span>Name</span><input id="f_name" autocomplete="off"></label>
+          <label class="fld"><span>Designation</span><input id="f_designation" autocomplete="off"></label>
+          <label class="fld w"><span>Company</span><input id="f_company" autocomplete="off"></label>
+          <label class="fld"><span>Phone</span><input id="f_phone" inputmode="tel" autocomplete="off"></label>
+          <label class="fld"><span>Email</span><input id="f_email" type="email" autocomplete="off"></label>
+          <label class="fld w"><span>Address</span><textarea id="f_address" rows="2"></textarea></label>
+          <label class="fld"><span>City</span><input id="f_city" autocomplete="off"></label>
+          <label class="fld"><span>PIN code</span><input id="f_pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+          <label class="fld w"><span>Website</span><input id="f_website" autocomplete="off"></label>
+        </div>
+      </details>
+      <div class="btns">
+        <button class="btn" id="saveBtn">Save card</button>
+        <div class="two"><button class="btn alt" id="dRescan">Scan again</button><button class="btn alt" id="dDiscard">Discard</button></div>
+      </div>
+    </div>
     <div class="actions">
       <button class="act pri" id="scanBtn">
         <span class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.4-2h6.2l1.4 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.6"/></svg></span>
@@ -127,31 +196,24 @@ details.raw textarea{margin-top:8px;width:100%;min-height:90px;font:12px/1.4 ui-
   </main>
 </section>
 
-<!-- ============ REVIEW ============ -->
-<section id="v-review" class="hide">
-  <header class="top"><div class="bar">
-    <button class="back" id="revBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
-    <span class="brand">Scanned card</span></div></header>
-  <main>
-    <div class="cardframe" id="revFrame"><img id="revImg" alt="Scanned visiting card"></div>
-    <div class="status" id="revStat"><span class="spin"></span><span>Preparing…</span></div>
-    <div class="form" id="revForm">
-      <label class="fld"><span>Name</span><input id="f_name" autocomplete="off"></label>
-      <label class="fld"><span>Designation</span><input id="f_designation" autocomplete="off"></label>
-      <label class="fld w"><span>Company</span><input id="f_company" autocomplete="off"></label>
-      <label class="fld"><span>Phone</span><input id="f_phone" inputmode="tel" autocomplete="off"></label>
-      <label class="fld"><span>Email</span><input id="f_email" type="email" autocomplete="off"></label>
-      <label class="fld w"><span>Address</span><textarea id="f_address" rows="2"></textarea></label>
-      <label class="fld"><span>City</span><input id="f_city" autocomplete="off"></label>
-      <label class="fld"><span>PIN code</span><input id="f_pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
-      <label class="fld w"><span>Website</span><input id="f_website" autocomplete="off"></label>
-    </div>
-    <details class="raw"><summary>Raw text read from the card</summary><textarea id="f_raw" readonly></textarea></details>
-    <div class="btns">
-      <button class="btn" id="upBtn" disabled>Upload to register</button>
-      <button class="btn alt" id="rescanBtn">Scan again</button>
-    </div>
-  </main>
+<!-- ============ LIVE SCANNER ============ -->
+<section id="v-scan" class="hide">
+  <video id="vid" playsinline muted autoplay></video>
+  <div id="frame">
+    <img id="snap" class="hide" alt="">
+    <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+    <div id="sweep"></div>
+    <div id="tick"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="38"/><path d="M24 41l11 11 21-24"/></svg></div>
+  </div>
+  <div class="shead"><button id="sClose" aria-label="Close scanner"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b>Scan a card</b></div>
+  <div class="hint" id="hintTop">Place the card flat and fit it inside the green corners</div>
+  <div class="hint" id="msg"></div>
+  <div id="camErr"><p id="camErrTxt"></p><button class="btn" id="errCam">Use the phone camera app</button></div>
+  <div class="sctl">
+    <button class="side" id="galBtn" aria-label="Choose from gallery"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg></button>
+    <button id="shutter" aria-label="Capture card"></button>
+    <span style="width:56px"></span>
+  </div>
 </section>
 
 <!-- ============ ALL CARDS ============ -->
@@ -179,7 +241,8 @@ details.raw textarea{margin-top:8px;width:100%;min-height:90px;font:12px/1.4 ui-
 <!-- ============ DETAIL SHEET ============ -->
 <div class="sheet hide" id="sheet"><div class="in" id="sheetIn"></div></div>
 <div id="toast" role="status"></div>
-<input type="file" id="cam" accept="image/*" capture="environment" class="hide">
+<input type="file" id="camFile" accept="image/*" capture="environment" class="hide">
+<input type="file" id="galFile" accept="image/*" class="hide">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -234,69 +297,140 @@ onCards=()=>{
 $('modeNote').textContent=ONLINE?'Connected to the online register. Every card uploaded here is visible to your team.':'Test mode: cards are saved only on this phone. Connect the server to share them with your team.';
 
 /* ---------------- navigation ---------------- */
-const VIEWS=['home','review','cards'];
-function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));window.scrollTo(0,0);if(v==='cards')renderCards()}
+const VIEWS=['home','cards','scan'];
+function show(v){VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards()}
 function nav(v){location.hash=v==='home'?'':v}
+function goBack(){history.length>1?history.back():nav('home')}
 window.addEventListener('hashchange',()=>{
   const v=location.hash.slice(1)||'home';
   $('sheet').classList.add('hide');
-  show(v==='review'&&!draft?'home':(VIEWS.includes(v)?v:'home'));
+  if(v==='scan'){if(!camOn)return show('home');}
+  show(VIEWS.includes(v)?v:'home');
 });
 $('allBtn').onclick=()=>nav('cards');
-$('allBack').onclick=()=>history.length>1?history.back():nav('home');
-$('revBack').onclick=()=>{draft=null;history.length>1?history.back():nav('home')};
+$('allBack').onclick=goBack;
 
-/* ---------------- scan ---------------- */
-let draft=null,worker=null,thumb='';
-$('scanBtn').onclick=()=>$('cam').click();
-$('rescanBtn').onclick=()=>$('cam').click();
-$('cam').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)scan(f)};
+/* ---------------- live scanner ---------------- */
 const F=['name','designation','company','phone','email','address','city','pin','website'];
+let draft=null,worker=null,stream=null,camOn=false,busy=false;
+const CARD_RATIO=1.75;
 
-function loadImg(file){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)})}
-function toCanvas(img,max){
-  const k=Math.min(1,max/Math.max(img.width,img.height));
-  const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
-  c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;
+function ensureWorker(){
+  if(!worker)worker=Tesseract.createWorker('eng',1,{logger:m=>{if(busy&&m.status==='recognizing text')$('msg').textContent='Reading the card… '+Math.round(m.progress*100)+'%'}}).catch(e=>{worker=null;throw e});
+  return worker;
 }
-function status(kind,msg){
-  const s=$('revStat');s.className='status'+(kind==='ok'?' ok':kind==='err'?' err':'');
-  s.innerHTML=(kind==='busy'?'<span class="spin"></span>':'')+'<span>'+esc(msg)+'</span>';
+function stopCam(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  $('vid').srcObject=null;
 }
-async function scan(file){
-  draft={};F.forEach(k=>$('f_'+k).value='');$('f_raw').value='';$('upBtn').disabled=true;
-  nav('review');show('review');status('busy','Preparing the photo…');
+async function openScanner(){
+  camOn=true;busy=false;
+  $('snap').classList.add('hide');$('frame').classList.remove('busy');$('tick').style.display='none';
+  $('camErr').style.display='none';$('msg').textContent='';$('hintTop').textContent='Place the card flat and fit it inside the green corners';
+  $('shutter').disabled=false;
+  nav('scan');show('scan');
+  ensureWorker().catch(()=>{});
   try{
-    const img=await loadImg(file);
-    thumb=toCanvas(img,ONLINE?1000:760).toDataURL('image/jpeg',ONLINE?.72:.62);
-    $('revImg').src=thumb;
-    const big=toCanvas(img,1800);
-    status('busy','Loading the card reader (first time takes a few seconds)…');
-    if(!worker)worker=await Tesseract.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')status('busy','Reading the card… '+Math.round(m.progress*100)+'%')}});
-    const {data}=await worker.recognize(big);
-    const p=parseCard(data.text);
-    F.forEach(k=>$('f_'+k).value=p[k]||'');
-    $('f_raw').value=data.text.trim();
-    status('ok','Card read. Please check each detail, fix anything wrong, then upload.');
-    $('upBtn').disabled=false;
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+    const v=$('vid');v.srcObject=stream;await v.play().catch(()=>{});
+    try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
   }catch(e){
-    status('err','Could not read this card. You can type the details below, or tap Scan again for a clearer photo.');
-    $('upBtn').disabled=false;
+    $('shutter').disabled=true;
+    $('camErrTxt').textContent=(e&&e.name==='NotAllowedError')?'Camera permission is blocked. Allow the camera for this site in your browser settings, or use one of the options below.':'The live camera could not start on this device.';
+    $('camErr').style.display='block';
   }
 }
-$('upBtn').onclick=async()=>{
-  const c={};F.forEach(k=>c[k]=$('f_'+k).value.trim());
-  if(!c.name&&!c.company){toast('Enter at least a name or a company');return}
+$('scanBtn').onclick=openScanner;
+$('dRescan').onclick=openScanner;
+$('sClose').onclick=()=>{camOn=false;goBack()};
+$('errCam').onclick=()=>$('camFile').click();
+$('galBtn').onclick=()=>$('galFile').click();
+$('camFile').onchange=$('galFile').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f)});
+    const k=Math.min(1,1400/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    $('camErr').style.display='none';
+    processCanvas(c);
+  }catch(err){toast('Could not open that photo')}
+};
+$('shutter').onclick=()=>{
+  const v=$('vid');
+  if(!v.videoWidth){toast('Camera is not ready yet');return}
+  const r=v.getBoundingClientRect(),fr=$('frame').getBoundingClientRect();
+  const vw=v.videoWidth,vh=v.videoHeight,sc=Math.max(r.width/vw,r.height/vh);
+  const ox=(vw*sc-r.width)/2,oy=(vh*sc-r.height)/2;
+  const sx=(fr.left-r.left+ox)/sc,sy=(fr.top-r.top+oy)/sc,sw=fr.width/sc,sh=fr.height/sc;
+  const cw=Math.min(1400,Math.round(sw)),ch=Math.round(cw*sh/sw);
+  const c=document.createElement('canvas');c.width=cw;c.height=ch;
+  c.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cw,ch);
+  processCanvas(c);
+};
+async function processCanvas(c){
+  if(busy)return;busy=true;
+  $('shutter').disabled=true;
+  const outW=ONLINE?1000:800,k=Math.min(1,outW/c.width);
+  const t=document.createElement('canvas');t.width=Math.round(c.width*k);t.height=Math.round(c.height*k);
+  t.getContext('2d').drawImage(c,0,0,t.width,t.height);
+  const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7);
+  $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
+  $('vid').pause&&$('vid').pause();
+  $('hintTop').textContent='Scanning card';$('msg').textContent='Loading the card reader…';
+  let p={};let raw='';
+  try{
+    const w=await ensureWorker();
+    // boost contrast for better reading
+    const o=document.createElement('canvas');o.width=c.width;o.height=c.height;
+    const ox=o.getContext('2d');try{ox.filter='grayscale(1) contrast(1.35)'}catch(e){}
+    ox.drawImage(c,0,0);
+    const {data}=await w.recognize(o);
+    raw=data.text;p=parseCard(raw);
+  }catch(e){p={};}
+  const got=F.some(k=>p[k]);
+  draft={img:thumb,raw,f:{}};F.forEach(k=>draft.f[k]=p[k]||'');
+  $('msg').textContent=got?'Card captured':'Card captured. Text could not be read, you can type the details.';
+  $('tick').style.display='grid';
+  await new Promise(r=>setTimeout(r,850));
+  busy=false;camOn=false;
+  renderDraft();
+  if(location.hash==='#scan')goBack();else show('home');
+  if(!got)setTimeout(()=>toast('Could not read the text. Tap Edit details to type it.'),300);
+}
+
+/* ---------------- latest scan panel (landing page) ---------------- */
+function renderDraft(){
+  const box=$('draftBox');
+  if(!draft){box.classList.add('hide');return}
+  box.classList.remove('hide');
+  $('dImg').src=draft.img;
+  F.forEach(k=>$('f_'+k).value=draft.f[k]);
+  drawSummary();
+}
+function drawSummary(){
+  const f=draft.f;
+  $('dSum').innerHTML=`<b>${esc(f.name||f.company||'Name not found')}</b>
+    ${f.designation||(f.name&&f.company)?`<span>${esc([f.designation,f.name?f.company:''].filter(Boolean).join(', '))}</span>`:''}
+    <small>${esc([f.phone,f.email,f.city].filter(Boolean).join('  |  '))||'Tap Edit details to add contact information'}</small>`;
+}
+F.forEach(k=>$('f_'+k).addEventListener('input',e=>{if(draft){draft.f[k]=e.target.value;drawSummary()}}));
+$('dDiscard').onclick=()=>{if(confirm('Discard this scan?')){draft=null;renderDraft()}};
+$('saveBtn').onclick=async()=>{
+  if(!draft)return;
+  const c={};F.forEach(k=>c[k]=(draft.f[k]||'').trim());
+  if(!c.name&&!c.company){toast('Enter at least a name or a company');$('draftBox').querySelector('details').open=true;return}
   const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
-  if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Upload anyway?'))return;
-  c.image=thumb;
-  $('upBtn').disabled=true;$('upBtn').textContent='Uploading…';
+  if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Save anyway?'))return;
+  c.image=draft.img;
+  $('saveBtn').disabled=true;$('saveBtn').textContent='Saving…';
   try{
     await store.add(c);
     if(store.refresh)store.refresh();
-    draft=null;toast('Card uploaded');history.length>1?history.back():nav('home');
-  }catch(e){toast('Upload failed: '+(e.name==='QuotaExceededError'?'phone storage is full (test mode)':e.message))}
-  $('upBtn').textContent='Upload to register';$('upBtn').disabled=false;
+    draft=null;renderDraft();toast('Card saved');
+  }catch(e){toast('Save failed: '+(e.name==='QuotaExceededError'?'phone storage is full (test mode)':e.message))}
+  $('saveBtn').textContent='Save card';$('saveBtn').disabled=false;
 };
 
 /* ---------------- text parsing ---------------- */
