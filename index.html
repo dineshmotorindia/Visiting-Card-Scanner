@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a1020">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("gopali_theme")||"midnight"}catch(e){document.documentElement.dataset.theme="midnight"}</script>
 <title>Gopali & Co | Card Register</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -504,12 +509,12 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
       Leave empty to use the free offline reader.
    ===================================================================== */
 const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCaCDxchNDB3Yo0DvSywQsANjpVi36a3Fo",
+  authDomain: "gopali-cards.firebaseapp.com",
+  projectId: "gopali-cards",
+  storageBucket: "gopali-cards.firebasestorage.app",
+  messagingSenderId: "147247700446",
+  appId: "1:147247700446:web:002a1200c8a14f2ac2654f"
 };
 const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
 const AI_MODEL = "gemini-2.5-flash";  // change if Google renames the model
@@ -1417,6 +1422,7 @@ document.addEventListener('pointerdown',e=>{
 
 /* ---------------- start ---------------- */
 if(location.hash)location.hash='';
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 A.init();
 </script>
 
