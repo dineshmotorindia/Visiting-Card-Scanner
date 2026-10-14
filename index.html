@@ -322,6 +322,100 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
 .tbl th{font-size:12px;color:var(--muted)}
 .tw{overflow-x:auto}
 .actbox{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:var(--shadow)}
+/* ---------- compact professional scale (overrides) ---------- */
+body{font-size:13.5px}
+.brand{font-size:24px}
+.bar .brand{font-size:17px}
+.top{padding:calc(env(safe-area-inset-top,0px) + 9px) 12px 10px}
+.back{padding:6px 11px 6px 7px;font-size:13px}
+.icbtn{width:36px;height:36px}
+.icbtn svg{width:18px;height:18px}
+main{padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 28px)}
+main.padb{padding-bottom:96px}
+.hero{padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 42px;border-radius:0 0 22px 22px}
+.av{width:34px;height:34px;flex-basis:34px;font-size:16px}
+.wt small{font-size:10px}
+.wt b{font-size:13.5px;max-width:170px}
+.greet{margin:14px 0 2px;font-size:12.5px}
+.hero .brand{font-size:28px}
+.hero .sub{font-size:12px;margin-top:3px}
+.deck{width:118px;height:78px;top:62px;right:-16px}
+.dc{padding:9px;gap:5px;border-radius:9px}
+.dc i{height:4px}.dc i:first-child{height:5px}
+.stats{margin:-26px 12px 0;gap:8px}
+.st{padding:8px 11px;border-radius:13px}
+.st b{font-size:20px}.st span{font-size:10.5px}
+.hm{padding-top:12px}
+.tiles{gap:8px}
+.act{padding:11px 12px;gap:7px;border-radius:15px}
+.act .ic{width:34px;height:34px;border-radius:11px}
+.act .ic svg{width:19px;height:19px}
+.act h2{font-size:15px}
+.act p{font-size:11.5px;margin-top:1px}
+.act.pri{padding:12px 14px;gap:12px}
+.act.pri .ic{width:44px;height:44px;border-radius:14px}
+.act.pri .ic svg{width:24px;height:24px}
+.act.pri h2{font-size:18px}
+.act.pri .chev{width:18px;height:18px}
+.shd{margin:16px 2px 8px}
+.shd h3{font-size:15.5px}
+.exports{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.xp{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 6px;color:var(--text);font-weight:600;font-size:12.5px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .2s}
+.xp:hover{border-color:var(--accent)}
+.xp:active{transform:scale(.96)}
+.xp svg{color:var(--accent);flex:0 0 auto}
+.rail{gap:9px;margin:0 -12px;padding:2px 12px 12px}
+.rc{flex-basis:132px;padding:6px 6px 9px;border-radius:13px}
+.rc b{font-size:13.5px;margin-top:7px}
+.rc span{font-size:11px}
+.note{margin-top:14px;padding:8px 11px;font-size:11.5px}
+.cardframe{border-radius:9px}
+h3.sec{font-size:18px}
+.form{gap:8px;margin-top:12px}
+.fld span{font-size:11.5px;margin-bottom:3px}
+.fld input,.fld textarea{padding:9px 11px;font-size:14px;border-radius:10px}
+.btn{padding:11px 14px;font-size:14px;border-radius:12px}
+.btns{gap:8px;margin-top:14px}
+.link{font-size:12.5px;padding:6px 0}
+.draft{padding:11px;border-radius:17px;margin-bottom:12px}
+.dhead{margin-bottom:8px}
+.dhead h3{font-size:16px}
+.pill{font-size:11px;padding:3px 9px}
+.sum{margin:10px 2px 2px}
+.sum b{font-size:17px}.sum span{font-size:12.5px}.sum small{font-size:12px;margin-top:4px}
+.filters{padding:12px;border-radius:15px}
+.filters h3{font-size:15px;margin-bottom:8px}
+.filters .fld{margin-bottom:8px}
+.filters .fld input{padding:8px 10px;font-size:13.5px}
+.grid{gap:10px}
+.tile{padding:7px 7px 10px;border-radius:15px}
+.tile .meta{padding:8px 4px 0}
+.tile h4{font-size:15.5px}
+.tile .l2{font-size:12px}
+.tile .l3{font-size:11.5px;margin-top:4px}
+.count{font-size:12px;margin-bottom:8px}
+.sheet .in{padding:13px 13px calc(env(safe-area-inset-bottom,0px) + 16px);border-radius:20px 20px 0 0}
+.dl{font-size:13px;gap:7px 10px;margin:12px 0 4px;grid-template-columns:88px 1fr}
+.dl dt{font-size:12px}
+.lg-brand .brand{font-size:32px}
+.lgbox{padding:16px 15px;border-radius:20px}
+.opts{padding:11px;border-radius:15px;gap:10px 14px}
+details.set{padding:10px 12px;border-radius:15px}
+.tbl{font-size:12px}
+#selBar,#lBar{padding:8px 12px calc(env(safe-area-inset-bottom,0px) + 8px)}
+#selBar .btn{padding:9px 14px;font-size:13.5px}
+#selBar b{font-size:13px}
+#toast{font-size:13px;padding:9px 14px}
+/* ---------- export mode, review flags ---------- */
+.modebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:7px 12px;margin-bottom:10px;font-size:12.5px;font-weight:600}
+.flags{display:none;margin:8px 2px 0;font-size:12px;color:var(--bad);background:var(--badbg);border-radius:10px;padding:8px 10px}
+.flags.show{display:block}
+.flags.ok{display:block;background:rgba(47,216,134,.12);color:var(--go)}
+.flags b{display:block;margin-bottom:2px}
+.flags span{display:block}
+.fld input.warn,.fld textarea.warn{border-color:var(--bad);box-shadow:0 0 0 3px var(--badbg)}
+.warnbox{background:var(--badbg);color:var(--bad);border-radius:12px;padding:8px 12px;font-size:12.5px;margin-bottom:10px}
+.dim{color:var(--muted);font-size:12.5px;margin:2px 0 0}
 </style>
 </head>
 <body>
@@ -394,6 +488,7 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
       <div class="dhead"><h3>Latest scan</h3><span class="pill">Not saved yet</span></div>
       <div id="dFrameWrap"></div>
       <div class="sum" id="dSum"></div>
+      <div class="flags" id="dFlags"></div>
       <details class="edit" id="dEdit"><summary>Edit details</summary><div class="form" id="draftForm"></div></details>
       <div class="btns">
         <button class="btn" id="saveBtn">Save card</button>
@@ -415,11 +510,18 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
         <span><h2>Address Labels</h2><p>Print courier labels</p></span>
       </button>
     </div>
-    <div class="shd rise" style="--d:6"><h3>Recent cards</h3><button class="link" id="recAll">See all</button></div>
-    <div class="rail rise" id="rail" style="--d:7"></div>
+    <div class="shd rise" style="--d:6"><h3>Export</h3></div>
+    <div class="exports rise" style="--d:7">
+      <button class="xp" data-x="xlsx"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg><span>Excel</span></button>
+      <button class="xp" data-x="pdf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>PDF</span></button>
+      <button class="xp" data-x="docx"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8 12l1.5 5 1.5-4 1.5 4 1.5-5"/></svg><span>Word</span></button>
+    </div>
+    <div class="shd rise" style="--d:8"><h3>Recent cards</h3><button class="link" id="recAll">See all</button></div>
+    <div class="rail rise" id="rail" style="--d:9"></div>
     <label class="ck2 rise" style="--d:8"><input type="checkbox" id="homeAuto"> Auto crop cards right after scanning (skip the manual step)</label>
     <div class="note" id="modeNote"></div>
-    <button class="link hide" id="actBtn" style="margin-top:12px">View activity log (admin)</button>
+    <button class="link hide" id="actBtn" style="margin-top:8px">View activity log (admin)</button>
+    <button class="link hide" id="aiBtn" style="margin-top:0">AI reader settings (admin)</button>
   </main>
 </section>
 
@@ -460,12 +562,13 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
         <button class="clear" id="qClear">Clear filters</button>
       </aside>
       <div>
+        <div class="modebar hide" id="modeBar"><span id="modeTxt"></span><button class="link" id="modeCancel">Cancel</button></div>
         <div class="listbar"><p class="count" id="cardCount"></p><span><button class="link hide" id="scopeBtn"></button> <button class="link" id="selAll">Select all shown</button></span></div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
   </main>
-  <div id="selBar"><b id="selTxt"></b><button class="link" id="selClear">Clear</button><button class="btn" id="mkLabels">Make labels</button></div>
+  <div id="selBar"><b id="selTxt"></b><button class="link" id="selClear">Clear</button><button class="btn alt" id="expBtn">Export</button><button class="btn" id="mkLabels">Make labels</button></div>
 </section>
 
 <!-- ============ LABELS ============ -->
@@ -475,6 +578,7 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
     <span class="brand">Address labels</span></div></header>
   <main class="padb">
     <p class="count" id="lSum"></p>
+    <div class="warnbox hide" id="lWarn"></div>
     <div class="opts">
       <label class="fld"><span>Start from label no.</span><input id="lStart" type="number" min="1" max="16" value="1" inputmode="numeric"></label>
       <label class="ck"><input type="checkbox" id="lCo" checked> Include company</label>
@@ -505,6 +609,8 @@ details.set .form{grid-template-columns:1fr 1fr 1fr}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <script>
 /* =====================================================================
    SETTINGS
@@ -522,7 +628,8 @@ const FIREBASE_CONFIG = {
   appId: "1:147247700446:web:002a1200c8a14f2ac2654f"
 };
 const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
-const AI_MODEL = "gemini-2.5-flash";  // change if Google renames the model
+const AI_MODEL = "gemini-flash-latest"; // Google's alias for the current Flash model
+const AI={key:AI_KEY,model:AI_MODEL};
 /* ===================================================================== */
 
 const $=id=>document.getElementById(id);
@@ -584,7 +691,7 @@ if(ONLINE){
   const key=()=>'gopali_cards_v2_'+me.uid;
   const read=()=>{try{return JSON.parse(localStorage.getItem(key())||'[]')}catch(e){return[]}};
   store={
-    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now(),owner:me.uid,ownerName:me.name,createdAt:Date.now()});localStorage.setItem(key(),JSON.stringify(a))},
+    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now()+Math.random().toString(36).slice(2,6),owner:me.uid,ownerName:me.name,createdAt:Date.now()});localStorage.setItem(key(),JSON.stringify(a))},
     async update(id,v){localStorage.setItem(key(),JSON.stringify(read().map(x=>x.id===id?{...x,...v}:x)))},
     async del(id){localStorage.setItem(key(),JSON.stringify(read().filter(x=>x.id!==id)))},
     watch(){cards=read();onCards()},
@@ -610,20 +717,21 @@ onCards=()=>{
   if(me)renderHome();
 };
 function setNote(){
-  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI_KEY?' Card reader: AI.':' Card reader: offline.');
+  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI.key?' Card reader: AI.':' Card reader: offline.');
   $('whoTxt').textContent=me.name+(me.role==='admin'?' (admin)':'');
   $('avatar').textContent=(me.name||'?').trim().charAt(0).toUpperCase();
   const hr=new Date().getHours();
   $('greet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+(me.name||'').trim().split(' ')[0];
   $('actBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
   $('scopeBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
+  $('aiBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
   scopeText();
 }
 function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
 /* ---------------- navigation ---------------- */
 const VIEWS=['login','home','cards','scan','labels','activity'];
-function show(v){if(!me)v='login';VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v==='cards')renderCards();if(v==='labels')renderLabels()}
+function show(v){if(!me)v='login';VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v!=='cards'&&v!=='labels')cardsMode='browse';if(v==='cards'){modeUI();renderCards()}if(v==='labels')renderLabels()}
 function nav(v){location.hash=v==='home'?'':v}
 function goBack(){history.length>1?history.back():nav('home')}
 window.addEventListener('hashchange',()=>{
@@ -696,7 +804,7 @@ function startSession(u){
   me=u;cards=[];selected.clear();scopeAll=false;draft=null;
   if(typeof renderDraft==='function')renderDraft();
   if(!u){signup=false;lgMode();$('lgPass').value='';location.hash='';show('login');return}
-  setNote();onCards();store.watch();log('login');
+  setNote();onCards();store.watch();log('login');loadAISettings();
   $('lgPass').value='';
   const cur=location.hash.slice(1);
   show(['cards','labels','activity'].includes(cur)?'home':'home');
@@ -717,7 +825,7 @@ async function openScanner(){
   $('camErr').style.display='none';$('msg').textContent='';$('hintTop').textContent='Place the card flat and fit it inside the green corners';
   $('shutter').disabled=false;
   nav('scan');show('scan');
-  if(!AI_KEY)ensureWorker().catch(()=>{});
+  if(!AI.key)ensureWorker().catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}},audio:false});
@@ -932,8 +1040,8 @@ $('adjCancel').onclick=()=>{
 async function aiRead(c){
   const b64=c.toDataURL('image/jpeg',.88).split(',')[1];
   const prompt='This is a photo of a business visiting card, usually from India. Read it and reply with JSON only, using exactly these keys: name, designation, company, phone, email, address, city, pin, website. Rules: name is the person\'s name only, without degrees or qualifications. designation is the job title, empty if none. company is the organisation name. phone lists mobile numbers first, then landlines, separated by commas, as printed. address is the full postal address on one line, without phone, email or website. pin is the 6 digit PIN code. Use an empty string for anything not on the card. Never invent text.';
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+AI_MODEL+':generateContent',{
-    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI_KEY},
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+AI.model+':generateContent',{
+    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI.key},
     body:JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})
   });
   if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error(r.status+' '+m)}
@@ -1016,9 +1124,9 @@ async function processCard(card){
   const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7),ar=card.width/card.height;
   $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
   $('hintTop').textContent=scanSide==='back'?'Scanning back':'Scanning card';
-  $('msg').textContent=AI_KEY?'Reading the card with AI…':'Reading the card…';
+  $('msg').textContent=AI.key?'Reading the card with AI…':'Reading the card…';
   let p=null;
-  if(AI_KEY){
+  if(AI.key){
     try{p=await aiRead(card)}catch(e){console.warn(e);toast('AI reader failed ('+String(e.message).slice(0,60)+'). Using offline reader.');$('msg').textContent='Using offline reader…'}
   }
   if(!p){
@@ -1159,12 +1267,37 @@ function renderDraft(){
   box.classList.remove('hide');
   $('dFrameWrap').innerHTML=frameHTML(draft.img,draft.img2,draft.ar);
   F.forEach(k=>$('f_'+k).value=draft.f[k]);
-  $('dEdit').open=false;
   drawSummary();
+  $('dEdit').open=Object.keys(validate(draft.f)).length>0;
+}
+function validate(f){
+  const w={};
+  if(!f.name)w.name='Name is missing';
+  else if(/\d/.test(f.name)||f.name.length>40)w.name='Name looks wrong';
+  const ph=(f.phone||'').split(',').map(x=>x.trim()).filter(Boolean);
+  if(!ph.length)w.phone='Phone number is missing';
+  else if(ph.some(p=>{const d=p.replace(/\D/g,'');return d.length<8||d.length>13||(d.length===10&&!/^[6-9]/.test(d))}))w.phone='Phone number looks wrong';
+  if(f.email&&f.email.split(',').some(e=>!/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(e.trim())))w.email='Email looks wrong';
+  if(f.pin&&!/^\d{6}$/.test(f.pin))w.pin='PIN must be 6 digits';
+  else if(!f.pin&&/\b\d{6}\b|\b\d{3}\s\d{3}\b/.test(f.address||''))w.pin='PIN is in the address but not filled';
+  if(!f.address)w.address='Address is missing';
+  if(f.website&&f.website.split(',').some(x=>!/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/.test(x.trim())))w.website='Website looks wrong';
+  if((f.designation||'').length>80)w.designation='Designation looks too long';
+  return w;
+}
+const FLAGLBL={name:'Name',phone:'Phone',email:'Email',pin:'PIN',address:'Address',website:'Website',designation:'Designation'};
+function showFlags(){
+  if(!draft)return;
+  const w=validate(draft.f),ks=Object.keys(w),box=$('dFlags');
+  F.forEach(k=>$('f_'+k).classList.toggle('warn',!!w[k]));
+  if(ks.length){box.className='flags show';box.innerHTML='<b>Please check before saving</b>'+ks.map(k=>'<span>'+esc(FLAGLBL[k]||k)+': '+esc(w[k])+'</span>').join('')}
+  else{box.className='flags ok';box.textContent='All fields look valid. Please still compare them with the card.'}
+  return ks.length;
 }
 function drawSummary(){
   const f=draft.f;
-  $('dSum').innerHTML=`<b>${esc(f.name||f.company||'Name not found')}</b>
+  showFlags();
+  $('dSum').innerHTML=`<b>${esc(f.name||'Name not found')}</b>
     ${f.designation||(f.name&&f.company)?`<span>${esc([f.designation,f.name?f.company:''].filter(Boolean).join(', '))}</span>`:''}
     <small>${esc([f.phone,f.email,f.city].filter(Boolean).join('  |  '))||'Tap Edit details to add contact information'}</small>`;
 }
@@ -1174,7 +1307,9 @@ $('dDiscard').onclick=()=>{if(confirm('Discard this scan?')){draft=null;renderDr
 $('saveBtn').onclick=async()=>{
   if(!draft)return;
   const c={};F.forEach(k=>c[k]=(draft.f[k]||'').trim());
-  if(!c.name&&!c.company){toast('Enter at least a name or a company');$('dEdit').open=true;return}
+  const probs=Object.keys(validate(c));
+  if(!c.name){$('dEdit').open=true;toast('Enter the name. Labels start with the name.');$('f_name').focus();return}
+  if(probs.length&&!confirm('Some details look doubtful ('+probs.map(k=>FLAGLBL[k]||k).join(', ')+'). Save anyway?'))return;
   const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
   if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Save anyway?'))return;
   c.image=draft.img;c.ar=draft.ar;if(draft.img2){c.image2=draft.img2;c.ar2=draft.ar2}
@@ -1214,7 +1349,8 @@ function renderCards(){
 }
 function updateSelBar(){
   const n=selected.size;
-  $('selBar').style.display=n&&!$('v-cards').classList.contains('hide')?'flex':'none';
+  $('selBar').style.display=(n||cardsMode!=='browse')&&!$('v-cards').classList.contains('hide')?'flex':'none';
+  $('mkLabels').disabled=cardsMode!=='browse'&&!n;
   $('selTxt').textContent=n+' selected';
 }
 $('grid').addEventListener('click',e=>{
@@ -1234,7 +1370,7 @@ $('selAll').onclick=()=>{
   $('selAll').textContent=all?'Select all shown':'Unselect all shown';renderCards();
 };
 $('selClear').onclick=()=>{selected.clear();$('selAll').textContent='Select all shown';renderCards()};
-$('mkLabels').onclick=()=>nav('labels');
+$('mkLabels').onclick=()=>{if(cardsMode==='browse')nav('labels');else doExport(cardsMode)};
 
 /* ---------------- detail sheet (view + edit) ---------------- */
 function openSheet(id){
@@ -1317,10 +1453,14 @@ $('setSave').onclick=()=>{readSet();localStorage.setItem('gopali_layout',JSON.st
 const mdoc=new jspdf.jsPDF({unit:'mm',format:'a4'});
 function labelItems(c,withCo){
   const L=[];
-  if(c.name)L.push({t:c.name});
-  if(c.designation)L.push({t:c.designation});
-  if(withCo&&c.company&&c.company!==c.name)L.push({t:c.company});
-  if(!c.name&&!withCo&&c.company)L.push({t:c.company});
+  if(c.name){
+    L.push({t:c.name});
+    if(c.designation)L.push({t:c.designation});
+    if(withCo&&c.company&&c.company!==c.name)L.push({t:c.company});
+  }else{
+    if(c.company)L.push({t:c.company});
+    if(c.designation)L.push({t:c.designation});
+  }
   let a=c.address||'';
   if(c.city&&!a.toLowerCase().includes(c.city.toLowerCase()))a+=(a?', ':'')+c.city;
   if(c.pin&&!a.includes(c.pin))a+=(a?' - ':'')+c.pin;
@@ -1354,6 +1494,9 @@ function labelPlan(){
 }
 function renderLabels(){
   const {sel,per,start,pages,withCo}=labelPlan();
+  const miss=sel.filter(c=>!c.name);
+  $('lWarn').classList.toggle('hide',!miss.length);
+  if(miss.length)$('lWarn').textContent=miss.length+' selected card'+(miss.length===1?' has':'s have')+' no name ('+miss.slice(0,3).map(c=>c.company||'unnamed').join(', ')+'). The label will start with the company. Open the card and add the name.';
   $('lSum').textContent=`${sel.length} label${sel.length===1?'':'s'} on ${pages} sheet${pages===1?'':'s'}. Each sheet holds ${per} labels, empty ones stay blank.`;
   const W=Math.min(540,Math.max(260,($('lPages').clientWidth||window.innerWidth-36))),sc=W/210;
   let html='';
@@ -1401,6 +1544,42 @@ $('pdfBtn').onclick=()=>{
   toast('PDF downloaded');
 };
 
+/* ---------------- AI reader settings (admin) ---------------- */
+function loadAISettings(){
+  if(!ONLINE||!db)return;
+  db.collection('settings').doc('ai').get().then(d=>{
+    if(d.exists){AI.key=d.data().key||AI_KEY;AI.model=d.data().model||AI_MODEL;setNote()}
+  }).catch(()=>{});
+}
+$('aiBtn').onclick=()=>{
+  $('sheetIn').innerHTML=`<h3 class="sec">AI card reader</h3>
+    <p class="dim">The AI reader is much more accurate than the offline reader. Paste a Gemini API key from aistudio.google.com. It is saved in your private Firebase database, not in the website files, and is shared with signed-in staff only.</p>
+    <p class="dim">Privacy: Google's free tier may use submitted images to improve its products. For client contact data, use a paid (billing-enabled) key.</p>
+    <div class="form" style="grid-template-columns:1fr"><label class="fld"><span>Gemini API key</span><input id="ai_key" type="password" autocomplete="off"></label>
+    <label class="fld"><span>Model name</span><input id="ai_model" autocomplete="off"></label></div>
+    <div class="err" id="aiMsg"></div>
+    <div class="btns"><button class="btn alt" id="aiTest">Test connection</button><button class="btn" id="aiSave">Save for the whole team</button><button class="btn alt" id="aiClose">Close</button></div>`;
+  $('ai_key').value=AI.key||'';$('ai_model').value=AI.model||AI_MODEL;
+  $('sheet').classList.remove('hide');
+  $('aiClose').onclick=()=>$('sheet').classList.add('hide');
+  $('aiTest').onclick=async()=>{
+    const k=$('ai_key').value.trim(),m=$('ai_model').value.trim()||AI_MODEL;
+    if(!k){$('aiMsg').textContent='Paste the key first.';return}
+    $('aiMsg').style.color='var(--muted)';$('aiMsg').textContent='Testing…';
+    try{
+      const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{parts:[{text:'Reply with the single word OK'}]}]})});
+      const j=await r.json();
+      if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+      $('aiMsg').style.color='var(--go)';$('aiMsg').textContent='Connected. The model replied: '+((j.candidates&&j.candidates[0].content.parts[0].text)||'OK').slice(0,40);
+    }catch(e){$('aiMsg').style.color='var(--bad)';$('aiMsg').textContent=String(e.message).slice(0,160)}
+  };
+  $('aiSave').onclick=async()=>{
+    const k=$('ai_key').value.trim(),m=$('ai_model').value.trim()||AI_MODEL;
+    try{await db.collection('settings').doc('ai').set({key:k,model:m,updatedBy:me.name});AI.key=k;AI.model=m;setNote();$('sheet').classList.add('hide');toast(k?'AI reader is on for everyone':'AI reader turned off')}
+    catch(e){$('aiMsg').style.color='var(--bad)';$('aiMsg').textContent='Could not save: '+e.message}
+  };
+};
+
 /* ---------------- themes, landing page interactions ---------------- */
 const THEMES=[['midnight','Midnight','#0a1020'],['pearl','Pearl','#141f55'],['emerald','Emerald','#08150f']];
 function applyTheme(n){
@@ -1445,6 +1624,97 @@ document.addEventListener('pointerdown',e=>{
   b.appendChild(sp);setTimeout(()=>sp.remove(),650);
   if(navigator.vibrate){try{navigator.vibrate(8)}catch(x){}}
 });
+
+/* ---------------- export: Excel, PDF, Word ---------------- */
+const XNAME={xlsx:'Excel',pdf:'PDF',docx:'Word'};
+const EXP_COLS=['Name','Designation','Company','Phone','Email','Address','City','PIN','Website','Added by','Date added'];
+function expRows(list){
+  return list.map(c=>({Name:c.name||'',Designation:c.designation||'',Company:c.company||'',Phone:c.phone||'',Email:c.email||'',Address:c.address||'',City:c.city||'',PIN:c.pin||'',Website:c.website||'','Added by':c.ownerName||'','Date added':new Date(tsOf(c)).toLocaleDateString('en-IN')}));
+}
+function saveBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2500)}
+function exportXlsx(rows,fname){
+  const ws=XLSX.utils.json_to_sheet(rows,{header:EXP_COLS});
+  ws['!cols']=[22,24,28,22,32,50,14,9,28,16,12].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Cards');XLSX.writeFile(wb,fname);
+}
+function buildPdf(rows,who){
+  const doc=new jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const cols=[['#',8,null],['Name',34,'Name'],['Designation',36,'Designation'],['Company',40,'Company'],['Phone',30,'Phone'],['Email',46,'Email'],['Address',62,'Address'],['City',21,'City']];
+  const L=10,PH=210,date=new Date().toLocaleDateString('en-IN');
+  const head=()=>{
+    doc.setFillColor(15,26,66);doc.rect(0,0,297,17,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('Gopali & Co',L,11);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);
+    doc.text('Visiting card register  |  '+rows.length+' contact'+(rows.length===1?'':'s')+'  |  '+date+(who?'  |  '+who:''),287,11,{align:'right'});
+    let x=L;const y=21;
+    doc.setFillColor(26,39,102);doc.rect(L,y,277,7,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+    cols.forEach(([t,w])=>{doc.text(t,x+1.5,y+4.8);x+=w});
+    return y+7;
+  };
+  let y=head();
+  rows.forEach((r,i)=>{
+    doc.setFont('helvetica','normal');doc.setFontSize(8);
+    const cells=cols.map(([t,w,k])=>doc.splitTextToSize(k?String(r[k]||''):String(i+1),w-3));
+    const h=Math.max(...cells.map(c=>c.length))*3.5+3;
+    if(y+h>PH-12){doc.addPage();y=head();doc.setFont('helvetica','normal');doc.setFontSize(8)}
+    if(i%2===0){doc.setFillColor(242,244,250);doc.rect(L,y,277,h,'F')}
+    doc.setTextColor(20,20,20);
+    let x=L;cells.forEach((c,j)=>{doc.text(c,x+1.5,y+4);x+=cols[j][1]});
+    doc.setDrawColor(215,220,235);doc.setLineWidth(.1);doc.line(L,y+h,L+277,y+h);
+    y+=h;
+  });
+  const n=doc.getNumberOfPages();
+  for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(8);doc.setTextColor(120);doc.text('Page '+p+' of '+n,287,PH-6,{align:'right'})}
+  return doc;
+}
+function buildDocx(rows,who){
+  const {Document,Paragraph,Table,TableRow,TableCell,TextRun,WidthType,PageOrientation,ShadingType}=docx;
+  const cols=[['#',500,null],['Name',1900,'Name'],['Designation',2000,'Designation'],['Company',2300,'Company'],['Phone',1700,'Phone'],['Email',2600,'Email'],['Address',3200,'Address'],['City',1100,'City']];
+  const total=cols.reduce((s,c)=>s+c[1],0);
+  const cell=(t,w,o={})=>new TableCell({width:{size:w,type:WidthType.DXA},shading:o.head?{type:ShadingType.CLEAR,fill:'1A2766',color:'auto'}:(o.zebra?{type:ShadingType.CLEAR,fill:'F2F4FA',color:'auto'}:undefined),margins:{top:60,bottom:60,left:90,right:90},children:[new Paragraph({children:[new TextRun({text:String(t),size:17,bold:!!o.head,color:o.head?'FFFFFF':'111111',font:'Calibri'})]})]});
+  const hdr=new TableRow({tableHeader:true,children:cols.map(([t,w])=>cell(t,w,{head:true}))});
+  const body=rows.map((r,i)=>new TableRow({cantSplit:true,children:cols.map(([t,w,k])=>cell(k?(r[k]||''):i+1,w,{zebra:i%2===0}))}));
+  return new Document({creator:'Gopali & Co',title:'Visiting cards',sections:[{
+    properties:{page:{size:{orientation:PageOrientation.LANDSCAPE},margin:{top:720,bottom:720,left:720,right:720}}},
+    children:[
+      new Paragraph({children:[new TextRun({text:'Gopali & Co',bold:true,size:34,font:'Georgia',color:'1A2766'})]}),
+      new Paragraph({spacing:{after:200},children:[new TextRun({text:'Visiting card register  |  '+rows.length+' contact'+(rows.length===1?'':'s')+'  |  '+new Date().toLocaleDateString('en-IN')+(who?'  |  '+who:''),size:18,color:'555555'})]}),
+      new Table({width:{size:total,type:WidthType.DXA},columnWidths:cols.map(c=>c[1]),rows:[hdr,...body]})
+    ]}]});
+}
+async function doExport(fmt){
+  const list=cards.filter(c=>selected.has(c.id));
+  if(!list.length){toast('Select at least one card');return}
+  const rows=expRows(list),stamp=new Date().toISOString().slice(0,10),base='Gopali-cards-'+stamp;
+  try{
+    if(fmt==='xlsx'){if(!window.XLSX)throw new Error('Excel tool not loaded. Check your internet.');exportXlsx(rows,base+'.xlsx')}
+    else if(fmt==='pdf'){buildPdf(rows,me.name).save(base+'.pdf')}
+    else{if(!window.docx)throw new Error('Word tool not loaded. Check your internet.');saveBlob(await docx.Packer.toBlob(buildDocx(rows,me.name)),base+'.docx')}
+    log('export_'+fmt,list.length+' cards');
+    toast(XNAME[fmt]+' file downloaded ('+list.length+' card'+(list.length===1?'':'s')+')');
+    if(cardsMode!=='browse'){cardsMode='browse';selected.clear();modeUI();renderCards()}
+  }catch(e){toast('Export failed: '+e.message)}
+}
+let cardsMode='browse';
+function modeUI(){
+  const ex=cardsMode!=='browse';
+  $('modeBar').classList.toggle('hide',!ex);
+  if(ex)$('modeTxt').textContent='Select the cards to export as '+XNAME[cardsMode];
+  $('mkLabels').textContent=ex?'Download '+XNAME[cardsMode]:'Make labels';
+  $('expBtn').classList.toggle('hide',ex);
+  updateSelBar();
+}
+function startExport(fmt){selected.clear();cardsMode=fmt;nav('cards')}
+document.querySelectorAll('.xp').forEach(b=>b.addEventListener('click',()=>startExport(b.dataset.x)));
+$('modeCancel').onclick=()=>{cardsMode='browse';selected.clear();modeUI();renderCards()};
+$('expBtn').onclick=()=>{
+  if(!selected.size){toast('Tick the cards you want to export first');return}
+  $('sheetIn').innerHTML='<h3 class="sec">Export '+selected.size+' card'+(selected.size===1?'':'s')+'</h3><div class="btns">'+
+    ['xlsx','pdf','docx'].map(f=>'<button class="btn alt" data-f="'+f+'">'+XNAME[f]+'</button>').join('')+'<button class="btn alt" id="xCancel">Cancel</button></div>';
+  $('sheet').classList.remove('hide');
+  $('sheetIn').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{$('sheet').classList.add('hide');doExport(b.dataset.f)});
+  $('xCancel').onclick=()=>$('sheet').classList.add('hide');
+};
 
 /* ---------------- start ---------------- */
 if(location.hash)location.hash='';
