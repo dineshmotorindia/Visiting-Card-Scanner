@@ -543,7 +543,7 @@ details.set{padding:10px 12px;border-radius:15px}
   <div class="sctl">
     <button class="side" id="galBtn" aria-label="Choose from gallery"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg></button>
     <button id="shutter" aria-label="Capture card"></button>
-    <span style="width:56px"></span>
+    <button class="side hide" id="swCam" aria-label="Switch camera"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.4-2h6.2l1.4 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9.5 12.5a2.7 2.7 0 0 1 4.6-1.2M14.5 13.5a2.7 2.7 0 0 1-4.6 1.2"/></svg></button>
   </div>
 </section>
 
@@ -818,25 +818,58 @@ function ensureWorker(){
   return worker;
 }
 function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('vid').srcObject=null}
+let camId='',camList=[];
+try{camId=localStorage.getItem('gopali_cam')||''}catch(e){}
+const isDesk=!!(window.matchMedia&&matchMedia('(pointer:fine)').matches&&!matchMedia('(pointer:coarse)').matches);
+async function startStream(){
+  stopCam();
+  const base={width:{ideal:2560},height:{ideal:1440}};
+  const video=camId?{...base,deviceId:{ideal:camId}}:{...base,facingMode:{ideal:'environment'}};
+  stream=await navigator.mediaDevices.getUserMedia({video,audio:false});
+  const v=$('vid');v.srcObject=stream;await v.play().catch(()=>{});
+  try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+  try{
+    camList=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+    $('swCam').classList.toggle('hide',camList.length<2);
+    camId=stream.getVideoTracks()[0].getSettings().deviceId||camId;
+  }catch(e){}
+}
 async function openScanner(){
   camOn=true;busy=false;scanSide='front';$('adjust').style.display='none';$('sTitle').textContent='Scan a card';$('ask').style.display='none';
   loadCV().catch(()=>{});
   $('snap').classList.add('hide');$('frame').classList.remove('busy');$('tick').style.display='none';
   $('camErr').style.display='none';$('msg').textContent='';$('hintTop').textContent='Place the card flat and fit it inside the green corners';
   $('shutter').disabled=false;
+  $('hintTop').textContent='Place the card flat and fit it inside the green corners'+(isDesk?'. Press Space to capture.':'');
+  $('errCam').textContent=isDesk?'Choose a photo from this computer':'Use the phone camera app';
   nav('scan');show('scan');
   if(!AI.key)ensureWorker().catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}},audio:false});
-    const v=$('vid');v.srcObject=stream;await v.play().catch(()=>{});
-    try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+    await startStream();
   }catch(e){
     $('shutter').disabled=true;
     $('camErrTxt').textContent=(e&&e.name==='NotAllowedError')?'Camera permission is blocked. Allow the camera for this site in your browser settings, or use one of the options below.':'The live camera could not start on this device.';
     $('camErr').style.display='block';
   }
 }
+$('swCam').onclick=async()=>{
+  if(camList.length<2)return;
+  const i=camList.findIndex(d=>d.deviceId===camId),nx=camList[(i+1)%camList.length];
+  camId=nx.deviceId;try{localStorage.setItem('gopali_cam',camId)}catch(e){}
+  try{await startStream();toast(nx.label||'Camera switched')}catch(e){toast('Could not open that camera')}
+};
+document.addEventListener('keydown',e=>{
+  if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if($('adjust').style.display==='flex'){
+    if(e.key==='Enter'){e.preventDefault();$('adjOk').click()}
+    else if(e.key==='Escape')$('adjCancel').click();
+    return;
+  }
+  if($('v-scan').classList.contains('hide')||$('ask').style.display==='block')return;
+  if((e.key===' '||e.key==='Enter')&&!$('shutter').disabled){e.preventDefault();$('shutter').click()}
+  else if(e.key==='Escape')$('sClose').click();
+});
 $('scanBtn').onclick=openScanner;
 $('dRescan').onclick=openScanner;
 $('sClose').onclick=()=>{if(scanSide==='back'&&draft){finish()}else{camOn=false;goBack()}};
