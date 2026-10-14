@@ -18,6 +18,10 @@ service cloud.firestore {
       allow update: if signedIn() && (resource.data.owner == request.auth.uid || isAdmin())
                     && request.resource.data.owner == resource.data.owner;
     }
+    match /settings/{d} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
     match /activity/{a} {
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
       allow read: if isAdmin();
