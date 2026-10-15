@@ -461,11 +461,6 @@ details.set{padding:10px 12px;border-radius:15px}
 .dim{color:var(--muted);font-size:12.5px;margin:2px 0 0}
 
 /* ---------- landing: stage + channel options ---------- */
-.lg-stage{position:relative;z-index:2;max-width:440px;width:100%;height:190px;margin:0 auto 4px;transition:height .4s}
-.lg-stage.small{height:160px}
-.lg-stage canvas,.heroc{touch-action:pan-y;cursor:grab;display:block;outline:none}
-.lg-stage canvas{width:100%;height:100%}
-.lg-hint{position:absolute;left:0;right:0;bottom:-2px;text-align:center;font-size:11.5px;letter-spacing:.5px;color:rgba(255,255,255,.6);pointer-events:none}
 .lg-opt{position:relative;overflow:hidden;transition:transform .12s,box-shadow .2s}
 .lg-opt::after{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.16),transparent 60%);opacity:0;transition:opacity .2s;pointer-events:none}
 .lg-opt:hover::after{opacity:1}
@@ -473,7 +468,6 @@ details.set{padding:10px 12px;border-radius:15px}
 .lg-opt[data-ch="textile"]{box-shadow:0 18px 44px rgba(0,0,0,.32),inset 4px 0 0 #ff5fa2}
 .lg-opt[data-ch="motor"] .lg-ic{background:linear-gradient(135deg,#f2342a,#ff8a3d);color:#fff}
 .lg-opt[data-ch="textile"] .lg-ic{background:linear-gradient(135deg,#ff5fa2,#ffb36b);color:#2a0716}
-.lg-opt:hover .lg-ic svg{animation:spin360 .9s ease}
 .lg-opt .lg-chev{transition:transform .2s}
 .lg-opt:hover .lg-chev{transform:translateX(4px)}
 @keyframes spin360{to{transform:rotate(360deg)}}
@@ -488,10 +482,6 @@ details.set{padding:10px 12px;border-radius:15px}
 .lg-chan{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:5px 11px;border-radius:99px;margin:0 0 10px 8px}
 
 /* ---------- home: 3D object, chip, confetti ---------- */
-.heroc{position:absolute;right:0;top:60px;width:176px;height:156px;z-index:3}
-.deck{display:none}
-html.no3d .deck{display:block}
-html.no3d .heroc,html.no3d .lg-stage{display:none}
 .chip{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:5px 12px 5px 10px;border-radius:99px;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;font-weight:700;letter-spacing:.5px;color:#fff;position:relative;z-index:3}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--go);animation:ping 2s infinite}
 #cf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:300}
@@ -522,16 +512,13 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
     <i class="orb o1"></i><i class="orb o2"></i>
     <button class="icbtn lg-theme" id="themeBtn2" aria-label="Change theme"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-1.4-1.1-1.5-1.1-2.7 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4C21 6.7 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg></button>
     <div class="lg-brand rise"><h1 class="brand gold">Gopali &amp; Co</h1><p class="sub">Visiting card register</p></div>
-    <div class="lg-stage rise" style="--d:1" id="lgStageBox"><canvas id="lgCanvas" aria-label="3D models. Tap one to choose a login"></canvas><div class="lg-hint">Tap a model or choose below</div></div>
     <!-- step 1: choose how to enter -->
     <div class="lg-choice rise" style="--d:2" id="lgChoice">
       <button class="lg-opt" id="optMotor" data-ch="motor" type="button">
-        <span class="lg-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 14.2V21M9.9 11.1L3.4 9.4M14.1 11.1l6.5-1.7"/></svg></span>
         <span class="lg-tx"><b>MotorIndia</b><span>Automotive team sign in</span></span>
         <svg class="lg-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       <button class="lg-opt" id="optTextile" data-ch="textile" type="button">
-        <span class="lg-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10M7 20h10"/><rect x="8" y="4" width="8" height="16" rx="1"/><path d="M8 9l8 2M8 13l8 2"/></svg></span>
         <span class="lg-tx"><b>Textile Magazine</b><span>Textile team sign in</span></span>
         <svg class="lg-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
@@ -571,7 +558,6 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
 <section id="v-home" class="hide">
   <div class="hero" id="hero">
     <i class="orb o1"></i><i class="orb o2"></i>
-    <canvas class="heroc" id="heroCanvas" aria-label="3D model, drag to spin"></canvas>
     <div class="deck" id="deck" aria-hidden="true">
       <div class="dc dc1"><i></i><i></i><i></i></div><div class="dc dc2"><i></i><i></i><i></i></div><div class="dc dc3"><i></i><i></i><i></i></div>
     </div>
@@ -716,7 +702,6 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -892,8 +877,6 @@ function chanTheme(k){let l='';try{l=localStorage.getItem('gopali_light_'+k)}cat
 function lgChoose(t){
   lgType=t;$('lgPass').value='';$('lgPass').type='password';$('lgEye').classList.remove('on');
   applyTheme(t?chanTheme(t):'midnight');
-  if(typeof lgStage!=='undefined'&&lgStage)lgStage.setFocus(t);
-  $('lgStageBox').classList.toggle('small',!!t);
   lgMode();if(t)setTimeout(()=>$('lgPass').focus({preventScroll:true}),60);
 }
 $('optMotor').onclick=()=>lgChoose('motor');
@@ -927,7 +910,7 @@ function startSession(u){
   if(unsub){unsub();unsub=null}
   me=u;cards=[];selected.clear();scopeAll=false;draft=null;
   if(typeof renderDraft==='function')renderDraft();
-  if(!u){lgType='';lgMode();$('lgPass').value='';applyTheme('midnight');if(typeof lgStage!=='undefined'&&lgStage)lgStage.setFocus('');$('lgStageBox').classList.remove('small');location.hash='';show('login');return}
+  if(!u){lgType='';lgMode();$('lgPass').value='';applyTheme('midnight');location.hash='';show('login');return}
   setNote();onCards();store.watch();log('login');loadAISettings();enterChannel(u);
   $('lgPass').value='';
   const cur=location.hash.slice(1);
@@ -1871,111 +1854,7 @@ document.addEventListener('pointerdown',e=>{
 });
 
 /* ---------------- 3D models (three.js) ---------------- */
-const HAS3D=typeof THREE!=='undefined';
 const RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
-function makeWheel(){
-  const g=new THREE.Group(),inner=new THREE.Group();g.add(inner);
-  const rub=new THREE.MeshStandardMaterial({color:0x26262c,roughness:.85,metalness:.1});
-  const tread=new THREE.MeshStandardMaterial({color:0x3a3a42,roughness:.9});
-  const chrome=new THREE.MeshStandardMaterial({color:0xe4e8f0,roughness:.25,metalness:.85});
-  const red=new THREE.MeshStandardMaterial({color:0xf2342a,emissive:0xf2342a,emissiveIntensity:.55,roughness:.4});
-  const tyre=new THREE.Mesh(new THREE.TorusGeometry(1,.38,24,60),rub);tyre.scale.z=.6;g.add(tyre);
-  for(let i=0;i<28;i++){
-    const a=i/28*Math.PI*2,b=new THREE.Mesh(new THREE.BoxGeometry(.1,.17,.42),tread);
-    b.position.set(Math.cos(a)*1.38,Math.sin(a)*1.38,0);b.rotation.z=a;g.add(b);
-  }
-  const disk=new THREE.Mesh(new THREE.CylinderGeometry(.64,.64,.3,48),chrome);disk.rotation.x=Math.PI/2;inner.add(disk);
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(.56,.03,12,60),red);ring.position.z=.16;inner.add(ring);
-  for(let i=0;i<5;i++){
-    const a=i/5*Math.PI*2,sp=new THREE.Mesh(new THREE.BoxGeometry(.1,.46,.06),chrome);
-    sp.position.set(Math.cos(a)*.34,Math.sin(a)*.34,.17);sp.rotation.z=a-Math.PI/2;inner.add(sp);
-  }
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.42,28),red);hub.rotation.x=Math.PI/2;inner.add(hub);
-  g.userData.inner=inner;return g;
-}
-function makeKnot(){
-  const g=new THREE.Group();
-  const pink=new THREE.MeshStandardMaterial({color:0xff5fa2,roughness:.35,metalness:.25,emissive:0x5a0f33,emissiveIntensity:.55});
-  const gold=new THREE.MeshStandardMaterial({color:0xffc36b,roughness:.3,metalness:.6,emissive:0x5a3a08,emissiveIntensity:.4});
-  g.add(new THREE.Mesh(new THREE.TorusKnotGeometry(.85,.27,180,26,2,3),pink));
-  g.add(new THREE.Mesh(new THREE.TorusKnotGeometry(.85,.05,260,10,3,4),gold));
-  return g;
-}
-function makeStage(canvas,only){
-  if(!HAS3D||!canvas)return null;
-  let r;try{r=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true})}catch(e){return null}
-  r.setClearColor(0x000000,0);
-  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,1,.1,60);cam.position.set(0,0,7.4);
-  sc.add(new THREE.AmbientLight(0xffffff,.65));
-  const kl=new THREE.DirectionalLight(0xffffff,1);kl.position.set(3,4,6);sc.add(kl);
-  const pa=new THREE.PointLight(0xff4a3a,1.4,24);pa.position.set(-5,-2,4);sc.add(pa);
-  const pb=new THREE.PointLight(0xff5fa2,1.4,24);pb.position.set(5,2,4);sc.add(pb);
-  const objs={motor:makeWheel(),textile:makeKnot()};
-  const S={only:only||'',focus:'',px:0,py:0,dragging:false,onPick:null};
-  Object.entries(objs).forEach(([k,o],i)=>{Object.assign(o.userData,{k,i,ry:0,rx:0,vy:0,vx:0,boost:0,sp:0,sc:.001,x:0});o.scale.setScalar(.001);sc.add(o)});
-  let w=0,h=0;
-  function size(){
-    const cw=canvas.clientWidth,ch=canvas.clientHeight;if(!cw||!ch)return false;
-    if(cw!==w||ch!==h){w=cw;h=ch;r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
-    return true;
-  }
-  function frame(t){
-    requestAnimationFrame(frame);
-    if(document.hidden||!canvas.offsetParent||!size())return;
-    const halfW=Math.tan(18*Math.PI/180)*7.4*cam.aspect,idle=t/1000;
-    Object.values(objs).forEach(o=>{
-      const u=o.userData,k=u.k;let ts=1,tx=0;
-      if(S.only)ts=S.only===k?.95:0;
-      else if(S.focus)ts=S.focus===k?1.25:0;
-      else tx=(k==='motor'?-1:1)*Math.min(2.5,halfW*.42);
-      u.sc+=(ts-u.sc)*.12;u.x+=(tx-u.x)*.12;
-      o.visible=u.sc>.03;if(!o.visible)return;
-      o.scale.setScalar(Math.max(.001,u.sc));
-      u.boost*=.95;u.ry+=u.vy;u.rx+=u.vx;u.vy*=.93;u.vx*=.93;
-      if(!S.dragging){u.ry*=.985;u.rx*=.97}
-      if(k==='textile')u.sp+=(RM?0:.008)+u.boost*.3;
-      o.position.set(u.x,RM?0:Math.sin(idle*1.4+u.i)*.09,0);
-      o.rotation.y=(k==='motor'?-.55:0)+S.px*.45+u.ry+u.sp;
-      o.rotation.x=S.py*.3+u.rx+(k==='textile'?.3:.08);
-      if(k==='motor')o.userData.inner.rotation.z-=(RM?0:.018)+u.boost;
-    });
-    r.render(sc,cam);
-  }
-  requestAnimationFrame(frame);
-  let down=null;const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
-  canvas.addEventListener('pointerdown',e=>{
-    down={lx:e.clientX,ly:e.clientY,m:0};S.dragging=true;canvas.style.cursor='grabbing';
-    try{canvas.setPointerCapture(e.pointerId)}catch(x){}
-  });
-  canvas.addEventListener('pointermove',e=>{
-    const rc=canvas.getBoundingClientRect();
-    if(e.pointerType!=='touch'){S.px=((e.clientX-rc.left)/rc.width-.5)*2;S.py=((e.clientY-rc.top)/rc.height-.5)*2}
-    if(down){
-      const dx=e.clientX-down.lx,dy=e.clientY-down.ly;down.lx=e.clientX;down.ly=e.clientY;down.m+=Math.abs(dx)+Math.abs(dy);
-      Object.values(objs).forEach(o=>{o.userData.vy+=dx*.0035;o.userData.vx+=dy*.0035});
-    }
-  });
-  canvas.addEventListener('pointerleave',()=>{S.px=0;S.py=0});
-  const up=e=>{
-    S.dragging=false;canvas.style.cursor='grab';
-    if(down&&down.m<8){
-      const rc=canvas.getBoundingClientRect();
-      ndc.set(((e.clientX-rc.left)/rc.width)*2-1,-((e.clientY-rc.top)/rc.height)*2+1);ray.setFromCamera(ndc,cam);
-      const hits=ray.intersectObjects(Object.values(objs).filter(o=>o.visible),true);
-      if(hits.length){let o=hits[0].object;while(o&&!o.userData.k)o=o.parent;if(o){o.userData.boost=.45;if(S.onPick)S.onPick(o.userData.k,e)}}
-    }
-    down=null;
-  };
-  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',()=>{S.dragging=false;down=null});
-  S.setFocus=k=>{S.focus=k||''};
-  S.setOnly=k=>{S.only=k||''};
-  S.kick=k=>{if(objs[k])objs[k].userData.boost=.4};
-  return S;
-}
-let lgStage=null,heroStage=null;
-try{lgStage=makeStage($('lgCanvas'),'');heroStage=makeStage($('heroCanvas'),'motor')}catch(e){console.warn(e)}
-if(!lgStage||!heroStage)document.documentElement.classList.add('no3d');
-
 /* ---------------- confetti ---------------- */
 const cf=document.createElement('canvas');cf.id='cf';document.body.appendChild(cf);
 const cfx=cf.getContext('2d');let parts=[],cfOn=false;
@@ -2003,7 +1882,6 @@ function cfLoop(){
 function setHeroChannel(ch){
   $('chanTxt').textContent=ch.label;
   $('heroSub').textContent=ch.tag;
-  if(heroStage)heroStage.setOnly(ch.key);
 }
 function enterChannel(u){
   const ch=channelOf(u.email);if(!ch)return;
@@ -2011,14 +1889,12 @@ function enterChannel(u){
   setHeroChannel(ch);
   if(justLoggedIn){justLoggedIn=false;setTimeout(()=>burst(innerWidth/2,innerHeight*.28,90),380)}
 }
-if(lgStage)lgStage.onPick=(k,e)=>{if(lgType)return;burst(e.clientX,e.clientY,40);lgChoose(k)};
-if(heroStage)heroStage.onPick=(k,e)=>burst(e.clientX,e.clientY,38);
 const LGW=document.querySelector('#v-login .lg-wrap');
 const TINT={motor:['#e02a20','#ff8a3d'],textile:['#c13fd0','#ff9f5a']};
 function tint(k){const c=TINT[k];if(c){LGW.style.setProperty('--orb1',c[0]);LGW.style.setProperty('--orb2',c[1])}else{LGW.style.removeProperty('--orb1');LGW.style.removeProperty('--orb2')}}
 [['optMotor','motor'],['optTextile','textile']].forEach(([id,k])=>{
   const b=$(id);
-  b.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;tint(k);if(lgStage)lgStage.kick(k)});
+  b.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;tint(k)});
   b.addEventListener('pointerleave',()=>tint(''));
   b.addEventListener('focus',()=>tint(k));b.addEventListener('blur',()=>tint(''));
   b.addEventListener('click',()=>{tint('');burst(b.getBoundingClientRect().left+60,b.getBoundingClientRect().top+30,26)});
