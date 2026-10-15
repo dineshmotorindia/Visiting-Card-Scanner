@@ -105,6 +105,17 @@ main.padb{padding-bottom:120px}
 .lgbox h3{margin:0 0 4px}
 .lgbox .form{grid-template-columns:1fr;margin-top:12px}
 .lgnote{max-width:440px;margin:16px auto 0;text-align:center;color:rgba(255,255,255,.75);font-size:13px;position:relative;z-index:2}
+.lg-choice{max-width:440px;width:100%;margin:0 auto;display:grid;gap:14px;position:relative;z-index:2}
+.lg-opt{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:14px;background:var(--surface);color:var(--text);border-radius:22px;padding:18px 18px;box-shadow:0 18px 44px rgba(0,0,0,.32);transition:transform .18s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent}
+.lg-opt:hover{transform:translateY(-2px)}
+.lg-opt:active{transform:scale(.985)}
+.lg-opt:focus-visible{outline:3px solid var(--accent)}
+.lg-ic{flex:0 0 48px;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-ink)}
+.lg-tx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.lg-tx b{font:600 18px var(--serif)}
+.lg-tx span{font-size:13.5px;color:var(--muted);line-height:1.35}
+.lg-chev{flex:0 0 auto;color:var(--muted)}
+.lg-back{margin:0 0 10px;padding:0;display:inline-flex;align-items:center;gap:4px;font-size:14px}
 .fgt small{font-weight:500;color:var(--muted);font-size:12.5px;text-decoration:none;display:inline}
 .err{color:var(--bad);font-size:13.5px;min-height:20px;margin:8px 0 0}
 
@@ -429,19 +440,32 @@ details.set{padding:10px 12px;border-radius:15px}
     <i class="orb o1"></i><i class="orb o2"></i>
     <button class="icbtn lg-theme" id="themeBtn2" aria-label="Change theme"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-1.4-1.1-1.5-1.1-2.7 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4C21 6.7 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg></button>
     <div class="lg-brand rise"><h1 class="brand gold">Gopali &amp; Co</h1><p class="sub">Visiting card register</p></div>
-    <div class="lgbox rise" style="--d:2">
+    <!-- step 1: choose how to enter -->
+    <div class="lg-choice rise" style="--d:2" id="lgChoice">
+      <button class="lg-opt" id="optMotor" type="button">
+        <span class="lg-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+        <span class="lg-tx"><b>MotorIndia</b><span>Sign in with your team password</span></span>
+        <svg class="lg-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="lg-opt" id="optTextile" type="button">
+        <span class="lg-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4"/></svg></span>
+        <span class="lg-tx"><b>Textile Magazine</b><span>Sign in with your team password</span></span>
+        <svg class="lg-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <!-- step 2: the form (personal or organisation) -->
+    <div class="lgbox rise hide" style="--d:2" id="lgBox">
+      <button class="link lg-back" id="lgBack" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
       <h3 class="sec" id="lgTitle">Sign in</h3>
-      <p id="lgSub" style="color:var(--muted);margin:0;font-size:14px">Use your own login. Your cards are saved to your account.</p>
+      <p id="lgSub" style="color:var(--muted);margin:0;font-size:14px">Enter the password given to you by your company.</p>
       <div class="form">
-        <label class="fld hide" id="lgNameW"><span>Your name</span><input id="lgName" autocomplete="name"></label>
-        <label class="fld"><span>Email</span><input id="lgEmail" type="email" autocomplete="username" autocapitalize="off"></label>
+        <label class="fld"><span>Email</span><input id="lgEmail" type="email" readonly autocomplete="username" autocapitalize="off"></label>
         <label class="fld"><span>Password</span><input id="lgPass" type="password" autocomplete="current-password"></label>
       </div>
       <div class="err" id="lgErr" role="alert"></div>
       <div class="btns" style="margin-top:12px">
         <button class="btn" id="lgGo">Sign in</button>
-        <button class="link" id="lgSwap">New here? Create an account</button>
-        <button class="link fgt" id="lgForgot">Forgot password? <small>(Check Spam Mail Too)</small></button>
       </div>
     </div>
     <p class="lgnote" id="lgNote"></p>
@@ -627,12 +651,21 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "147247700446",
   appId: "1:147247700446:web:002a1200c8a14f2ac2654f"
 };
+/* LOGIN CHANNELS: two fixed company logins. The email is pre-filled on the
+   login screen; employees only type the password.
+   In Firebase Console > Authentication > Users, create each email below with
+   the password you want to give to that team. */
+const CHANNELS = {
+  motor:   { label: "MotorIndia",       email: "motoindia.channels@gmail.com" },
+  textile: { label: "Textile Magazine", email: "textilemagazine.channel@gmail.com" }
+};
 const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
 const AI_MODEL = "gemini-flash-latest"; // Google's alias for the current Flash model
 const AI={key:AI_KEY,model:AI_MODEL};
 /* ===================================================================== */
 
 const $=id=>document.getElementById(id);
+const channelOf=e=>Object.values(CHANNELS).find(c=>c.email.toLowerCase()===String(e||'').trim().toLowerCase());
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
 
@@ -670,6 +703,7 @@ if(ONLINE){
   };
   const build=async u=>{
     let role='staff',name=u.displayName||u.email;
+    const ch=channelOf(u.email);if(ch)name=ch.label;
     try{const d=await db.collection('users').doc(u.uid).get();if(d.exists){role=d.data().role||'staff';name=d.data().name||name}}catch(e){}
     return {uid:u.uid,email:u.email,name,role};
   };
@@ -759,18 +793,20 @@ async function loadActivity(){
 }
 
 /* ---------------- login / sign out ---------------- */
-let signup=false,sessionReady=false;
+let sessionReady=false,lgType='';   // lgType: '' (choose) | 'motor' | 'textile'
 setTimeout(()=>{if(!sessionReady)startSession(null)},9000);
 function lgMode(){
-  $('lgTitle').textContent=signup?'Create account':'Sign in';
-  $('lgNameW').classList.toggle('hide',!signup);
-  $('lgGo').textContent=signup?'Create account':'Sign in';
-  $('lgSwap').textContent=signup?'Already have an account? Sign in':'New here? Create an account';
-  $('lgPass').autocomplete=signup?'new-password':'current-password';
+  const ch=CHANNELS[lgType];
+  $('lgChoice').classList.toggle('hide',!!ch);
+  $('lgBox').classList.toggle('hide',!ch);
+  if(ch){$('lgTitle').textContent=ch.label+' sign in';$('lgEmail').value=ch.email}
   $('lgErr').textContent='';
 }
-$('lgNote').textContent=ONLINE?'Sign in on any phone with the same email and password to see your cards.':'Test mode: accounts and cards stay on this phone only. Connect the online server to use the same login on other devices.';
-$('lgSwap').onclick=()=>{signup=!signup;lgMode()};
+function lgChoose(t){lgType=t;$('lgPass').value='';lgMode();if(t)setTimeout(()=>$('lgPass').focus(),50)}
+$('optMotor').onclick=()=>lgChoose('motor');
+$('optTextile').onclick=()=>lgChoose('textile');
+$('lgBack').onclick=()=>lgChoose('');
+$('lgNote').textContent=ONLINE?'Sign in on any phone with the same password to see your team\'s cards.':'Test mode: logins and cards stay on this phone only. Connect the online server to use the company logins.';
 function authMsg(e){
   const c=(e&&e.code)||'';
   if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Wrong email or password.';
@@ -783,27 +819,21 @@ function authMsg(e){
   return 'Could not sign in. Please try again.';
 }
 $('lgGo').onclick=async()=>{
-  const n=$('lgName').value.trim(),e=$('lgEmail').value.trim().toLowerCase(),p=$('lgPass').value;
-  if(signup&&!n){$('lgErr').textContent='Enter your name.';return}
-  if(!e||!p){$('lgErr').textContent='Enter your email and password.';return}
+  const ch=CHANNELS[lgType],p=$('lgPass').value;
+  if(!ch)return;
+  if(!p){$('lgErr').textContent='Enter your password.';return}
   $('lgErr').textContent='';$('lgGo').disabled=true;
-  try{signup?await A.signUp(n,e,p):await A.signIn(e,p)}catch(x){$('lgErr').textContent=authMsg(x)}
+  try{await A.signIn(ch.email.toLowerCase(),p)}catch(x){$('lgErr').textContent=authMsg(x)}
   $('lgGo').disabled=false;
 };
-['lgEmail','lgPass','lgName'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')$('lgGo').click()}));
-$('lgForgot').onclick=async()=>{
-  const e=$('lgEmail').value.trim().toLowerCase();
-  if(!e){$('lgErr').textContent='Type your email above first.';return}
-  try{await A.reset(e);toast('Reset email sent. Check your Spam folder too.');$('lgErr').textContent=''}
-  catch(x){$('lgErr').textContent=x&&x.code==='local-reset'?'Test mode has no password reset. Create a new account instead.':authMsg(x)}
-};
+$('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('lgGo').click()});
 $('outBtn').onclick=()=>{if(confirm('Sign out of '+me.name+'?'))A.signOut()};
 function startSession(u){
   sessionReady=true;$('splash').classList.add('hide');
   if(unsub){unsub();unsub=null}
   me=u;cards=[];selected.clear();scopeAll=false;draft=null;
   if(typeof renderDraft==='function')renderDraft();
-  if(!u){signup=false;lgMode();$('lgPass').value='';location.hash='';show('login');return}
+  if(!u){lgType='';lgMode();$('lgPass').value='';location.hash='';show('login');return}
   setNote();onCards();store.watch();log('login');loadAISettings();
   $('lgPass').value='';
   const cur=location.hash.slice(1);
@@ -1100,24 +1130,28 @@ function prep(c,inv){
 }
 async function ocrRead(c){
   const w=await ensureWorker();
-  let all=[];
-  for(const inv of [false,true]){
-    $('msg').textContent=inv?'Reading the card… second pass':'Reading the card…';
-    const {data}=await w.recognize(prep(c,inv));
-    const ls=(data.lines&&data.lines.length)?data.lines.map(l=>({t:l.text,cf:l.confidence,y:l.bbox.y0,x:l.bbox.x0})):data.text.split('\n').map((t,j)=>({t,cf:80,y:j*10,x:0}));
-    all=all.concat(ls.filter(l=>l.cf>=55));
+  let passes=[],cvOK=true;
+  try{await cvWait()}catch(e){cvOK=false}
+  if(cvOK){
+    try{
+      const cv=window.cv,src=cv.imread(c),dark=darkFraction(cv,src);
+      const mk=m=>{const cvs=document.createElement('canvas');cv.imshow(cvs,m);m.delete();return cvs};
+      passes.push(mk(prepMat(cv,src,false)));            // dark text on light, colour aware
+      if(dark>0.2)passes.push(mk(prepMat(cv,src,true))); // light text on dark panels
+      passes.push(mk(prepLumMat(cv,src)));               // fine print
+      src.delete();
+    }catch(e){console.warn('prep',e);passes=[]}
   }
-  const key=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');
-  const kept=[];
-  all.sort((a,b)=>b.cf-a.cf).forEach(l=>{
-    const k=key(l.t);if(k.length<3)return;
-    if(kept.some(o=>{const ok=key(o.t);return ok===k||(k.length>=6&&(ok.includes(k)||k.includes(ok)))}))return;
-    kept.push(l);
-  });
-  kept.sort((a,b)=>a.y-b.y||a.x-b.x);
-  return kept.map(l=>l.t).join('\n');
+  if(!passes.length)passes=[prep(c,false),prep(c,true)];
+  let all=[];
+  for(let i=0;i<passes.length;i++){
+    $('msg').textContent='Reading the card… step '+(i+1)+' of '+passes.length;
+    const {data}=await w.recognize(passes[i]);
+    const ls=(data.lines&&data.lines.length)?data.lines.map(l=>({t:l.text.trim(),cf:l.confidence,y:l.bbox.y0,x:l.bbox.x0})):data.text.split('\n').map((t,j)=>({t,cf:80,y:j*10,x:0}));
+    all=all.concat(ls);
+  }
+  return mergeLines(all);
 }
-
 function mergeFields(a,b){
   const o={...a};
   ['name','designation','company'].forEach(k=>{if(!o[k])o[k]=b[k]||''});
@@ -1181,6 +1215,7 @@ function finish(){
   renderDraft();
   if(location.hash==='#scan')goBack();else show('home');
   if(draft&&!F.some(k=>draft.f[k]))setTimeout(()=>toast('Could not read the text. Tap Edit details to type it.'),300);
+  else if(draft&&!draft.f.name)setTimeout(()=>{toast('Name not found on the card. Please type it.');$('dEdit').open=true;const n=$('f_name');n.scrollIntoView({block:'center'});n.focus()},450);
 }
 $('askNo').onclick=finish;
 $('askYes').onclick=()=>{
@@ -1194,17 +1229,21 @@ $('askYes').onclick=()=>{
 const tc=s=>s.toLowerCase().replace(/(^|[\s.(\-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
 const GOOD=/[A-Za-z0-9]{3,}|^[A-Za-z]\.?$|^(&|no|po|st|rd|tn|in|of|and|to|ph)[.:,]?$/i;
 function clean(l){
-  l=l.replace(/[|_~•©®™=\\{}\[\]<>]+/g,' ').replace(/\s+/g,' ').trim();
+  l=l.replace(/[|_~•©®™=\\{}\[\]<>¥€£§¶]+/g,' ').replace(/\s+/g,' ').trim();
   let t=l.split(' ').filter(Boolean);
   while(t.length>2&&!GOOD.test(t[0]))t.shift();
   while(t.length>2&&!GOOD.test(t[t.length-1]))t.pop();
+  // stray lowercase junk in front of an all-capitals line, e.g. "joe VETRI ENGINEERS"
+  if(t.length>=2&&/^[a-z]{1,3}$/.test(t[0])&&t.slice(1).every(x=>/^[A-Z0-9&.,()\-]+$/.test(x)))t.shift();
   const good=t.filter(x=>GOOD.test(x)).length;
   if(!t.length||good/t.length<.5)return '';
   return t.join(' ');
 }
 const EMAIL_RE=/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*/g;
 const SITE_RE=/(?:https?:\/\/)?(?:w{3}\.?)?[A-Za-z0-9-]{2,}(?:\.[A-Za-z0-9-]+)*\.(?:com|in|net|org|biz|info|co\.in)\b/gi;
-const PHONE_RE=/(?:\+\s?\d{1,3}[\s-]?)?\d[\d\s.\-]{6,}\d/g;
+const MOB_RE=/(?<!\d)(?:\+\s?[89]1[\s-]?|0)?[6-9]\d{4}[\s-]?\d{5}(?!\d)|(?<!\d)(?:\+\s?[89]1[\s-]?|0)?[6-9]\d{2}[\s-]\d{3}[\s-]\d{4}(?!\d)/g;
+const LAND_RE=/(?<!\d)(?:\+\s?[89]1[\s-]?)?\(?0?\d{2,4}\)?[\s-]\d{3,4}[\s-]?\d{3,4}(?!\d)/g;
+const KEYW=/\b(mob[il1]{1,2}[leo]{1,2}|mob|phone|ph|tel(?:ephone)?|cell|fax|e-?mail|website|web)\b\s*[:.\-=|]*/ig;
 const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent|auditor|accountant|architect|doctor|secretary|treasurer|principal|proprietrix)\b/i;
 const COM=/\b(pvt|ltd|llp|inc|company|industries|enterprises?|publications?|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|engineers|engineering|manufacturing|consultants|exports?|labs|technologies|systems|infotech|works|stores|distributors|printers|press)\b|&/i;
 const ADR=/\b(road|rd|street|st|nagar|floor|building|bldg|plot|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|towers|complex|park|flat|door|pandal|post|po|p\.o|apartments|estate|layout|extn|extension|market|bazaar|puram|palayam|garden|gardens|village|taluk|dist|district|hills|mall|plaza)\b|\bno\s*[.:]|\bd\.?\s?no\b/i;
@@ -1212,23 +1251,30 @@ const STATE=/^(tamil\s?nadu|t\.?\s?n\.?|india|kerala|karnataka|andhra pradesh|te
 const DEG=/\s*(\b(B\.?\s?Sc|B\.?\s?Tech|M\.?\s?Tech|B\.?\s?Com|M\.?\s?Com|M\.?\s?Sc|Ph\.?\s?D|Dr)\b|\b(B\.?E|M\.?E|B\.?A|M\.?A|C\.?A|MBA|LLB|MBBS)\b(?![a-z])).*$/;
 function normPhone(m){
   let d=m.replace(/\D/g,'');
-  if(d.length<8||d.length>13)return null;
-  if(d.length===11&&d[0]==='1'&&/^[6-9]/.test(d.slice(1)))d=d.slice(1);
-  if(d.length===12&&d.startsWith('91'))d=d.slice(2);
-  if(d.length===13&&d.startsWith('091'))d=d.slice(3);
+  if(d.length===12&&/^[89]1/.test(d))d=d.slice(2);
+  if(d.length===11&&d[0]==='0'&&/^[6-9]/.test(d[1]))d=d.slice(1);
   if(d.length===10&&/^[6-9]/.test(d))return d.slice(0,5)+' '+d.slice(5);
-  return m.replace(/[^\d+\s\-]/g,'').replace(/\s+/g,' ').trim();
+  if(d.length<8||d.length>13)return null;
+  return m.replace(/^\s*\+\s?81/,'+91').replace(/[^\d+\s\-]/g,'').replace(/\s+/g,' ').trim();
+}
+function lev(a,b){
+  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
 }
 function parseCard(text){
   const r={};F.forEach(k=>r[k]='');
   const lines=text.split('\n').map(clean).filter(Boolean);
   const emails=[],sites=[],phones=[],addr=[],rest=[];let pinLine='';
   for(let l of lines){
+    l=l.replace(/(@[\w-]+)\s+(com|in|net|org)\b/gi,'$1.$2').replace(/(www\.?[\w-]+)\s+(com|in|net|org)\b/gi,'$1.$2');
     l=l.replace(EMAIL_RE,m=>{let e=m.toLowerCase().replace(/[.,]+$/,'');if(!/@.+\./.test(e))e=e.replace(/(com|in|net|org)$/,'.$1');emails.push(e);return ' '});
     l=l.replace(SITE_RE,m=>{let w=m.toLowerCase().replace(/^https?:\/\//,'');w=w.replace(/^www(?!\.)/,'www.');sites.push(w);return ' '});
     const fax=/\bfax\b/i.test(l);
-    l=l.replace(PHONE_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return p?' ':m});
-    l=l.replace(/\b(mobile|mob|phone|ph|tel|cell|fax|e-?mail|website|web|email)\b\s*[:.\-]?/ig,' ').replace(/\s+/g,' ').trim();
+    l=l.replace(MOB_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return ' '});
+    l=l.replace(LAND_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return p?' ':m});
+    l=l.replace(KEYW,' ').replace(/\s+/g,' ').trim();
     if(l.replace(/[^A-Za-z0-9]/g,'').length<3)continue;
     const pm=l.match(/\b[1-9]\d{2}\s?\d{3}\b/);
     if(pm&&!r.pin){r.pin=pm[0].replace(/\s/g,'');pinLine=l;addr.push(l);continue}
@@ -1238,14 +1284,18 @@ function parseCard(text){
   const mob=p=>/^[6-9]\d{4} \d{5}$/.test(p);
   const ph=[...new Set(phones)];
   r.phone=[...ph.filter(mob),...ph.filter(p=>!mob(p))].slice(0,3).join(', ');
-  r.email=[...new Set(emails)].slice(0,2).join(', ');
-  // website: prefer the domain used in the email
+  // websites are trusted more than e-mail domains when OCR garbles letters
   let ws=[...new Set(sites)];
-  const dom=(emails[0]||'').split('@')[1]||'';
-  if(dom){ws=ws.map(w=>{const b=w.replace(/^www\./,'');return(b!==dom&&b.endsWith(dom))?'www.'+dom:w})}
-  r.website=[...new Set(ws)].slice(0,2).join(', ');
-  const base=(dom||(ws[0]||'').replace(/^www\./,'')).split('.')[0].toLowerCase();
-  // designation, company candidates
+  const sd=ws.map(w=>w.replace(/^www\./,''));
+  const fixed=emails.map(e=>{
+    const [loc,dm]=e.split('@');if(!dm)return e;
+    const hit=sd.find(x=>x===dm)||sd.find(x=>lev(x,dm)<=2&&x.split('.')[0].length>=5);
+    return hit?loc+'@'+hit:e;
+  });
+  r.email=[...new Set(fixed)].slice(0,2).join(', ');
+  r.website=ws.slice(0,2).join(', ');
+  const dom=(fixed[0]||'').split('@')[1]||sd[0]||'';
+  const base=dom.split('.')[0].toLowerCase();
   const coms=[],rem=[];
   for(const l of rest){
     if(!r.designation&&DES.test(l)){r.designation=l;continue}
@@ -1257,10 +1307,14 @@ function parseCard(text){
     r.company=(base&&coms.find(l=>k(l).includes(base)||base.includes(k(l))))||
       [...coms].sort((a,b)=>a.split(' ').length-b.split(' ').length).find(l=>k(l).length>=4)||coms[0];
   }
-  // name: best scoring short line made of letters
+  if(r.company&&base){
+    const tk=r.company.split(/\s+/);
+    for(let i=1;i<tk.length;i++){if(k(tk.slice(i).join(''))===base){r.company=tk.slice(i).join(' ');break}}
+  }
+  // name: best scoring short line made of letters (degrees such as B.Sc are cut off)
   let best=null,bs=-1;
-  rem.concat(coms.filter(l=>l!==r.company&&false)).forEach((l,i)=>{
-    const t=l.replace(DEG,'').trim();
+  rem.forEach((l,i)=>{
+    const t=l.replace(DEG,'').replace(/\([^)]*\)/g,'').replace(/[.,]+$/,'').trim();
     if(!/^[A-Za-z][A-Za-z.' ]{2,34}$/.test(t))return;
     const w=t.split(/\s+/);if(w.length>4)return;
     let sc=10-i;
@@ -1271,12 +1325,68 @@ function parseCard(text){
   });
   if(best)r.name=tc(best);
   if(!r.company&&base)r.company=tc(base);
-  // address + city
-  r.address=addr.join(', ').replace(/\s*,\s*,/g,',').replace(/[,\s-]+$/,'');
-  const pl=pinLine||'';
-  const parts=pl.replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-–]/).map(x=>x.replace(/[^A-Za-z .]/g,'').trim()).filter(x=>x.length>2&&!STATE.test(x));
+  r.address=addr.join(', ').replace(/\.{2,}/g,'.').replace(/\s*,\s*,/g,',').replace(/[,\s-]+$/,'');
+  const parts=(pinLine||'').replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-–]|\.\s/).map(x=>x.replace(/[^A-Za-z .]/g,'').trim()).filter(x=>x.length>2&&!STATE.test(x));
   if(parts.length)r.city=tc(parts[parts.length-1]);
   return r;
+}
+function dice(a,b){
+  const g=s=>{const m=new Map();for(let i=0;i<s.length-1;i++){const x=s.slice(i,i+2);m.set(x,(m.get(x)||0)+1)}return m};
+  const A=g(a),B=g(b);let n=0;A.forEach((v,x)=>{if(B.has(x))n+=Math.min(v,B.get(x))});
+  return 2*n/Math.max(1,(a.length-1)+(b.length-1));
+}
+function mergeLines(all){
+  const key=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const kept=[];
+  all.filter(l=>l.cf>=45).sort((a,b)=>b.cf-a.cf).forEach(l=>{
+    const k=key(l.t);if(k.length<3)return;
+    const i=kept.findIndex(o=>{const ok=o.k;return ok===k||dice(ok,k)>.72||(k.length>=8&&(ok.includes(k)||k.includes(ok)))});
+    if(i<0){kept.push({...l,k});return}
+    const o=kept[i];
+    // same line read twice: keep the fuller reading unless it is clearly less reliable
+    if(k.length>o.k.length+3&&l.cf>=o.cf-18)kept[i]={...l,k};
+  });
+  kept.sort((a,b)=>a.y-b.y||a.x-b.x);
+  return kept.map(l=>l.t).join('\n');
+}
+// image preparation: colour-aware adaptive threshold (reads blue-on-light and white-on-dark text)
+function prepMat(cv,rgba,inv){
+  const k=Math.max(1,Math.min(3,1800/rgba.cols));
+  const big=new cv.Mat();cv.resize(rgba,big,new cv.Size(Math.round(rgba.cols*k),Math.round(rgba.rows*k)),0,0,cv.INTER_CUBIC);
+  const ch=new cv.MatVector();cv.split(big,ch);
+  const c0=ch.get(0),c1=ch.get(1),c2=ch.get(2),mn=new cv.Mat();
+  cv.min(c0,c1,mn);cv.min(mn,c2,mn);
+  if(inv)cv.bitwise_not(mn,mn);
+  const b=new cv.Mat(),t=new cv.Mat(),o=new cv.Mat();
+  cv.GaussianBlur(mn,b,new cv.Size(3,3),0);
+  cv.adaptiveThreshold(b,t,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,41,14);
+  const px=Math.round(t.cols*.04);
+  cv.copyMakeBorder(t,o,px,px,px,px,cv.BORDER_CONSTANT,new cv.Scalar(255));
+  [big,c0,c1,c2,mn,b,t].forEach(m=>m.delete());ch.delete();
+  return o;
+}
+
+function prepLumMat(cv,rgba){
+  const k=Math.max(1,Math.min(2.2,2000/rgba.cols));
+  const big=new cv.Mat();cv.resize(rgba,big,new cv.Size(Math.round(rgba.cols*k),Math.round(rgba.rows*k)),0,0,cv.INTER_CUBIC);
+  const g=new cv.Mat();cv.cvtColor(big,g,cv.COLOR_RGBA2GRAY);
+  const d=g.data,h=new Uint32Array(256),n=d.length;
+  for(let i=0;i<n;i++)h[d[i]]++;
+  let s=0,lo=0,hi=255;for(;lo<255;lo++){s+=h[lo];if(s>n*.02)break}s=0;for(hi=255;hi>0;hi--){s+=h[hi];if(s>n*.02)break}
+  const span=Math.max(40,hi-lo);
+  for(let i=0;i<n;i++){const v=(d[i]-lo)*255/span;d[i]=v<0?0:v>255?255:v}
+  const px=Math.round(g.cols*.04),o=new cv.Mat();
+  cv.copyMakeBorder(g,o,px,px,px,px,cv.BORDER_CONSTANT,new cv.Scalar(255));
+  big.delete();g.delete();
+  return o;
+}
+
+function darkFraction(cv,rgba){
+  const sm=new cv.Mat(),g=new cv.Mat();
+  cv.resize(rgba,sm,new cv.Size(160,Math.max(1,Math.round(160*rgba.rows/rgba.cols))),0,0,cv.INTER_AREA);
+  cv.cvtColor(sm,g,cv.COLOR_RGBA2GRAY);
+  let n=0;for(let i=0;i<g.data.length;i++)if(g.data[i]<95)n++;
+  const f=n/g.data.length;sm.delete();g.delete();return f;
 }
 
 /* ---------------- card frame with optional flip ---------------- */
