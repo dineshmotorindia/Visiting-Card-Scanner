@@ -499,6 +499,36 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
 .lg-wrap>*{position:relative}
 .lg-wrap>.orb{position:absolute}
 .lg-wrap>.lg-theme{position:absolute}
+
+/* ---------- events, duplicates, messaging ---------- */
+.evrow{margin:10px 0 2px}
+.evchips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.evc{all:unset;box-sizing:border-box;cursor:pointer;font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);color:var(--text);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:background .15s,border-color .15s}
+.evc:hover{border-color:var(--accent)}
+.evc.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.evc.skip{color:var(--muted)}
+.evc.skip.on{color:var(--accent)}
+.fld select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--text);font-size:15px;font-family:var(--sans)}
+.fld select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dupw{margin-top:6px;padding:8px 10px;border-radius:8px;background:rgba(255,184,0,.16);border-left:3px solid #ffb800;color:var(--text)}
+.dupw b{color:#d98f00}
+.duprow{padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);margin-bottom:8px;display:grid;gap:2px}
+.duprow span,.duprow small{font-size:13.5px;color:var(--muted)}
+.duprow .why{color:#d98f00;font-weight:600}
+.evp{color:var(--accent);font-weight:600}
+.qa{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.qa a{flex:1 1 90px;text-align:center;text-decoration:none;padding:11px 10px;border-radius:14px;font-weight:700;font-size:14px;color:var(--text);background:var(--surface2);border:1px solid var(--line)}
+.qa a.wa{background:#25d366;border-color:#25d366;color:#06361b}
+.qa a:active{transform:scale(.97)}
+#selBar{flex-wrap:wrap;row-gap:8px}
+.mlist{display:grid;gap:8px;margin:12px 0;max-height:38vh;overflow:auto}
+.mrow{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}
+.mrow b{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow a,.mrow em{font-size:13px;font-weight:700;text-decoration:none;padding:7px 11px;border-radius:10px;border:1px solid var(--line);color:var(--text);font-style:normal}
+.mrow a.wa{background:#25d366;border-color:#25d366;color:#06361b}
+.mrow em{color:var(--muted);opacity:.7}
+.mrow.done{opacity:.55}
+.mrow.done b::after{content:" \2713";color:var(--go)}
 </style>
 </head>
 <body>
@@ -584,6 +614,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
       <div id="dFrameWrap"></div>
       <div class="sum" id="dSum"></div>
       <div class="flags" id="dFlags"></div>
+      <div class="evrow"><label class="fld"><span>Event (optional)</span><input id="dEvent" list="evList" autocomplete="off" placeholder="e.g. Chennai Auto Expo 2026"></label><div class="evchips" id="evChips"></div><datalist id="evList"></datalist></div>
       <details class="edit" id="dEdit"><summary>Edit details</summary><div class="form" id="draftForm"></div></details>
       <div class="btns">
         <button class="btn" id="saveBtn">Save card</button>
@@ -654,6 +685,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
         <label class="fld"><span>Search by name</span><input id="q_name" type="search" placeholder="Name or company"></label>
         <label class="fld"><span>City</span><input id="q_city" type="search" placeholder="e.g. Chennai"></label>
         <label class="fld"><span>Designation</span><input id="q_des" type="search" placeholder="e.g. Editor"></label>
+        <label class="fld"><span>Event</span><select id="q_event"><option value="">All events</option></select></label>
         <button class="clear" id="qClear">Clear filters</button>
       </aside>
       <div>
@@ -663,7 +695,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
       </div>
     </div>
   </main>
-  <div id="selBar"><b id="selTxt"></b><button class="link" id="selClear">Clear</button><button class="btn alt" id="expBtn">Export</button><button class="btn" id="mkLabels">Make labels</button></div>
+  <div id="selBar"><b id="selTxt"></b><button class="link" id="selClear">Clear</button><button class="btn alt" id="expBtn">Export</button><button class="btn alt" id="msgBtn">Message</button><button class="btn" id="mkLabels">Make labels</button></div>
 </section>
 
 <!-- ============ LABELS ============ -->
@@ -1479,6 +1511,93 @@ function doFlip(fr,a,b,ar1,ar2){
   setTimeout(()=>{img.src=toB?b:a;img.style.transform='rotateY(0deg)';fr.dataset.side=toB?'b':'a';const sd=fr.querySelector('.side');if(sd)sd.textContent=toB?'Back':'Front'},160);
 }
 
+/* ---------------- duplicates, events, messaging helpers ---------------- */
+const phoneKey=p=>{const d=String(p||'').replace(/\D/g,'');return d.length>=10?d.slice(-10):d};
+const phonesOf=c=>String(c.phone||'').split(',').map(phoneKey).filter(x=>x.length>=8);
+const emailsOf=c=>String(c.email||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
+const nk=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+function findDups(c,skipId){
+  const ph=phonesOf(c),em=emailsOf(c),nm=nk(c.name),co=nk(c.company),out=[];
+  cards.forEach(x=>{
+    if(x.id===skipId)return;
+    const why=[];
+    if(ph.length&&phonesOf(x).some(p=>ph.includes(p)))why.push('same phone');
+    if(em.length&&emailsOf(x).some(e=>em.includes(e)))why.push('same email');
+    if(nm&&co&&nm===nk(x.name)&&co===nk(x.company))why.push('same name and company');
+    if(why.length)out.push({card:x,why});
+  });
+  return out;
+}
+function dupDialog(dups){
+  return new Promise(res=>{
+    const row=d=>{const x=d.card;return `<div class="duprow"><b>${esc(x.name||x.company||'Unnamed')}</b><span>${esc([x.designation,x.company].filter(Boolean).join(', '))}</span><small>${esc([x.phone,x.email].filter(Boolean).join('  |  '))}</small><small class="why">Matches: ${esc(d.why.join(', '))}${x.event?'  |  Event: '+esc(x.event):''}</small></div>`};
+    $('sheetIn').innerHTML=`<h3 class="sec">Possible duplicate</h3><p style="color:var(--muted);margin:6px 0 12px;font-size:14px">A card like this is already saved.</p>${dups.slice(0,3).map(row).join('')}<div class="btns"><button class="btn" id="dpSave">Save anyway</button><button class="btn alt" id="dpView">View saved card</button><button class="btn alt" id="dpNo">Cancel</button></div>`;
+    $('sheet').classList.remove('hide');
+    $('dpSave').onclick=()=>{$('sheet').classList.add('hide');res('save')};
+    $('dpNo').onclick=()=>{$('sheet').classList.add('hide');res('cancel')};
+    $('dpView').onclick=()=>{res('view');openSheet(dups[0].card.id)};
+  });
+}
+function eventList(){
+  const m=new Map();
+  [...cards].sort((a,b)=>tsOf(b)-tsOf(a)).forEach(c=>{const e=(c.event||'').trim();if(e&&!m.has(e.toLowerCase()))m.set(e.toLowerCase(),e)});
+  return [...m.values()];
+}
+function canonEvent(v){
+  v=String(v||'').trim().replace(/\s+/g,' ');if(!v)return '';
+  return eventList().find(e=>e.toLowerCase()===v.toLowerCase())||v;
+}
+function drawEvChips(){
+  const cur=((draft&&draft.event)||'').trim().toLowerCase(),ev=eventList();
+  $('evChips').innerHTML=ev.slice(0,5).map(e=>`<button type="button" class="evc ${cur===e.toLowerCase()?'on':''}" data-ev="${esc(e)}">${esc(e)}</button>`).join('')+`<button type="button" class="evc skip ${cur?'':'on'}" data-ev="">Skip, no event</button>`;
+  $('evList').innerHTML=ev.map(e=>`<option value="${esc(e)}">`).join('');
+}
+function waNum(c){
+  const ps=String(c.phone||'').split(',').map(x=>x.replace(/\D/g,'')).filter(x=>x.length>=10);
+  const pick=ps.find(d=>/^[6-9]/.test(d.slice(-10)))||ps[0];
+  if(!pick)return '';
+  return pick.length===10?'91'+pick:(pick.length===11&&pick[0]==='0'?'91'+pick.slice(1):pick);
+}
+const firstName=c=>String(c.name||'').trim().split(/\s+/)[0]||'there';
+const fillMsg=(t,c)=>String(t||'').replace(/\{name\}/gi,firstName(c));
+function quickActions(c){
+  const wa=waNum(c),tel=String(c.phone||'').split(',')[0].replace(/[^\d+]/g,''),em=emailsOf(c)[0];
+  if(!wa&&!tel&&!em)return '';
+  return '<div class="qa">'+(wa?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${wa}">WhatsApp</a>`:'')+(tel?`<a href="tel:${esc(tel)}">Call</a>`:'')+(em?`<a href="mailto:${esc(em)}">Email</a>`:'')+'</div>';
+}
+function openMsg(){
+  const list=cards.filter(c=>selected.has(c.id));if(!list.length)return;
+  const key='gopali_msg_'+(me?me.uid:'');let tpl='';try{tpl=localStorage.getItem(key)||''}catch(e){}
+  $('sheetIn').innerHTML=`<h3 class="sec">Message ${list.length} contact${list.length===1?'':'s'}</h3>
+    <label class="fld"><span>Message (use {name} for each person's name)</span><textarea id="mTxt" rows="4"></textarea></label>
+    <label class="fld" style="margin-top:10px"><span>Email subject</span><input id="mSub" autocomplete="off"></label>
+    <div class="mlist" id="mList"></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Each button opens WhatsApp or your mail app with the message ready. You tap send.</p>
+    <div class="btns"><button class="btn" id="mMail">Email everyone (BCC)</button><button class="btn alt" id="mClose">Close</button></div>`;
+  $('mTxt').value=tpl||'Hello {name}, ';
+  $('mSub').value='Greetings from '+((me&&channelOf(me.email))?channelOf(me.email).label:'Gopali & Co');
+  const draw=()=>{
+    const t=$('mTxt').value,sub=$('mSub').value;
+    try{localStorage.setItem(key,t)}catch(e){}
+    $('mList').innerHTML=list.map(c=>{
+      const wa=waNum(c),em=emailsOf(c)[0],txt=encodeURIComponent(fillMsg(t,c));
+      return `<div class="mrow"><b>${esc(c.name||c.company||'Unnamed')}</b>${wa?`<a class="wa" data-sent target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${txt}">WhatsApp</a>`:'<em>No mobile</em>'}${em?`<a data-sent href="mailto:${esc(em)}?subject=${encodeURIComponent(sub)}&body=${txt}">Email</a>`:'<em>No email</em>'}</div>`;
+    }).join('');
+  };
+  draw();$('mTxt').oninput=draw;$('mSub').oninput=draw;
+  $('mList').onclick=e=>{const a=e.target.closest('a[data-sent]');if(a)a.closest('.mrow').classList.add('done')};
+  $('mMail').onclick=()=>{
+    const to=[...new Set(list.map(c=>emailsOf(c)[0]).filter(Boolean))];
+    if(!to.length){toast('None of these contacts has an email');return}
+    const body=fillMsg($('mTxt').value,{name:''}).replace(/^Hello ,/,'Hello,');
+    const url='mailto:?bcc='+encodeURIComponent(to.join(','))+'&subject='+encodeURIComponent($('mSub').value)+'&body='+encodeURIComponent(body);
+    if(url.length>1900)toast('Many contacts. If your mail app does not open, send in smaller batches.');
+    location.href=url;
+  };
+  $('mClose').onclick=()=>$('sheet').classList.add('hide');
+  $('sheet').classList.remove('hide');
+}
+
 /* ---------------- latest scan panel (landing page) ---------------- */
 $('draftForm').innerHTML=formHTML('f_');
 function renderDraft(){
@@ -1487,6 +1606,7 @@ function renderDraft(){
   box.classList.remove('hide');
   $('dFrameWrap').innerHTML=frameHTML(draft.img,draft.img2,draft.ar);
   F.forEach(k=>$('f_'+k).value=draft.f[k]);
+  $('dEvent').value=draft.event||'';drawEvChips();
   drawSummary();
   $('dEdit').open=Object.keys(validate(draft.f)).length>0;
 }
@@ -1510,7 +1630,9 @@ function showFlags(){
   if(!draft)return;
   const w=validate(draft.f),ks=Object.keys(w),box=$('dFlags');
   F.forEach(k=>$('f_'+k).classList.toggle('warn',!!w[k]));
-  if(ks.length){box.className='flags show';box.innerHTML='<b>Please check before saving</b>'+ks.map(k=>'<span>'+esc(FLAGLBL[k]||k)+': '+esc(w[k])+'</span>').join('')}
+  const dups=findDups(draft.f),dupHTML=dups.length?'<div class="dupw"><b>Possible duplicate</b>'+dups.slice(0,2).map(d=>'<span>'+esc(d.card.name||d.card.company||'Unnamed')+' ('+esc(d.why.join(', '))+')</span>').join('')+'</div>':'';
+  if(ks.length){box.className='flags show';box.innerHTML='<b>Please check before saving</b>'+ks.map(k=>'<span>'+esc(FLAGLBL[k]||k)+': '+esc(w[k])+'</span>').join('')+dupHTML}
+  else if(dups.length){box.className='flags show';box.innerHTML=dupHTML}
   else{box.className='flags ok';box.textContent='All fields look valid. Please still compare them with the card.'}
   return ks.length;
 }
@@ -1522,6 +1644,8 @@ function drawSummary(){
     <small>${esc([f.phone,f.email,f.city].filter(Boolean).join('  |  '))||'Tap Edit details to add contact information'}</small>`;
 }
 F.forEach(k=>$('f_'+k).addEventListener('input',e=>{if(draft){draft.f[k]=e.target.value;drawSummary()}}));
+$('dEvent').addEventListener('input',e=>{if(draft){draft.event=e.target.value;drawEvChips()}});
+$('evChips').addEventListener('click',e=>{const b=e.target.closest('[data-ev]');if(!b||!draft)return;draft.event=b.dataset.ev;$('dEvent').value=draft.event;drawEvChips()});
 $('dFrameWrap').addEventListener('click',e=>{const f=e.target.closest('[data-flip]');if(f&&draft)doFlip(f.closest('.cardframe'),draft.img,draft.img2,draft.ar,draft.ar2)});
 $('dDiscard').onclick=()=>{if(confirm('Discard this scan?')){draft=null;renderDraft()}};
 $('saveBtn').onclick=async()=>{
@@ -1530,8 +1654,9 @@ $('saveBtn').onclick=async()=>{
   const probs=Object.keys(validate(c));
   if(!c.name){$('dEdit').open=true;toast('Enter the name. Labels start with the name.');$('f_name').focus();return}
   if(probs.length&&!confirm('Some details look doubtful ('+probs.map(k=>FLAGLBL[k]||k).join(', ')+'). Save anyway?'))return;
-  const dup=cards.find(x=>(c.email&&x.email===c.email)||(c.phone&&x.phone===c.phone));
-  if(dup&&!confirm('A card with the same email or phone is already saved ('+(dup.name||dup.company)+'). Save anyway?'))return;
+  const dups=findDups(c);
+  if(dups.length){const a=await dupDialog(dups);if(a!=='save')return}
+  const ev=canonEvent(draft.event);if(ev)c.event=ev;
   c.image=draft.img;c.ar=draft.ar;if(draft.img2){c.image2=draft.img2;c.ar2=draft.ar2}
   $('saveBtn').disabled=true;$('saveBtn').textContent='Saving…';
   try{
@@ -1543,16 +1668,25 @@ $('saveBtn').onclick=async()=>{
 
 /* ---------------- all cards + filters + selection ---------------- */
 ['q_name','q_city','q_des'].forEach(i=>$(i).addEventListener('input',renderCards));
-$('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');renderCards()};
+$('q_event').addEventListener('change',renderCards);
+$('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');$('q_event').value='';renderCards()};
+function fillEventFilter(){
+  const sel=$('q_event'),cur=sel.value,ev=eventList(),none=cards.filter(c=>!c.event).length;
+  sel.innerHTML='<option value="">All events</option>'+ev.map(e=>`<option value="${esc(e)}">${esc(e)} (${cards.filter(c=>(c.event||'').toLowerCase()===e.toLowerCase()).length})</option>`).join('')+(ev.length&&none?`<option value="__none">No event (${none})</option>`:'');
+  sel.value=[...sel.options].some(o=>o.value===cur)?cur:'';
+  $('evList').innerHTML=ev.map(e=>`<option value="${esc(e)}">`).join('');
+}
 function filtered(){
-  const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim();
+  const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim(),qe=$('q_event').value;
   return cards.filter(c=>
     (!qn||((c.name||'')+' '+(c.company||'')).toLowerCase().includes(qn))&&
     (!qc||(c.city||'').toLowerCase().includes(qc))&&
-    (!qd||(c.designation||'').toLowerCase().includes(qd)));
+    (!qd||(c.designation||'').toLowerCase().includes(qd))&&
+    (!qe||(qe==='__none'?!c.event:(c.event||'').toLowerCase()===qe.toLowerCase())));
 }
 const CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#04251a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
 function renderCards(){
+  fillEventFilter();
   const L=filtered();
   $('cardCount').textContent=L.length===cards.length?`${cards.length} card${cards.length===1?'':'s'}`:`${L.length} of ${cards.length} cards`;
   $('grid').innerHTML=L.map(c=>`
@@ -1561,6 +1695,7 @@ function renderCards(){
       <div class="meta">
         <h4>${esc(c.name||c.company||'Unnamed')}</h4>
         <p class="l2">${esc([c.designation,c.name?c.company:''].filter(Boolean).join(', '))}</p>
+        ${c.event?`<p class="l3 evp">${esc(c.event)}</p>`:''}
         ${scopeAll&&c.ownerName?`<p class="l3">Added by ${esc(c.ownerName)}</p>`:''}
         ${c.city?`<p class="l3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>${esc(c.city)}</p>`:''}
       </div>
@@ -1571,6 +1706,7 @@ function updateSelBar(){
   const n=selected.size;
   $('selBar').style.display=(n||cardsMode!=='browse')&&!$('v-cards').classList.contains('hide')?'flex':'none';
   $('mkLabels').disabled=cardsMode!=='browse'&&!n;
+  $('msgBtn').style.display=cardsMode==='browse'?'':'none';$('msgBtn').disabled=!n;
   $('selTxt').textContent=n+' selected';
 }
 $('grid').addEventListener('click',e=>{
@@ -1591,6 +1727,7 @@ $('selAll').onclick=()=>{
 };
 $('selClear').onclick=()=>{selected.clear();$('selAll').textContent='Select all shown';renderCards()};
 $('mkLabels').onclick=()=>{if(cardsMode==='browse')nav('labels');else doExport(cardsMode)};
+$('msgBtn').onclick=openMsg;
 
 /* ---------------- detail sheet (view + edit) ---------------- */
 function openSheet(id){
@@ -1603,8 +1740,9 @@ function openSheet(id){
       ${row('Name',c.name)}${row('Designation',c.designation)}${row('Company',c.company)}
       ${row('Phone',c.phone,c.phone?c.phone.split(',').map(p=>`<a href="tel:${esc(p.replace(/[^\d+]/g,''))}">${esc(p.trim())}</a>`).join(', '):'')}
       ${row('Email',c.email,c.email?c.email.split(',').map(m=>`<a href="mailto:${esc(m.trim())}">${esc(m.trim())}</a>`).join(', '):'')}
-      ${row('Address',c.address)}${row('City',c.city)}${row('PIN code',c.pin)}${row('Website',c.website)}
+      ${row('Address',c.address)}${row('City',c.city)}${row('PIN code',c.pin)}${row('Website',c.website)}${row('Event',c.event)}
     </dl>
+    ${quickActions(c)}
     <div class="btns">
       <button class="btn" id="shEdit">Edit details</button>
       <button class="btn alt" id="shCrop">Fix card crop</button>
@@ -1644,13 +1782,13 @@ function editSheet(id){
   $('sheetIn').innerHTML=`
     ${frameHTML(c.image,c.image2,c.ar)}
     <h3 class="sec" style="margin:16px 0 0">Edit details</h3>
-    <div class="form" id="eForm">${formHTML('e_')}</div>
+    <div class="form" id="eForm">${formHTML('e_')}<label class="fld w"><span>Event (optional)</span><input id="e_event" list="evList" autocomplete="off"></label></div>
     <div class="btns"><button class="btn" id="eSave">Save changes</button><button class="btn alt" id="eCancel">Cancel</button></div>`;
-  F.forEach(k=>$('e_'+k).value=c[k]||'');
+  F.forEach(k=>$('e_'+k).value=c[k]||'');$('e_event').value=c.event||'';
   {const fl=$('sheetIn').querySelector('[data-flip]');if(fl)fl.onclick=()=>doFlip(fl.closest('.cardframe'),c.image,c.image2,c.ar,c.ar2)}
   $('eCancel').onclick=()=>openSheet(id);
   $('eSave').onclick=async()=>{
-    const v={};F.forEach(k=>v[k]=$('e_'+k).value.trim());
+    const v={};F.forEach(k=>v[k]=$('e_'+k).value.trim());v.event=canonEvent($('e_event').value);
     if(!v.name&&!v.company){toast('Enter at least a name or a company');return}
     $('eSave').disabled=true;
     try{await store.update(id,v);Object.assign(c,v);if(store.refresh)store.refresh();log('edit',v.name||v.company);toast('Changes saved');openSheet(id)}
@@ -1943,9 +2081,9 @@ if(!RM){
 
 /* ---------------- export: Excel, PDF, Word ---------------- */
 const XNAME={xlsx:'Excel',pdf:'PDF',docx:'Word'};
-const EXP_COLS=['Name','Designation','Company','Phone','Email','Address','City','PIN','Website','Added by','Date added'];
+const EXP_COLS=['Name','Designation','Company','Phone','Email','Address','City','PIN','Website','Event','Added by','Date added'];
 function expRows(list){
-  return list.map(c=>({Name:c.name||'',Designation:c.designation||'',Company:c.company||'',Phone:c.phone||'',Email:c.email||'',Address:c.address||'',City:c.city||'',PIN:c.pin||'',Website:c.website||'','Added by':c.ownerName||'','Date added':new Date(tsOf(c)).toLocaleDateString('en-IN')}));
+  return list.map(c=>({Name:c.name||'',Designation:c.designation||'',Company:c.company||'',Phone:c.phone||'',Email:c.email||'',Address:c.address||'',City:c.city||'',PIN:c.pin||'',Website:c.website||'',Event:c.event||'','Added by':c.ownerName||'','Date added':new Date(tsOf(c)).toLocaleDateString('en-IN')}));
 }
 function saveBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2500)}
 function exportXlsx(rows,fname){
