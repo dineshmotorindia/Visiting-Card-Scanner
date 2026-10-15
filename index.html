@@ -913,7 +913,7 @@ function lgChoose(t){
 $('optMotor').onclick=()=>lgChoose('motor');
 $('optTextile').onclick=()=>lgChoose('textile');
 $('lgBack').onclick=()=>lgChoose('');
-$('lgNote').textContent=ONLINE?'Sign in on any phone with the same password to see your team\'s cards.':'Test mode: logins and cards stay on this phone only. Connect the online server to use the company logins.';
+$('lgNote').textContent=(ONLINE?'Sign in on any phone with the same password to see your team\'s cards.':'Test mode: logins and cards stay on this phone only. Connect the online server to use the company logins.').replace(/$/,' Version '+BUILD+'.');
 function authMsg(e){
   const c=(e&&e.code)||'';
   if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Wrong email or password.';
@@ -2232,7 +2232,18 @@ $('expBtn').onclick=()=>{
 
 /* ---------------- start ---------------- */
 if(location.hash)location.hash='';
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+/* one-time clean-up so an old cached copy of the app can never keep showing */
+(async()=>{
+  try{
+    if(localStorage.getItem('gopali_build')!==BUILD){
+      localStorage.setItem('gopali_build',BUILD);
+      if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.unregister()))}
+      if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}
+      location.reload();return;
+    }
+  }catch(e){}
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
 A.init();
 </script>
 
