@@ -601,7 +601,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
     <p class="greet" id="greet"></p>
     <h1 class="brand gold">Gopali &amp; Co</h1>
     <p class="sub" id="heroSub">Visiting card register</p>
-    <span class="chip" id="chanChip"><i></i><span id="chanTxt"></span></span>
+    <span class="chip" id="chanChip"><i></i><span id="chanTxt"></span></span> <span class="chip" id="aiChip" role="button" tabindex="0"></span>
   </div>
   <div class="stats">
     <div class="st rise" style="--d:1"><b id="stCards">0</b><span>Cards</span></div>
@@ -610,7 +610,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
   </div>
   <main class="hm">
     <div class="draft hide" id="draftBox">
-      <div class="dhead"><h3>Latest scan</h3><span class="pill">Not saved yet</span></div>
+      <div class="dhead"><h3>Latest scan</h3><span class="pill" id="dSrc" style="margin-left:auto;margin-right:6px"></span><span class="pill">Not saved yet</span></div>
       <div id="dFrameWrap"></div>
       <div class="sum" id="dSum"></div>
       <div class="flags" id="dFlags"></div>
@@ -764,7 +764,7 @@ const CHANNELS = {
 };
 const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
 const AI_MODEL = "gemini-flash-latest"; // Google's alias for the current Flash model
-const AI={key:AI_KEY,model:AI_MODEL};
+const AI={key:AI_KEY,model:AI_MODEL,err:''};
 /* ===================================================================== */
 
 const $=id=>document.getElementById(id);
@@ -853,16 +853,15 @@ onCards=()=>{
   if(!$('v-cards').classList.contains('hide'))renderCards();
   if(me)renderHome();
 };
+const BUILD='r7 (15 Oct)';
+function aiStatus(){
+  if(!ONLINE)return 'Phone reader only (test mode)';
+  if(AI.key)return AI.err?'AI key found, last scan failed: '+AI.err:'AI reader is on';
+  return 'Phone reader only'+(AI.err?' ('+AI.err+')':'');
+}
 function setNote(){
-  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI.key?' Card reader: on this phone, AI only for unclear cards.':' Card reader: on this phone.');
-  $('whoTxt').textContent=me.name+(me.role==='admin'?' (admin)':'');
-  $('avatar').textContent=(me.name||'?').trim().charAt(0).toUpperCase();
-  const hr=new Date().getHours();
-  $('greet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+(me.name||'').trim().split(' ')[0];
-  $('actBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
-  $('scopeBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
-  $('aiBtn').classList.toggle('hide',!(ONLINE&&me.role==='admin'));
-  scopeText();
+  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+' '+aiStatus()+'. Version '+BUILD+'.';
+  const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: check key':'AI reader on'):'Phone reader only';c.title=aiStatus()}
 }
 function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
@@ -1337,20 +1336,19 @@ async function processCard(card){
   $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
   $('hintTop').textContent=scanSide==='back'?'Scanning back':'Scanning card';
   $('msg').textContent='Reading the card…';
-  // the card is read on this phone first. Only a doubtful result is sent to the AI reader (if a key is set).
-  let p=null;
-  try{p=parseCard(await ocrRead(card))}catch(e){console.warn(e);p={}}
+  let p=null,src='phone';
   if(AI.key){
-    const q=sanitizeFields(p);
-    if(!q.name||Object.keys(validate(q)).length){
-      $('msg').textContent='Double-checking with AI…';
-      try{p=await aiRead(card)}catch(e){console.warn(e);toast('AI check failed ('+String(e.message).slice(0,60)+'). Using the phone reader.')}
-    }
+    $('msg').textContent='Reading the card with AI…';
+    try{p=await aiRead(card);src='ai'}
+    catch(e){console.warn(e);AI.err=String(e.message||e).slice(0,140);setNote();toast('AI reader failed: '+AI.err+'. Using the phone reader.');$('msg').textContent='Reading the card…'}
+  }
+  if(!p){
+    try{p=parseCard(await ocrRead(card))}catch(e){console.warn(e);p={}}
   }
   F.forEach(k=>{if(p[k]==null)p[k]=''});
   p=sanitizeFields(p);
-  if(scanSide==='front'){draft={img:thumb,ar,f:{}};F.forEach(k=>draft.f[k]=p[k]||'')}
-  else{draft.f=sanitizeFields(mergeFields(draft.f,p));draft.img2=thumb;draft.ar2=ar}
+  if(scanSide==='front'){draft={img:thumb,ar,f:{},src};F.forEach(k=>draft.f[k]=p[k]||'')}
+  else{draft.src=(draft.src==='ai'&&src==='ai')?'ai':(draft.src==='ai'||src==='ai'?'mixed':'phone');draft.f=sanitizeFields(mergeFields(draft.f,p));draft.img2=thumb;draft.ar2=ar}
   $('msg').textContent='';
   $('tick').style.display='grid';
   await new Promise(r=>setTimeout(r,800));
@@ -1660,6 +1658,7 @@ function renderDraft(){
   $('dFrameWrap').innerHTML=frameHTML(draft.img,draft.img2,draft.ar);
   F.forEach(k=>$('f_'+k).value=draft.f[k]);
   $('dEvent').value=draft.event||'';drawEvChips();
+  $('dSrc').textContent=draft.src==='ai'?'Read by AI':draft.src==='mixed'?'AI and phone':'Read on phone';
   drawSummary();
   $('dEdit').open=Object.keys(validate(draft.f)).length>0;
 }
@@ -1960,10 +1959,14 @@ $('pdfBtn').onclick=()=>{
 
 /* ---------------- AI reader settings (admin) ---------------- */
 function loadAISettings(){
-  if(!ONLINE||!db)return;
+  if(!ONLINE||!db){setNote();return}
+  AI.err='';
   db.collection('settings').doc('ai').get().then(d=>{
-    if(d.exists){AI.key=d.data().key||AI_KEY;AI.model=d.data().model||AI_MODEL;setNote()}
-  }).catch(()=>{});
+    if(!d.exists){AI.err='no settings/ai document found';setNote();return}
+    AI.key=d.data().key||AI_KEY;AI.model=d.data().model||AI_MODEL;
+    if(!AI.key)AI.err='key field is empty';
+    setNote();
+  }).catch(e=>{AI.err='cannot read key: '+(e.code||e.message);setNote()});
 }
 $('aiBtn').onclick=()=>{
   $('sheetIn').innerHTML=`<h3 class="sec">AI card reader</h3>
@@ -2073,6 +2076,7 @@ function cfLoop(){
 }
 
 /* ---------------- channel entry + landing interactions ---------------- */
+$('aiChip').onclick=()=>toast(aiStatus()+'. Version '+BUILD);
 function setHeroChannel(ch){
   $('chanTxt').textContent=ch.label;
   $('heroSub').textContent=ch.tag;
