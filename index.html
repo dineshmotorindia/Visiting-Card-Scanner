@@ -854,7 +854,7 @@ onCards=()=>{
   if(me)renderHome();
 };
 function setNote(){
-  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI.key?' Card reader: AI.':' Card reader: offline.');
+  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+(AI.key?' Card reader: on this phone, AI only for unclear cards.':' Card reader: on this phone.');
   $('whoTxt').textContent=me.name+(me.role==='admin'?' (admin)':'');
   $('avatar').textContent=(me.name||'?').trim().charAt(0).toUpperCase();
   const hr=new Date().getHours();
@@ -982,7 +982,7 @@ async function openScanner(){
   $('hintTop').textContent='Place the card flat and fit it inside the green corners'+(isDesk?'. Press Space to capture.':'');
   $('errCam').textContent=isDesk?'Choose a photo from this computer':'Use the phone camera app';
   nav('scan');show('scan');
-  if(!AI.key)ensureWorker().catch(()=>{});
+  ensureWorker().catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
     await startStream();
@@ -1211,7 +1211,7 @@ $('adjCancel').onclick=()=>{
 /* ---- reading: AI (optional) or offline OCR ---- */
 async function aiRead(c){
   const b64=c.toDataURL('image/jpeg',.88).split(',')[1];
-  const prompt='This is a photo of a business visiting card, usually from India. Read it and reply with JSON only, using exactly these keys: name, designation, company, phone, email, address, city, pin, website. Rules: name is the person\'s name only, without degrees or qualifications. designation is the job title, empty if none. company is the organisation name. phone lists mobile numbers first, then landlines, separated by commas, as printed. address is the full postal address on one line, without phone, email or website. pin is the 6 digit PIN code. Use an empty string for anything not on the card. Never invent text.';
+  const prompt='You are reading a photo of an Indian business visiting card. Reply with JSON only, using exactly these keys: name, designation, company, phone, email, address, city, pin, website. Rules: (1) name is the individual person\'s name only, exactly as printed, without titles or degrees. Never use the company name, logo text, tagline, department or an area or street name as the name. If no person name is printed, use an empty string. (2) designation is that person\'s job title, empty if none. (3) company is the organisation or brand name, not the person and not the tagline. (4) phone lists every mobile number first, then landlines, comma separated, as printed; leave out fax. (5) email lists every email address, comma separated. (6) website lists every web address such as www.example.com, comma separated. Websites go only in website, never in address or city. (7) address is the postal address on one line, without the company name, phone, email or website. (8) city is only the city or town name taken from the address, for example Pune or Chennai, with no state, PIN, website or other words. (9) pin is the 6 digit PIN code from the address. Use an empty string for anything that is not printed on the card. Never guess or invent details. Copy the spelling exactly as printed.';
   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+AI.model+':generateContent',{
     method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI.key},
     body:JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})
@@ -1261,6 +1261,42 @@ async function ocrRead(c){
   }
   return mergeLines(all);
 }
+/* ---------------- final clean-up for every reader result (AI or offline) ---------------- */
+const STATES_RE=/\b(tamil\s?nadu|kerala|karnataka|andhra pradesh|telangana|maharashtra|gujarat|rajasthan|west bengal|delhi|new delhi|uttar pradesh|madhya pradesh|punjab|haryana|odisha|bihar|goa|india)\b/ig;
+function cleanSite(w){return String(w||'').toLowerCase().replace(/^https?:\/\//,'').replace(/^www(?!\.)/,'www.').replace(/[\s,;]+/g,'').replace(/[.\-\/]+$/,'')}
+function cityFrom(address){
+  const parts=String(address||'').replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').replace(STATES_RE,' ').split(/[,\-–]|\.\s/)
+    .map(x=>x.replace(/[^A-Za-z .]/g,'').replace(/\b(district|dist|taluk|taluka|post)\b\.?/ig,'').replace(/\s+/g,' ').trim())
+    .filter(x=>x.length>2&&!/www|@/i.test(x)&&!ADR.test(x));
+  return parts.length?tc(parts[parts.length-1]):'';
+}
+function sanitizeFields(f){
+  const o={};F.forEach(k=>o[k]=String(f[k]==null?'':f[k]).replace(/\s+/g,' ').trim());
+  const sites=o.website?o.website.split(/\s*[,;]\s*/):[],mails=o.email?o.email.split(/\s*[,;]\s*/):[];
+  const WWW=/\b(?:https?:\/\/)?www\.?[A-Za-z0-9-]*(?:\.[A-Za-z0-9-]+)*\.?/ig;
+  // websites and e-mails never stay inside the other fields
+  ['address','city','designation','name','company'].forEach(k=>{
+    let v=o[k];if(!v)return;
+    v=v.replace(EMAIL_RE,m=>{mails.push(m);return ' '});
+    v=v.replace(WWW,m=>{if(m.replace(/\W/g,'').length>3)sites.push(m);return ' '});
+    if(k!=='company')v=v.replace(SITE_RE,m=>{sites.push(m);return ' '});
+    if(k==='address')v=v.replace(KEYW,' ');
+    o[k]=v.replace(/\s+/g,' ').replace(/\s+,/g,',').replace(/^[,;:.\-\s]+|[,;\s]+$/g,'').trim();
+  });
+  o.email=[...new Set(mails.map(e=>e.trim().toLowerCase().replace(/[.,]+$/,'')).filter(Boolean))].slice(0,3).join(', ');
+  o.website=[...new Set(sites.map(cleanSite).filter(x=>x.replace(/^www\./,'').length>=4))].slice(0,3).join(', ');
+  const kk=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(o.name&&(/\d/.test(o.name)||(o.company&&kk(o.name)===kk(o.company))))o.name='';
+  o.city=o.city.replace(/\b(district|dist)\b\.?/ig,'').replace(/\s+/g,' ').trim();
+  if(o.city&&(/\d|www|@/i.test(o.city)||STATE.test(o.city)||o.city.length>30))o.city='';
+  if(!o.city&&o.address)o.city=cityFrom(o.address);
+  if(!/^\d{6}$/.test(o.pin)){
+    const m=(o.address||'').match(/\b[1-9]\d{2}\s?\d{3}\b/);
+    o.pin=m?m[0].replace(/\s/g,''):o.pin.replace(/\D/g,'').slice(0,6);
+  }
+  return o;
+}
+
 function mergeFields(a,b){
   const o={...a};
   ['name','designation','company'].forEach(k=>{if(!o[k])o[k]=b[k]||''});
@@ -1300,17 +1336,21 @@ async function processCard(card){
   const thumb=t.toDataURL('image/jpeg',ONLINE?.8:.7),ar=card.width/card.height;
   $('snap').src=thumb;$('snap').classList.remove('hide');$('frame').classList.add('busy');
   $('hintTop').textContent=scanSide==='back'?'Scanning back':'Scanning card';
-  $('msg').textContent=AI.key?'Reading the card with AI…':'Reading the card…';
+  $('msg').textContent='Reading the card…';
+  // the card is read on this phone first. Only a doubtful result is sent to the AI reader (if a key is set).
   let p=null;
+  try{p=parseCard(await ocrRead(card))}catch(e){console.warn(e);p={}}
   if(AI.key){
-    try{p=await aiRead(card)}catch(e){console.warn(e);toast('AI reader failed ('+String(e.message).slice(0,60)+'). Using offline reader.');$('msg').textContent='Using offline reader…'}
-  }
-  if(!p){
-    try{p=parseCard(await ocrRead(card))}catch(e){console.warn(e);p={}}
+    const q=sanitizeFields(p);
+    if(!q.name||Object.keys(validate(q)).length){
+      $('msg').textContent='Double-checking with AI…';
+      try{p=await aiRead(card)}catch(e){console.warn(e);toast('AI check failed ('+String(e.message).slice(0,60)+'). Using the phone reader.')}
+    }
   }
   F.forEach(k=>{if(p[k]==null)p[k]=''});
+  p=sanitizeFields(p);
   if(scanSide==='front'){draft={img:thumb,ar,f:{}};F.forEach(k=>draft.f[k]=p[k]||'')}
-  else{draft.f=mergeFields(draft.f,p);draft.img2=thumb;draft.ar2=ar}
+  else{draft.f=sanitizeFields(mergeFields(draft.f,p));draft.img2=thumb;draft.ar2=ar}
   $('msg').textContent='';
   $('tick').style.display='grid';
   await new Promise(r=>setTimeout(r,800));
@@ -1355,8 +1395,8 @@ const LAND_RE=/(?<!\d)(?:\+\s?[89]1[\s-]?)?\(?0?\d{2,4}\)?[\s-]\d{3,4}[\s-]?\d{3
 const KEYW=/\b(mob[il1]{1,2}[leo]{1,2}|mob|phone|ph|tel(?:ephone)?|cell|fax|e-?mail|website|web)\b\s*[:.\-=|]*/ig;
 const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent|auditor|accountant|architect|doctor|secretary|treasurer|principal|proprietrix)\b/i;
 const COM=/\b(pvt|ltd|llp|inc|company|industries|enterprises?|publications?|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|engineers|engineering|manufacturing|consultants|exports?|labs|technologies|systems|infotech|works|stores|distributors|printers|press)\b|&/i;
-const ADR=/\b(road|rd|street|st|nagar|floor|building|bldg|plot|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|towers|complex|park|flat|door|pandal|post|po|p\.o|apartments|estate|layout|extn|extension|market|bazaar|puram|palayam|garden|gardens|village|taluk|dist|district|hills|mall|plaza)\b|\bno\s*[.:]|\bd\.?\s?no\b/i;
-const STATE=/^(tamil\s?nadu|t\.?\s?n\.?|india|kerala|karnataka|andhra pradesh|telangana|maharashtra|in|ind)[\s,.\-]*(in|india)?[\s,.]*$/i;
+const ADR=/\b(road|rd|street|st|nagar|floor|building|bldg|plot|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|towers|complex|park|flat|door|pandal|post|po|p\.o|apartments|estate|layout|extn|extension|market|bazaar|puram|palayam|garden|gardens|village|taluk|dist|district|hills|mall|plaza|industrial|growth|centre|center|campus|zone|phase|chambers|bhavan|highway|sipcot|midc|gidc|sidco|taluka|tehsil|mandal|marg|chowk|peth|wadi|gali)\b|\bno\s*[.:]|\bd\.?\s?no\b/i;
+const STATE=/^(tamil\s?nadu|t\.?\s?n\.?|india|kerala|karnataka|andhra pradesh|telangana|maharashtra|gujarat|rajasthan|west bengal|delhi|new delhi|uttar pradesh|madhya pradesh|punjab|haryana|odisha|bihar|goa|in|ind)[\s,.\-]*(in|india)?[\s,.]*$/i;
 const DEG=/\s*(\b(B\.?\s?Sc|B\.?\s?Tech|M\.?\s?Tech|B\.?\s?Com|M\.?\s?Com|M\.?\s?Sc|Ph\.?\s?D|Dr)\b|\b(B\.?E|M\.?E|B\.?A|M\.?A|C\.?A|MBA|LLB|MBBS)\b(?![a-z])).*$/;
 function normPhone(m){
   let d=m.replace(/\D/g,'');
@@ -1380,6 +1420,7 @@ function parseCard(text){
     l=l.replace(/(@[\w-]+)\s+(com|in|net|org)\b/gi,'$1.$2').replace(/(www\.?[\w-]+)\s+(com|in|net|org)\b/gi,'$1.$2');
     l=l.replace(EMAIL_RE,m=>{let e=m.toLowerCase().replace(/[.,]+$/,'');if(!/@.+\./.test(e))e=e.replace(/(com|in|net|org)$/,'.$1');emails.push(e);return ' '});
     l=l.replace(SITE_RE,m=>{let w=m.toLowerCase().replace(/^https?:\/\//,'');w=w.replace(/^www(?!\.)/,'www.');sites.push(w);return ' '});
+    l=l.replace(/\bw{3}\.?\s?([A-Za-z0-9-]{3,}(?:\.[A-Za-z0-9-]{2,})*)\.?(?=\s|$)/gi,(m,d)=>{sites.push('www.'+d.toLowerCase());return ' '});
     const fax=/\bfax\b/i.test(l);
     l=l.replace(MOB_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return ' '});
     l=l.replace(LAND_RE,m=>{const p=normPhone(m);if(p&&!fax)phones.push(p);return p?' ':m});
@@ -1406,11 +1447,12 @@ function parseCard(text){
   const dom=(fixed[0]||'').split('@')[1]||sd[0]||'';
   const base=dom.split('.')[0].toLowerCase();
   const coms=[],rem=[];
-  for(const l of rest){
-    if(!r.designation&&DES.test(l)){r.designation=l;continue}
-    if(COM.test(l)){coms.push(l);continue}
-    rem.push(l);
-  }
+  let desIdx=-9;const remI=[];
+  rest.forEach((l,ri)=>{
+    if(!r.designation&&DES.test(l)){r.designation=l;desIdx=ri;return}
+    if(COM.test(l)){coms.push(l);return}
+    rem.push(l);remI.push(ri);
+  });
   const k=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
   if(coms.length){
     r.company=(base&&coms.find(l=>k(l).includes(base)||base.includes(k(l))))||
@@ -1420,22 +1462,33 @@ function parseCard(text){
     const tk=r.company.split(/\s+/);
     for(let i=1;i<tk.length;i++){if(k(tk.slice(i).join(''))===base){r.company=tk.slice(i).join(' ');break}}
   }
-  // name: best scoring short line made of letters (degrees such as B.Sc are cut off)
+  // name: a person-like line. Logo text, brand names and address lines are rejected.
+  const loc=((fixed[0]||'').split('@')[0]||'').toLowerCase(),locK=loc.replace(/[^a-z]/g,'');
+  const brands=[...new Set([base,...sd.map(x=>x.split('.')[0]),...ws.map(x=>x.replace(/^www\./,'').split('.')[0]),r.company||''].map(x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'')).filter(x=>x.length>=4))];
   let best=null,bs=-1;
   rem.forEach((l,i)=>{
     const t=l.replace(DEG,'').replace(/\([^)]*\)/g,'').replace(/[.,]+$/,'').trim();
     if(!/^[A-Za-z][A-Za-z.' ]{2,34}$/.test(t))return;
     const w=t.split(/\s+/);if(w.length>4)return;
+    const tk=k(t);
+    if(brands.some(b=>lev(tk,b)/Math.max(tk.length,b.length)<=.34))return;
     let sc=10-i;
     if(/^[A-Za-z]\.\s?[A-Za-z]{2,}/.test(t)||/[A-Za-z]{3,}\s[A-Za-z]\.?$/.test(t))sc+=3;
     if(w.length>=2&&w.length<=3)sc+=2;
     if(l!==t)sc+=2;
+    if(locK.length>=5&&(tk===locK||(tk.length>=5&&(locK.includes(tk)||tk.includes(locK)))||dice(tk,locK)>.7))sc+=8;
+    else if(locK&&w.some(x=>x.length>=4&&locK.includes(x.toLowerCase())))sc+=4;
+    if(Math.abs(remI[i]-desIdx)===1)sc+=5;
     if(sc>bs){bs=sc;best=t}
   });
   if(best)r.name=tc(best);
-  if(!r.company&&base)r.company=tc(base);
+  else{
+    const tokens=loc.split(/[._\-]+/).filter(x=>/^[a-z]{2,}$/.test(x));
+    if(tokens.length>=2)r.name=tc(tokens.join(' '));
+  }
+  if(!r.company){const cb=(sd[0]||'').split('.')[0]||base;if(cb)r.company=tc(cb)}
   r.address=addr.join(', ').replace(/\.{2,}/g,'.').replace(/\s*,\s*,/g,',').replace(/[,\s-]+$/,'');
-  const parts=(pinLine||'').replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-–]|\.\s/).map(x=>x.replace(/[^A-Za-z .]/g,'').trim()).filter(x=>x.length>2&&!STATE.test(x));
+  const parts=(pinLine||'').replace(/\b[1-9]\d{2}\s?\d{3}\b/,'').split(/[,\-–]|\.\s/).map(x=>x.replace(/[^A-Za-z .]/g,'').trim()).filter(x=>x.length>2&&!STATE.test(x)&&!/www|@/i.test(x));
   if(parts.length)r.city=tc(parts[parts.length-1]);
   return r;
 }
@@ -1572,7 +1625,7 @@ function openMsg(){
     <label class="fld"><span>Message (use {name} for each person's name)</span><textarea id="mTxt" rows="4"></textarea></label>
     <label class="fld" style="margin-top:10px"><span>Email subject</span><input id="mSub" autocomplete="off"></label>
     <div class="mlist" id="mList"></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Each button opens WhatsApp or your mail app with the message ready. You tap send.</p>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Each button opens WhatsApp or your mail app with the message ready. You tap send. Tip: message people you met, say where you met, and send in small batches.</p>
     <div class="btns"><button class="btn" id="mMail">Email everyone (BCC)</button><button class="btn alt" id="mClose">Close</button></div>`;
   $('mTxt').value=tpl||'Hello {name}, ';
   $('mSub').value='Greetings from '+((me&&channelOf(me.email))?channelOf(me.email).label:'Gopali & Co');
@@ -1614,6 +1667,7 @@ function validate(f){
   const w={};
   if(!f.name)w.name='Name is missing';
   else if(/\d/.test(f.name)||f.name.length>40)w.name='Name looks wrong';
+  else if(ADR.test(f.name)||COM.test(f.name)||(f.company&&f.name.toLowerCase().replace(/[^a-z0-9]/g,'')===f.company.toLowerCase().replace(/[^a-z0-9]/g,'')))w.name='Name looks like an address or company';
   const ph=(f.phone||'').split(',').map(x=>x.trim()).filter(Boolean);
   if(!ph.length)w.phone='Phone number is missing';
   else if(ph.some(p=>{const d=p.replace(/\D/g,'');return d.length<8||d.length>13||(d.length===10&&!/^[6-9]/.test(d))}))w.phone='Phone number looks wrong';
@@ -1621,11 +1675,13 @@ function validate(f){
   if(f.pin&&!/^\d{6}$/.test(f.pin))w.pin='PIN must be 6 digits';
   else if(!f.pin&&/\b\d{6}\b|\b\d{3}\s\d{3}\b/.test(f.address||''))w.pin='PIN is in the address but not filled';
   if(!f.address)w.address='Address is missing';
-  if(f.website&&f.website.split(',').some(x=>!/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/.test(x.trim())))w.website='Website looks wrong';
+  else if(/\bwww\b|@|\.(com|net|org|in)\b/i.test(f.address))w.address='Address has a website or email in it';
+  if(f.city&&/\d|www|@/i.test(f.city))w.city='City looks wrong';
+  if(f.website&&f.website.split(',').some(x=>!/^(?:https?:\/\/)?(?:www\.)?[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}$/.test(x.trim())))w.website='Website looks wrong';
   if((f.designation||'').length>80)w.designation='Designation looks too long';
   return w;
 }
-const FLAGLBL={name:'Name',phone:'Phone',email:'Email',pin:'PIN',address:'Address',website:'Website',designation:'Designation'};
+const FLAGLBL={city:'City',name:'Name',phone:'Phone',email:'Email',pin:'PIN',address:'Address',website:'Website',designation:'Designation'};
 function showFlags(){
   if(!draft)return;
   const w=validate(draft.f),ks=Object.keys(w),box=$('dFlags');
