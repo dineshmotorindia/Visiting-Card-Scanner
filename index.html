@@ -861,7 +861,7 @@ function aiStatus(){
 }
 function setNote(){
   $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+' '+aiStatus()+'. Version '+BUILD+'.';
-  const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: check key':'AI reader on'):'Phone reader only';c.title=aiStatus()}
+  const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: check key':'AI reader on'):('Phone reader only'+(AI.err?': '+AI.err:''));c.title=aiStatus()}
 }
 function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
@@ -1391,6 +1391,7 @@ const SITE_RE=/(?:https?:\/\/)?(?:w{3}\.?)?[A-Za-z0-9-]{2,}(?:\.[A-Za-z0-9-]+)*\
 const MOB_RE=/(?<!\d)(?:\+\s?[89]1[\s-]?|0)?[6-9]\d{4}[\s-]?\d{5}(?!\d)|(?<!\d)(?:\+\s?[89]1[\s-]?|0)?[6-9]\d{2}[\s-]\d{3}[\s-]\d{4}(?!\d)/g;
 const LAND_RE=/(?<!\d)(?:\+\s?[89]1[\s-]?)?\(?0?\d{2,4}\)?[\s-]\d{3,4}[\s-]?\d{3,4}(?!\d)/g;
 const KEYW=/\b(mob[il1]{1,2}[leo]{1,2}|mob|phone|ph|tel(?:ephone)?|cell|fax|e-?mail|website|web)\b\s*[:.\-=|]*/ig;
+const SLOGAN=/\b(your|our|we|you|the|is|are|with|reduces?|improves?|better|best|tomorrow|savings?|energy|power|audit|analy[sz]e|optimi[sz]e|responsibility|collective|environment)\b/i;
 const DES=/\b(manager|director|editor|ceo|cfo|coo|founder|co-founder|partner|head|officer|executive|proprietor|president|engineer|consultant|sales|marketing|owner|chairman|managing|assistant|supervisor|advisor|dealer|publisher|correspondent|auditor|accountant|architect|doctor|secretary|treasurer|principal|proprietrix)\b/i;
 const COM=/\b(pvt|ltd|llp|inc|company|industries|enterprises?|publications?|group|solutions|associates|traders|agencies|motors|corporation|services|magazine|media|engineers|engineering|manufacturing|consultants|exports?|labs|technologies|systems|infotech|works|stores|distributors|printers|press)\b|&/i;
 const ADR=/\b(road|rd|street|st|nagar|floor|building|bldg|plot|lane|avenue|colony|salai|main|cross|sector|block|opp|near|tower|towers|complex|park|flat|door|pandal|post|po|p\.o|apartments|estate|layout|extn|extension|market|bazaar|puram|palayam|garden|gardens|village|taluk|dist|district|hills|mall|plaza|industrial|growth|centre|center|campus|zone|phase|chambers|bhavan|highway|sipcot|midc|gidc|sidco|taluka|tehsil|mandal|marg|chowk|peth|wadi|gali)\b|\bno\s*[.:]|\bd\.?\s?no\b/i;
@@ -1448,7 +1449,7 @@ function parseCard(text){
   let desIdx=-9;const remI=[];
   rest.forEach((l,ri)=>{
     if(!r.designation&&DES.test(l)){r.designation=l;desIdx=ri;return}
-    if(COM.test(l)){coms.push(l);return}
+    if(COM.test(l)&&!SLOGAN.test(l)){coms.push(l);return}
     rem.push(l);remI.push(ri);
   });
   const k=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -1466,7 +1467,7 @@ function parseCard(text){
   let best=null,bs=-1;
   rem.forEach((l,i)=>{
     const t=l.replace(DEG,'').replace(/\([^)]*\)/g,'').replace(/[.,]+$/,'').trim();
-    if(!/^[A-Za-z][A-Za-z.' ]{2,34}$/.test(t))return;
+    if(!/^[A-Za-z][A-Za-z.' ]{2,34}$/.test(t)||SLOGAN.test(t))return;
     const w=t.split(/\s+/);if(w.length>4)return;
     const tk=k(t);
     if(brands.some(b=>lev(tk,b)/Math.max(tk.length,b.length)<=.34))return;
