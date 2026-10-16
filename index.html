@@ -529,9 +529,41 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
 .mrow em{color:var(--muted);opacity:.7}
 .mrow.done{opacity:.55}
 .mrow.done b::after{content:" \2713";color:var(--go)}
+
+/* ---------- landing admin link, admin screen, team ---------- */
+.lg-admin{justify-self:center;margin-top:8px;color:rgba(255,255,255,.72)!important;font-size:13.5px;text-decoration:underline;text-underline-offset:3px}
+.adm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px}
+.adm-ch{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:4px;align-content:end;min-height:150px;padding:20px 18px;border-radius:22px;color:#fff;box-shadow:var(--shadow);transition:transform .12s;position:relative;overflow:hidden}
+.adm-ch:active{transform:scale(.985)}
+.adm-ch:focus-visible{outline:3px solid var(--accent)}
+.adm-ch b{font:600 22px var(--serif)}
+.adm-ch strong{font-size:15px;font-weight:700;opacity:.95}
+.adm-ch small{font-size:12.5px;opacity:.78}
+.adm-ch[data-ch="motor"]{background:linear-gradient(140deg,#14151a 0%,#7a1410 65%,#f2342a 100%)}
+.adm-ch[data-ch="textile"]{background:linear-gradient(140deg,#2a0f46 0%,#8a2a8f 62%,#ff5fa2 100%)}
+.adm-links{display:grid;gap:10px;margin-top:12px;max-width:420px}
+.tmbox{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;margin:16px 0 8px;max-width:560px}
+.tmh{margin:22px 0 8px;font:600 17px var(--serif)}
+.tmrow{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px;max-width:560px}
+.tmrow.off{opacity:.55}
+.tmi{display:grid;min-width:0}
+.tmi b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tmi small{color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tmb{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:0 0 auto}
+.tmb .link{font-size:13px;padding:2px 0}
+
+/* ---------- date and time bar (all screens) ---------- */
+.clk{position:sticky;top:0;z-index:60;height:calc(26px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:center;background:rgba(8,10,16,.94);color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.top{top:calc(26px + env(safe-area-inset-top,0px))}
+#v-scan{inset:calc(26px + env(safe-area-inset-top,0px)) 0 0 0}
+.lg-wrap{min-height:calc(100vh - 26px)}
+.link.pulse{animation:pulse2 .9s 3}
+@keyframes pulse2{50%{transform:scale(1.07);color:var(--accent)}}
+.fgt small{font-size:12px;opacity:.85}
 </style>
 </head>
 <body>
+<div id="clock" class="clk" aria-live="off"></div>
 
 <!-- ============ SPLASH ============ -->
 <div id="splash"><div><h1 class="brand gold">Gopali &amp; Co</h1><div class="spbar"></div></div></div>
@@ -552,6 +584,8 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
         <span class="lg-tx"><b>Textile Magazine</b><span>Textile team sign in</span></span>
         <svg class="lg-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
+      <button class="link lg-admin" id="optAdmin" type="button">Admin login</button>
+      <button class="link lg-admin hide" id="lgOut" type="button">Not you? Sign out</button>
     </div>
 
     <!-- step 2: the form (personal or organisation) -->
@@ -560,16 +594,54 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
       <h3 class="sec" id="lgTitle">Sign in</h3>
       <p id="lgSub" style="color:var(--muted);margin:0;font-size:14px">Enter the password given to you by your company.</p>
       <div class="form">
-        <label class="fld"><span>Email</span><input id="lgEmail" type="email" readonly autocomplete="username" autocapitalize="off"></label>
+        <label class="fld hide" id="lgNameW"><span>Your name</span><input id="lgName" autocomplete="name"></label>
+        <label class="fld"><span>Email</span><input id="lgEmail" type="email" autocomplete="username" autocapitalize="off" placeholder="you@company.com"></label>
         <label class="fld pw"><span>Password</span><input id="lgPass" type="password" autocomplete="current-password"><button type="button" class="eye" id="lgEye" aria-label="Show password"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
       </div>
       <div class="err" id="lgErr" role="alert"></div>
       <div class="btns" style="margin-top:12px">
         <button class="btn" id="lgGo">Sign in</button>
+        <button class="link" id="lgSwap" type="button"></button>
+        <button class="link fgt" id="lgForgot" type="button">Forgot password? <small>(check spam folder too)</small></button>
       </div>
     </div>
     <p class="lgnote" id="lgNote"></p>
   </div>
+</section>
+
+<!-- ============ ADMIN HOME ============ -->
+<section id="v-admin" class="hide">
+  <header class="top"><div class="bar">
+    <span class="brand">Admin</span>
+    <span style="margin-left:auto;display:flex;gap:8px">
+      <button class="icbtn" id="themeBtn3" aria-label="Change theme"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="icbtn" id="admOut" aria-label="Sign out"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button>
+    </span></div></header>
+  <main class="wide">
+    <p class="dim" id="admHi" style="margin:16px 0 6px"></p>
+    <h3 class="sec">Saved cards</h3>
+    <div class="adm-grid">
+      <button class="adm-ch" id="admMotor" data-ch="motor"><b>MotorIndia</b><strong id="admCnt_motor">…</strong><small id="admReps_motor"></small></button>
+      <button class="adm-ch" id="admTextile" data-ch="textile"><b>Textile Magazine</b><strong id="admCnt_textile">…</strong><small id="admReps_textile"></small></button>
+    </div>
+    <h3 class="sec" style="margin-top:26px">Manage</h3>
+    <div class="adm-links">
+      <button class="btn alt" id="admTeam">Team members</button>
+      <button class="btn alt" id="admAct">Activity log</button>
+      <button class="btn alt" id="admAi">AI reader settings</button>
+    </div>
+  </main>
+</section>
+
+<!-- ============ TEAM (admin) ============ -->
+<section id="v-team" class="hide">
+  <header class="top"><div class="bar">
+    <button class="back" id="teamBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <span class="brand">Team members</span></div></header>
+  <main class="wide">
+    <p class="dim" style="margin:16px 0 4px;max-width:560px">Team members sign up on their own. If someone leaves, switch their login off. Their cards stay safe in the common database.</p>
+    <div id="tmList"></div>
+  </main>
 </section>
 
 <!-- ============ ACTIVITY (admin) ============ -->
@@ -629,7 +701,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
       </button>
       <button class="act rise" id="allBtn" style="--d:4">
         <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="10" rx="2"/><path d="M7 19h12a2 2 0 0 0 2-2V9"/></svg></span>
-        <span><h2>View All Cards</h2><p id="homeCount">Loading…</p></span>
+        <span><h2>My Cards</h2><p id="homeCount">Loading…</p></span>
       </button>
       <button class="act rise" id="lblBtn" style="--d:5">
         <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9h6M7 13h10M7 16.5h4"/></svg></span>
@@ -646,6 +718,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
     <div class="rail rise" id="rail" style="--d:9"></div>
     <label class="ck2 rise" style="--d:8"><input type="checkbox" id="homeAuto"> Auto crop cards right after scanning (skip the manual step)</label>
     <div class="note" id="modeNote"></div>
+    <button class="link hide" id="switchTeam" style="margin-top:8px"></button>
     <button class="link hide" id="actBtn" style="margin-top:8px">View activity log (admin)</button>
     <button class="link hide" id="aiBtn" style="margin-top:0">AI reader settings (admin)</button>
   </main>
@@ -677,7 +750,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
 <section id="v-cards" class="hide">
   <header class="top"><div class="bar">
     <button class="back" id="allBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
-    <span class="brand">All cards</span></div></header>
+    <span class="brand" id="cardsTitle">All cards</span></div></header>
   <main class="wide padb">
     <div class="split">
       <aside class="filters">
@@ -686,6 +759,7 @@ html[data-theme^="textile"] .hero::after{content:"";position:absolute;left:0;rig
         <label class="fld"><span>City</span><input id="q_city" type="search" placeholder="e.g. Chennai"></label>
         <label class="fld"><span>Designation</span><input id="q_des" type="search" placeholder="e.g. Editor"></label>
         <label class="fld"><span>Event</span><select id="q_event"><option value="">All events</option></select></label>
+        <label class="fld hide" id="q_byw"><span>Uploaded by</span><select id="q_by"><option value="">Everyone</option></select></label>
         <button class="clear" id="qClear">Clear filters</button>
       </aside>
       <div>
@@ -754,13 +828,14 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "147247700446",
   appId: "1:147247700446:web:002a1200c8a14f2ac2654f"
 };
-/* LOGIN CHANNELS: two fixed company logins. The email is pre-filled on the
-   login screen; employees only type the password.
-   In Firebase Console > Authentication > Users, create each email below with
-   the password you want to give to that team. */
+/* ADMIN: the one fixed admin login. Create it in Firebase Console > Authentication
+   with this email and the password you choose. */
+const ADMIN_EMAIL = "motorindia.textile@gmail.com";
+/* TEAMS: team members sign up themselves with their own name, email and password,
+   and pick MotorIndia or Textile Magazine when they sign in. */
 const CHANNELS = {
-  motor:   { label: "MotorIndia",       email: "motorindia.channels@gmail.com",     tag: "Automotive contacts, in gear" },
-  textile: { label: "Textile Magazine", email: "textilemagazine.channel@gmail.com", tag: "Every thread, every contact" }
+  motor:   { label: "MotorIndia",       tag: "Automotive contacts, in gear" },
+  textile: { label: "Textile Magazine", tag: "Every thread, every contact" }
 };
 const AI_KEY   = "";                  // e.g. "AIza...." from Google AI Studio
 const AI_MODEL = "gemini-flash-latest"; // Google's alias for the current Flash model
@@ -768,7 +843,6 @@ const AI={key:AI_KEY,model:AI_MODEL,err:''};
 /* ===================================================================== */
 
 const $=id=>document.getElementById(id);
-const channelOf=e=>Object.entries(CHANNELS).map(([key,c])=>({key,...c})).find(c=>c.email.toLowerCase()===String(e||'').trim().toLowerCase());
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
 
@@ -784,7 +858,7 @@ function formHTML(p){
 
 /* ---------------- storage: online (Firebase) or this phone ---------------- */
 const ONLINE=!!FIREBASE_CONFIG.apiKey;
-let cards=[],onCards=()=>{},me=null,scopeAll=false,unsub=null;
+let cards=[],onCards=()=>{},me=null,scopeAll=false,unsub=null,adminCh='';
 let store,A={},db=null,auth=null;
 const tsOf=c=>c.createdAt&&c.createdAt.toMillis?c.createdAt.toMillis():(typeof c.createdAt==='number'?c.createdAt:Date.now());
 if(ONLINE){
@@ -794,32 +868,46 @@ if(ONLINE){
   db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
   const SV=()=>firebase.firestore.FieldValue.serverTimestamp();
   store={
-    async add(c){await db.collection('cards').add({...c,owner:me.uid,ownerName:me.name,createdAt:SV()})},
+    async add(c){await db.collection('cards').add({...c,owner:me.uid,ownerName:me.name,ownerEmail:me.email||'',channel:me.channel,createdAt:SV()})},
     async update(id,v){await db.collection('cards').doc(id).update(v)},
     async del(id){await db.collection('cards').doc(id).delete()},
     watch(){
       if(unsub){unsub();unsub=null}
-      const col=db.collection('cards'),q=(me.role==='admin'&&scopeAll)?col:col.where('owner','==',me.uid);
-      unsub=q.onSnapshot(sn=>{cards=sn.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>tsOf(y)-tsOf(x));onCards()},
+      if(me.role==='admin'&&!adminCh){cards=[];onCards();return}
+      const col=db.collection('cards'),q=me.role==='admin'?col.where('channel','==',adminCh):col.where('owner','==',me.uid);
+      unsub=q.onSnapshot(sn=>{const raw=sn.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>tsOf(y)-tsOf(x));cards=me.role==='admin'?raw:raw.filter(c=>!c.channel||c.channel===me.channel);onCards()},
         e=>{$('homeCount').textContent='Could not reach server';toast('Server error: '+e.message)});
     }
   };
+  let signingUp=false;
   const build=async u=>{
-    let role='staff',name=u.displayName||u.email;
-    const ch=channelOf(u.email);if(ch)name=ch.label;
-    try{const d=await db.collection('users').doc(u.uid).get();if(d.exists){role=d.data().role||'staff';name=d.data().name||name}}catch(e){}
-    return {uid:u.uid,email:u.email,name,role};
+    const email=(u.email||'').toLowerCase();
+    if(email===ADMIN_EMAIL.toLowerCase())return {uid:u.uid,email,name:'Admin',role:'admin',channel:''};
+    const base={uid:u.uid,email,name:u.displayName||email,role:'staff',channel:''};
+    let prof=null;
+    try{const d=await db.collection('users').doc(u.uid).get();if(d.exists)prof=d.data()}
+    catch(e){return {...base,blocked:'Could not read your profile. Check your internet and try again.'}}
+    if(!prof){
+      const nm=u.displayName||email.split('@')[0];
+      try{await db.collection('users').doc(u.uid).set({name:nm,email,role:'staff',active:true,createdAt:SV()});prof={name:nm,active:true}}
+      catch(e){return {...base,blocked:'Could not set up your profile: '+String(e.message||e).slice(0,100)}}
+    }
+    if(prof.active===false)return {...base,blocked:'Your login has been switched off. Ask your admin.'};
+    return {...base,name:prof.name||base.name};
   };
   A.signIn=(e,p)=>auth.signInWithEmailAndPassword(e,p);
   A.signUp=async(n,e,p)=>{
-    const cr=await auth.createUserWithEmailAndPassword(e,p);
-    try{await cr.user.updateProfile({displayName:n})}catch(x){}
-    try{await db.collection('users').doc(cr.user.uid).set({name:n,email:e,role:'staff',createdAt:SV()})}catch(x){console.warn(x)}
+    signingUp=true;
+    try{
+      const cr=await auth.createUserWithEmailAndPassword(e,p);
+      try{await cr.user.updateProfile({displayName:n})}catch(x){}
+      await db.collection('users').doc(cr.user.uid).set({name:n,email:e,role:'staff',active:true,createdAt:SV()});
+    }finally{signingUp=false}
     startSession(await build(auth.currentUser));
   };
   A.signOut=()=>auth.signOut();
   A.reset=e=>auth.sendPasswordResetEmail(e);
-  A.init=()=>auth.onAuthStateChanged(async u=>{startSession(u?await build(u):null)});
+  A.init=()=>auth.onAuthStateChanged(async u=>{if(signingUp)return;startSession(u?await build(u):null)});
 }else{
   // Test mode: accounts live on this phone only
   const UK='gopali_users_v1',SK='gopali_session_v1';
@@ -828,13 +916,13 @@ if(ONLINE){
   const key=()=>'gopali_cards_v2_'+me.uid;
   const read=()=>{try{return JSON.parse(localStorage.getItem(key())||'[]')}catch(e){return[]}};
   store={
-    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now()+Math.random().toString(36).slice(2,6),owner:me.uid,ownerName:me.name,createdAt:Date.now()});localStorage.setItem(key(),JSON.stringify(a))},
+    async add(c){const a=read();a.unshift({...c,id:'l'+Date.now()+Math.random().toString(36).slice(2,6),owner:me.uid,ownerName:me.name,ownerEmail:me.email||'',createdAt:Date.now()});localStorage.setItem(key(),JSON.stringify(a))},
     async update(id,v){localStorage.setItem(key(),JSON.stringify(read().map(x=>x.id===id?{...x,...v}:x)))},
     async del(id){localStorage.setItem(key(),JSON.stringify(read().filter(x=>x.id!==id)))},
     watch(){cards=read();onCards()},
     refresh(){cards=read();onCards()}
   };
-  const mk=(e,u)=>({uid:u.uid,email:e,name:u.name,role:'staff'});
+  const mk=(e,u)=>({uid:u.uid,email:e,name:u.name,role:'staff',channel:'motor'});
   A.signIn=async(e,p)=>{const U=lu(),u=U[e];if(!u||u.hash!==await sha(e+p))throw{code:'auth/invalid-credential'};localStorage.setItem(SK,e);startSession(mk(e,u))};
   A.signUp=async(n,e,p)=>{const U=lu();if(U[e])throw{code:'auth/email-already-in-use'};if(p.length<6)throw{code:'auth/weak-password'};U[e]={name:n,hash:await sha(e+p),uid:'u'+Date.now()};localStorage.setItem(UK,JSON.stringify(U));localStorage.setItem(SK,e);startSession(mk(e,U[e]))};
   A.signOut=async()=>{localStorage.removeItem(SK);startSession(null)};
@@ -853,29 +941,47 @@ onCards=()=>{
   if(!$('v-cards').classList.contains('hide'))renderCards();
   if(me)renderHome();
 };
-const BUILD='r8 (16 Oct)';
+const BUILD='r10 (16 Oct)';
 function aiStatus(){
   if(!ONLINE)return 'Phone reader only (test mode)';
   if(AI.key)return AI.err?'AI key found, last scan failed: '+AI.err:'AI reader is on';
   return 'Phone reader only'+(AI.err?' ('+AI.err+')':'');
 }
+function setWho(){
+  if(!me)return;
+  $('whoTxt').textContent=me.name;
+  $('avatar').textContent=(me.name||'?').trim().charAt(0).toUpperCase()||'?';
+  const h=new Date().getHours();
+  $('greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+((me.name||'').trim().split(/\s+/)[0]||'');
+}
 function setNote(){
-  $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+' '+aiStatus()+'. Version '+BUILD+'.';
+  setWho();
+  $('modeNote').textContent=(ONLINE?'Your cards are private: only you and the admin can see them. They open on any phone you sign in on.':'Test mode: your account and cards stay on this phone only.')+' '+aiStatus()+'. Version '+BUILD+'.';
+  const st=$('switchTeam');
+  if(st){const ok=me&&me.role==='staff'&&CHANNELS[me.channel];st.classList.toggle('hide',!ok);if(ok){const o=me.channel==='motor'?'textile':'motor';st.textContent='Saving cards for '+CHANNELS[me.channel].label+'. Switch to '+CHANNELS[o].label}}
   const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: last scan failed':'AI reader on'):('Phone reader only'+(AI.err?': '+AI.err:''));c.title=aiStatus()}
 }
 function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
 /* ---------------- navigation ---------------- */
-const VIEWS=['login','home','cards','scan','labels','activity'];
-function show(v){if(!me)v='login';VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v!=='cards'&&v!=='labels')cardsMode='browse';if(v==='cards'){modeUI();renderCards()}if(v==='labels')renderLabels()}
+const VIEWS=['login','home','cards','scan','labels','activity','admin','team'];
+const homeView=()=>me&&me.role==='admin'?'admin':'home';
+function show(v){if(!me)v='login';VIEWS.forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));if(v!=='scan')stopCam();window.scrollTo(0,0);if(v!=='cards'&&v!=='labels')cardsMode='browse';if(v==='cards'){modeUI();renderCards()}if(v==='labels')renderLabels();
+  if(v==='cards'){const adm=me&&me.role==='admin';$('cardsTitle').textContent=adm?(CHANNELS[adminCh]?CHANNELS[adminCh].label+' cards':'Cards'):'My cards';$('q_byw').classList.toggle('hide',!adm)}
+  if(v==='admin')loadAdminHome();
+  if(v==='team')loadTeam()}
 function nav(v){location.hash=v==='home'?'':v}
 function goBack(){history.length>1?history.back():nav('home')}
 window.addEventListener('hashchange',()=>{
-  let v=location.hash.slice(1)||'home';
+  let v=location.hash.slice(1)||homeView();
   $('sheet').classList.add('hide');
   if(v==='scan'&&!camOn)v='home';
   if(v==='labels'&&!selected.size)v='cards';
-  if(v==='activity'&&!(me&&me.role==='admin'))v='home';
+  const adm=me&&me.role==='admin';
+  if((v==='activity'||v==='admin'||v==='team')&&!adm)v='home';
+  if(adm&&(v==='home'||v==='scan'))v='admin';
+  if(adm&&(v==='cards'||v==='labels')&&!adminCh)v='admin';
+  if(me&&!adm&&!me.channel)v='login';
   if(!me)v='login';
   show(VIEWS.includes(v)?v:'home');
 });
@@ -897,23 +1003,42 @@ async function loadActivity(){
 /* ---------------- login / sign out ---------------- */
 let sessionReady=false,lgType='',justLoggedIn=false;   // lgType: '' (choose) | 'motor' | 'textile'
 setTimeout(()=>{if(!sessionReady)startSession(null)},9000);
+let lgPending='',lgSignup=false;
 function lgMode(){
-  const ch=CHANNELS[lgType];
-  $('lgChoice').classList.toggle('hide',!!ch);
-  $('lgBox').classList.toggle('hide',!ch);
-  if(ch){$('lgTitle').textContent=ch.label+' sign in';$('lgEmail').value=ch.email}
-  $('lgErr').textContent='';
+  const t=lgType,adm=t==='admin',su=lgSignup&&!adm;
+  $('lgChoice').classList.toggle('hide',!!t);
+  $('lgBox').classList.toggle('hide',!t);
+  $('optAdmin').classList.toggle('hide',!!me);
+  $('lgOut').classList.toggle('hide',!me);
+  if(t){
+    $('lgTitle').textContent=adm?'Admin sign in':CHANNELS[t].label+(su?' sign up':' sign in');
+    $('lgSub').textContent=adm?'For the company admin only.':(su?'Create your own login. You only do this once.':'Sign in with your own email and password.');
+  }
+  $('lgNameW').classList.toggle('hide',!su);
+  $('lgGo').textContent=su?'Sign up':'Sign in';
+  $('lgSwap').classList.toggle('hide',adm);
+  $('lgSwap').textContent=su?'Already signed up? Sign in':'New here? Sign up first';
+  $('lgPass').autocomplete=su?'new-password':'current-password';
+  $('lgPass').placeholder=su?'At least 6 characters':'';
+  $('lgErr').style.color='';$('lgErr').textContent=lgPending;lgPending='';
 }
 function chanTheme(k){let l='';try{l=localStorage.getItem('gopali_light_'+k)}catch(e){}return k+(l?'-light':'')}
+function setSide(k){if(!me)return;me.channel=k;try{localStorage.setItem('gopali_side',k)}catch(e){}}
 function lgChoose(t){
-  lgType=t;$('lgPass').value='';$('lgPass').type='password';$('lgEye').classList.remove('on');
-  applyTheme(t?chanTheme(t):'midnight');
-  lgMode();if(t)setTimeout(()=>$('lgPass').focus({preventScroll:true}),60);
+  if(me&&me.role==='staff'&&CHANNELS[t]){setSide(t);enterRep();return}
+  lgType=t;lgSignup=false;
+  $('lgPass').value='';$('lgName').value='';$('lgEmail').value=t==='admin'?ADMIN_EMAIL:'';
+  $('lgPass').type='password';$('lgEye').classList.remove('on');
+  applyTheme(CHANNELS[t]?chanTheme(t):'midnight');
+  lgMode();if(t)setTimeout(()=>$(t==='admin'?'lgPass':'lgEmail').focus({preventScroll:true}),60);
 }
 $('optMotor').onclick=()=>lgChoose('motor');
 $('optTextile').onclick=()=>lgChoose('textile');
+$('optAdmin').onclick=()=>lgChoose('admin');
 $('lgBack').onclick=()=>lgChoose('');
-$('lgNote').textContent=(ONLINE?'Sign in on any phone with the same password to see your team\'s cards.':'Test mode: logins and cards stay on this phone only. Connect the online server to use the company logins.').replace(/$/,' Version '+BUILD+'.');
+$('lgOut').onclick=()=>A.signOut();
+$('lgSwap').onclick=()=>{lgSignup=!lgSignup;$('lgSwap').classList.remove('pulse');lgMode()};
+$('lgNote').textContent=(ONLINE?'Sign in with your own email and password. First time? Sign up first. Your cards stay private to you and the admin.':'Test mode: logins and cards stay on this phone only.')+' Version '+BUILD+'.';
 function authMsg(e){
   const c=(e&&e.code)||'';
   if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Wrong email or password.';
@@ -923,30 +1048,81 @@ function authMsg(e){
   if(c==='auth/network-request-failed')return 'No internet connection.';
   if(c==='auth/too-many-requests')return 'Too many attempts. Wait a few minutes and try again.';
   if(c==='auth/operation-not-allowed')return 'Email sign-in is not switched on in Firebase yet.';
-  return 'Could not sign in. Please try again.';
+  if(c==='auth/user-disabled')return 'This login has been disabled.';
+  return 'Could not complete that. '+String((e&&e.message)||'').slice(0,100);
 }
 $('lgGo').onclick=async()=>{
-  const ch=CHANNELS[lgType],p=$('lgPass').value;
-  if(!ch)return;
-  if(!p){$('lgErr').textContent='Enter your password.';return}
-  $('lgErr').textContent='';$('lgGo').disabled=true;$('lgGo').textContent='Signing in…';justLoggedIn=true;
-  try{await A.signIn(ch.email.toLowerCase(),p)}
-  catch(x){justLoggedIn=false;$('lgErr').textContent=authMsg(x);const b=$('lgBox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('lgPass').select()}
-  $('lgGo').disabled=false;$('lgGo').textContent='Sign in';
+  const n=$('lgName').value.trim(),e=$('lgEmail').value.trim().toLowerCase(),p=$('lgPass').value,er=$('lgErr');
+  if(!lgType)return;
+  const su=lgSignup&&lgType!=='admin';
+  er.style.color='';
+  if(su&&!n){er.textContent='Enter your name.';return}
+  if(!e||!p){er.textContent='Enter your email and password.';return}
+  if(su&&e===ADMIN_EMAIL.toLowerCase()){er.textContent='This email is reserved for the admin.';return}
+  er.textContent='';$('lgGo').disabled=true;$('lgGo').textContent=su?'Creating…':'Signing in…';justLoggedIn=true;
+  try{su?await A.signUp(n,e,p):await A.signIn(e,p)}
+  catch(x){
+    justLoggedIn=false;
+    const c=(x&&x.code)||'';
+    if(!su&&lgType!=='admin'&&['auth/invalid-credential','auth/user-not-found','auth/invalid-login-credentials'].includes(c)){
+      er.textContent='We could not sign you in. If you have not signed up yet, please sign up first (tap "New here? Sign up first" below). If you have, check your password or use Forgot password.';$('lgSwap').classList.add('pulse');
+    }else er.textContent=authMsg(x);
+    const b=$('lgBox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('lgPass').select();
+  }
+  $('lgGo').disabled=false;$('lgGo').textContent=su?'Sign up':'Sign in';
 };
 $('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('lgGo').click()});
+$('lgEmail').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();($('lgNameW').classList.contains('hide')?$('lgPass'):$('lgPass')).focus()}});
+$('lgForgot').onclick=async()=>{
+  const e=$('lgEmail').value.trim().toLowerCase(),er=$('lgErr');
+  er.style.color='';
+  if(!e){er.textContent='Type your email above first.';return}
+  try{await A.reset(e);er.style.color='var(--go)';er.textContent='A reset link was sent to '+e+'. Check your spam folder too.'}
+  catch(x){er.textContent=(x&&x.code==='local-reset')?'Password reset needs the online server.':authMsg(x)}
+};
 $('outBtn').onclick=()=>{if(confirm('Sign out of '+me.name+'?'))A.signOut()};
+function enterRep(){
+  const u=me;
+  setNote();$('lgPass').value='';
+  onCards();store.watch();log('login');loadAISettings();enterChannel(u);
+  show('home');
+  if(location.hash)location.hash='';
+}
 function startSession(u){
   sessionReady=true;$('splash').classList.add('hide');
   if(unsub){unsub();unsub=null}
-  me=u;cards=[];selected.clear();scopeAll=false;draft=null;
+  // refuse switched-off logins and logins used on the wrong door
+  if(u){
+    let why=u.blocked||'';
+    if(!why&&lgType==='admin'&&u.role!=='admin')why='This login is not the admin. Go back and choose MotorIndia or Textile Magazine.';
+    else if(!why&&CHANNELS[lgType]&&u.role==='admin')why='This is the admin login. Use "Admin login" at the bottom of the first screen.';
+    if(why){lgPending=why;justLoggedIn=false;me=null;A.signOut();return}
+  }
+  me=u;cards=[];selected.clear();scopeAll=!!(u&&u.role==='admin');adminCh='';draft=null;
   if(typeof renderDraft==='function')renderDraft();
-  if(!u){lgType='';lgMode();$('lgPass').value='';applyTheme('midnight');location.hash='';show('login');return}
-  setNote();onCards();store.watch();log('login');loadAISettings();enterChannel(u);
-  $('lgPass').value='';
-  const cur=location.hash.slice(1);
-  show(['cards','labels','activity'].includes(cur)?'home':'home');
-  if(location.hash)location.hash='';
+  if(!u){
+    try{localStorage.removeItem('gopali_side')}catch(e){}
+    if(!lgPending)lgType='';
+    else if(!lgType)toast(lgPending);
+    lgSignup=false;
+    applyTheme(CHANNELS[lgType]?chanTheme(lgType):'midnight');
+    lgMode();$('lgPass').value='';location.hash='';show('login');return
+  }
+  if(u.role==='admin'){
+    setNote();$('lgPass').value='';
+    loadAISettings();log('login');
+    applyTheme('midnight');
+    if(location.hash)location.hash='';
+    show('admin');
+    return;
+  }
+  // team member: the side just chosen, otherwise the side remembered on this phone
+  let side=CHANNELS[lgType]?lgType:'';
+  if(!side){try{side=localStorage.getItem('gopali_side')||''}catch(e){}}
+  if(CHANNELS[side]){setSide(side);enterRep();return}
+  setNote();
+  $('lgNote').textContent='Signed in as '+u.name+'. Choose MotorIndia or Textile Magazine to continue.';
+  lgType='';lgMode();show('login');
 }
 
 /* ---------------- live scanner ---------------- */
@@ -1638,7 +1814,7 @@ function openMsg(){
     <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Each button opens WhatsApp or your mail app with the message ready. You tap send. Tip: message people you met, say where you met, and send in small batches.</p>
     <div class="btns"><button class="btn" id="mMail">Email everyone (BCC)</button><button class="btn alt" id="mClose">Close</button></div>`;
   $('mTxt').value=tpl||'Hello {name}, ';
-  $('mSub').value='Greetings from '+((me&&channelOf(me.email))?channelOf(me.email).label:'Gopali & Co');
+  $('mSub').value='Greetings from '+((me&&CHANNELS[me.channel])?CHANNELS[me.channel].label:'Gopali & Co');
   const draw=()=>{
     const t=$('mTxt').value,sub=$('mSub').value;
     try{localStorage.setItem(key,t)}catch(e){}
@@ -1736,7 +1912,14 @@ $('saveBtn').onclick=async()=>{
 /* ---------------- all cards + filters + selection ---------------- */
 ['q_name','q_city','q_des'].forEach(i=>$(i).addEventListener('input',renderCards));
 $('q_event').addEventListener('change',renderCards);
-$('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');$('q_event').value='';renderCards()};
+$('q_by').addEventListener('change',renderCards);
+$('qClear').onclick=()=>{['q_name','q_city','q_des'].forEach(i=>$(i).value='');$('q_event').value='';$('q_by').value='';renderCards()};
+function fillByFilter(){
+  const sel=$('q_by'),cur=sel.value,m=new Map();
+  cards.forEach(c=>{const n=c.ownerName||'Unknown';m.set(n,(m.get(n)||0)+1)});
+  sel.innerHTML='<option value="">Everyone</option>'+[...m.keys()].sort().map(n=>`<option value="${esc(n)}">${esc(n)} (${m.get(n)})</option>`).join('');
+  sel.value=[...sel.options].some(o=>o.value===cur)?cur:'';
+}
 function fillEventFilter(){
   const sel=$('q_event'),cur=sel.value,ev=eventList(),none=cards.filter(c=>!c.event).length;
   sel.innerHTML='<option value="">All events</option>'+ev.map(e=>`<option value="${esc(e)}">${esc(e)} (${cards.filter(c=>(c.event||'').toLowerCase()===e.toLowerCase()).length})</option>`).join('')+(ev.length&&none?`<option value="__none">No event (${none})</option>`:'');
@@ -1744,16 +1927,17 @@ function fillEventFilter(){
   $('evList').innerHTML=ev.map(e=>`<option value="${esc(e)}">`).join('');
 }
 function filtered(){
-  const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim(),qe=$('q_event').value;
+  const qn=$('q_name').value.toLowerCase().trim(),qc=$('q_city').value.toLowerCase().trim(),qd=$('q_des').value.toLowerCase().trim(),qe=$('q_event').value,qb=$('q_by').value;
   return cards.filter(c=>
     (!qn||((c.name||'')+' '+(c.company||'')).toLowerCase().includes(qn))&&
     (!qc||(c.city||'').toLowerCase().includes(qc))&&
     (!qd||(c.designation||'').toLowerCase().includes(qd))&&
-    (!qe||(qe==='__none'?!c.event:(c.event||'').toLowerCase()===qe.toLowerCase())));
+    (!qe||(qe==='__none'?!c.event:(c.event||'').toLowerCase()===qe.toLowerCase()))&&
+    (!qb||(c.ownerName||'Unknown')===qb));
 }
 const CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#04251a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
 function renderCards(){
-  fillEventFilter();
+  fillEventFilter();fillByFilter();
   const L=filtered();
   $('cardCount').textContent=L.length===cards.length?`${cards.length} card${cards.length===1?'':'s'}`:`${L.length} of ${cards.length} cards`;
   $('grid').innerHTML=L.map(c=>`
@@ -1808,13 +1992,14 @@ function openSheet(id){
       ${row('Phone',c.phone,c.phone?c.phone.split(',').map(p=>`<a href="tel:${esc(p.replace(/[^\d+]/g,''))}">${esc(p.trim())}</a>`).join(', '):'')}
       ${row('Email',c.email,c.email?c.email.split(',').map(m=>`<a href="mailto:${esc(m.trim())}">${esc(m.trim())}</a>`).join(', '):'')}
       ${row('Address',c.address)}${row('City',c.city)}${row('PIN code',c.pin)}${row('Website',c.website)}${row('Event',c.event)}
+      ${me&&me.role==='admin'?row('Uploaded by',(c.ownerName||'Unknown')+(c.ownerEmail?' ('+c.ownerEmail+')':''))+row('Uploaded on',new Date(tsOf(c)).toLocaleString('en-IN')):''}
     </dl>
     ${quickActions(c)}
     <div class="btns">
       <button class="btn" id="shEdit">Edit details</button>
       <button class="btn alt" id="shCrop">Fix card crop</button>
       <button class="btn alt" id="shClose">Close</button>
-      <button class="btn del" id="shDel">Delete card</button>
+      ${me&&me.role==='admin'?'<button class="btn del" id="shDel">Delete card</button>':''}
     </div>`;
   $('sheet').classList.remove('hide');
   const fl=$('sheetIn').querySelector('[data-flip]');if(fl)fl.onclick=()=>doFlip(fl.closest('.cardframe'),c.image,c.image2,c.ar,c.ar2);
@@ -1839,7 +2024,7 @@ function openSheet(id){
       },()=>openSheet(id),'Cancel');
     }catch(e){toast('Could not open the card image')}
   };
-  $('shDel').onclick=async()=>{
+  if($('shDel'))$('shDel').onclick=async()=>{
     if(!confirm('Delete this card from the register?'))return;
     try{await store.del(id);if(store.refresh)store.refresh();selected.delete(id);log('delete',c.name||c.company);$('sheet').classList.add('hide');toast('Card deleted')}catch(e){toast('Could not delete: '+e.message)}
   };
@@ -2018,7 +2203,7 @@ function applyTheme(n){
   const m=document.querySelector('meta[name=theme-color]'),t=THEMES.find(x=>x[0]===n);if(m&&t)m.content=t[2];
 }
 function cycleTheme(){
-  const cur=document.documentElement.dataset.theme,ck=me?(channelOf(me.email)||{}).key:lgType;
+  const cur=document.documentElement.dataset.theme,ck=me?(me.role==='admin'?adminCh:me.channel):(CHANNELS[lgType]?lgType:'');
   if(ck){
     const light=!cur.endsWith('-light');
     applyTheme(ck+(light?'-light':''));
@@ -2088,14 +2273,20 @@ function cfLoop(){
 }
 
 /* ---------------- channel entry + landing interactions ---------------- */
+$('switchTeam').onclick=()=>{
+  if(!me||!CHANNELS[me.channel])return;
+  const o=me.channel==='motor'?'textile':'motor';
+  if(!confirm('Switch to '+CHANNELS[o].label+'? New cards you save will go under '+CHANNELS[o].label+'.'))return;
+  setSide(o);applyTheme(chanTheme(o));enterChannel(me);store.watch();setNote();toast('Now saving to '+CHANNELS[o].label);
+};
 $('aiChip').onclick=()=>toast(aiStatus()+'. Version '+BUILD);
 function setHeroChannel(ch){
   $('chanTxt').textContent=ch.label;
   $('heroSub').textContent=ch.tag;
 }
 function enterChannel(u){
-  const ch=channelOf(u.email);if(!ch)return;
-  applyTheme(chanTheme(ch.key));
+  const ch=CHANNELS[u.channel];if(!ch)return;
+  applyTheme(chanTheme(u.channel));
   setHeroChannel(ch);
   if(justLoggedIn){justLoggedIn=false;setTimeout(()=>burst(innerWidth/2,innerHeight*.28,90),380)}
 }
@@ -2151,11 +2342,67 @@ if(!RM){
   document.addEventListener('pointerleave',()=>{if(tiltCur){tiltOff(tiltCur);tiltCur=null}});
 }
 
+/* ---------------- admin screen and team manager ---------------- */
+function loadAdminHome(){
+  if(unsub){unsub();unsub=null}
+  cards=[];adminCh='';selected.clear();applyTheme('midnight');
+  $('admHi').textContent='Signed in as '+(me?me.name:'');
+  ['motor','textile'].forEach(async k=>{
+    const c=$('admCnt_'+k),r=$('admReps_'+k);
+    c.textContent='…';r.textContent='';
+    try{const n=(await db.collection('cards').where('channel','==',k).count().get()).data().count;c.textContent=n+(n===1?' card':' cards')}catch(e){c.textContent='Open'}
+  });
+}
+document.querySelectorAll('.adm-ch').forEach(b=>b.onclick=()=>{
+  adminCh=b.dataset.ch;scopeAll=true;selected.clear();
+  applyTheme(chanTheme(adminCh));
+  store.watch();nav('cards');
+});
+$('admOut').onclick=()=>$('outBtn').onclick();
+$('themeBtn3').onclick=cycleTheme;
+$('admTeam').onclick=()=>nav('team');
+$('admAct').onclick=()=>{nav('activity');loadActivity()};
+$('admAi').onclick=()=>$('aiBtn').onclick();
+$('teamBack').onclick=goBack;
+
+async function loadTeam(){
+  $('tmList').innerHTML='<p class="dim">Loading…</p>';
+  try{
+    const sn=await db.collection('users').get();
+    const us=sn.docs.map(d=>({id:d.id,...d.data()}));
+    const row=u=>`<div class="tmrow ${u.active===false?'off':''}"><div class="tmi"><b>${esc(u.name||u.email)}</b><small>${esc(u.email||'')}${u.active===false?' | switched off':''}</small></div><div class="tmb"><button class="link" data-a="toggle" data-id="${esc(u.id)}" data-on="${u.active===false?'1':''}">${u.active===false?'Switch on':'Switch off'}</button><button class="link" data-a="reset" data-email="${esc(u.email||'')}">Reset password</button></div></div>`;
+    const l=us.filter(u=>u.role!=='admin').sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    $('tmList').innerHTML=`<h4 class="tmh">Team members (${l.length})</h4>`+(l.map(row).join('')||'<p class="dim">No one has signed up yet.</p>');
+  }catch(e){$('tmList').innerHTML='<p class="err" style="display:block">'+esc(e.message)+'</p>'}
+}
+$('tmList').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-a]');if(!b)return;
+  try{
+    if(b.dataset.a==='toggle'){
+      const on=!!b.dataset.on;
+      if(!on&&!confirm('Switch this login off? They will not be able to sign in or save cards.'))return;
+      await db.collection('users').doc(b.dataset.id).update({active:on});toast(on?'Login switched on':'Login switched off');loadTeam();
+    }else if(b.dataset.a==='reset'){
+      await A.reset(b.dataset.email);toast('Password reset link sent to '+b.dataset.email);
+    }
+  }catch(x){toast('Could not do that: '+String(x.message||x).slice(0,100))}
+});
+
+/* ---------------- date and time bar ---------------- */
+(function(){
+  const el=$('clock'),D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const tick=()=>{
+    const d=new Date(),h=d.getHours(),h12=h%12||12,p=n=>String(n).padStart(2,'0');
+    el.textContent=D[d.getDay()]+', '+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear()+'  |  '+h12+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' '+(h<12?'AM':'PM');
+  };
+  tick();setInterval(tick,1000);
+})();
+
 /* ---------------- export: Excel, PDF, Word ---------------- */
 const XNAME={xlsx:'Excel',pdf:'PDF',docx:'Word'};
-const EXP_COLS=['Name','Designation','Company','Phone','Email','Address','City','PIN','Website','Event','Added by','Date added'];
+const EXP_COLS=['Name','Designation','Company','Phone','Email','Address','City','PIN','Website','Event','Team','Added by','Date added'];
 function expRows(list){
-  return list.map(c=>({Name:c.name||'',Designation:c.designation||'',Company:c.company||'',Phone:c.phone||'',Email:c.email||'',Address:c.address||'',City:c.city||'',PIN:c.pin||'',Website:c.website||'',Event:c.event||'','Added by':c.ownerName||'','Date added':new Date(tsOf(c)).toLocaleDateString('en-IN')}));
+  return list.map(c=>({Name:c.name||'',Designation:c.designation||'',Company:c.company||'',Phone:c.phone||'',Email:c.email||'',Address:c.address||'',City:c.city||'',PIN:c.pin||'',Website:c.website||'',Event:c.event||'',Team:(CHANNELS[c.channel]||{}).label||'','Added by':c.ownerName||'','Date added':new Date(tsOf(c)).toLocaleDateString('en-IN')}));
 }
 function saveBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2500)}
 function exportXlsx(rows,fname){
