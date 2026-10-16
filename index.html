@@ -853,7 +853,7 @@ onCards=()=>{
   if(!$('v-cards').classList.contains('hide'))renderCards();
   if(me)renderHome();
 };
-const BUILD='r7 (15 Oct)';
+const BUILD='r8 (16 Oct)';
 function aiStatus(){
   if(!ONLINE)return 'Phone reader only (test mode)';
   if(AI.key)return AI.err?'AI key found, last scan failed: '+AI.err:'AI reader is on';
@@ -861,7 +861,7 @@ function aiStatus(){
 }
 function setNote(){
   $('modeNote').textContent=(ONLINE?'Your cards are saved to your account and open on any device you sign in on.':'Test mode: your account and cards stay on this phone only.')+' '+aiStatus()+'. Version '+BUILD+'.';
-  const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: check key':'AI reader on'):('Phone reader only'+(AI.err?': '+AI.err:''));c.title=aiStatus()}
+  const c=$('aiChip');if(c){c.textContent=AI.key?(AI.err?'AI: last scan failed':'AI reader on'):('Phone reader only'+(AI.err?': '+AI.err:''));c.title=aiStatus()}
 }
 function scopeText(){$('scopeBtn').textContent=scopeAll?'Showing everyone\'s cards. Show mine':'Showing my cards. Show everyone\'s'}
 
@@ -1211,11 +1211,22 @@ $('adjCancel').onclick=()=>{
 async function aiRead(c){
   const b64=c.toDataURL('image/jpeg',.88).split(',')[1];
   const prompt='You are reading a photo of an Indian business visiting card. Reply with JSON only, using exactly these keys: name, designation, company, phone, email, address, city, pin, website. Rules: (1) name is the individual person\'s name only, exactly as printed, without titles or degrees. Never use the company name, logo text, tagline, department or an area or street name as the name. If no person name is printed, use an empty string. (2) designation is that person\'s job title, empty if none. (3) company is the organisation or brand name, not the person and not the tagline. (4) phone lists every mobile number first, then landlines, comma separated, as printed; leave out fax. (5) email lists every email address, comma separated. (6) website lists every web address such as www.example.com, comma separated. Websites go only in website, never in address or city. (7) address is the postal address on one line, without the company name, phone, email or website. (8) city is only the city or town name taken from the address, for example Pune or Chennai, with no state, PIN, website or other words. (9) pin is the 6 digit PIN code from the address. Use an empty string for anything that is not printed on the card. Never guess or invent details. Copy the spelling exactly as printed.';
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+AI.model+':generateContent',{
-    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI.key},
-    body:JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})
-  });
-  if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error(r.status+' '+m)}
+  // try the chosen model first, then backup models; wait a little and retry when Google is busy (503/429/500)
+  const models=[...new Set([AI.model,'gemini-flash-latest','gemini-flash-lite-latest','gemini-2.5-flash'].filter(Boolean))];
+  const body=JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}});
+  let r=null,lastErr='';
+  for(let i=0;i<models.length*2&&!(r&&r.ok);i++){
+    const m=models[i%models.length];
+    if(i>0)await new Promise(ok=>setTimeout(ok,i<models.length?700:1800));
+    try{
+      r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':AI.key},body});
+    }catch(e){r=null;lastErr=String(e.message||e);continue}
+    if(r.ok)break;
+    let msg='';try{msg=(await r.json()).error.message}catch(e){}
+    lastErr=r.status+' '+msg;
+    if(![429,500,502,503,504,404].includes(r.status))break;   // wrong key or bad request: do not keep trying
+  }
+  if(!r||!r.ok)throw new Error(lastErr||'no answer from the AI reader');
   const j=await r.json();
   let t=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').replace(/```json|```/g,'').trim();
   const o=JSON.parse(t),out={};
@@ -1339,7 +1350,7 @@ async function processCard(card){
   let p=null,src='phone';
   if(AI.key){
     $('msg').textContent='Reading the card with AI…';
-    try{p=await aiRead(card);src='ai'}
+    try{p=await aiRead(card);src='ai';AI.err='';setNote()}
     catch(e){console.warn(e);AI.err=String(e.message||e).slice(0,140);setNote();toast('AI reader failed: '+AI.err+'. Using the phone reader.');$('msg').textContent='Reading the card…'}
   }
   if(!p){
